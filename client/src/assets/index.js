@@ -3,7 +3,7 @@ import backgroundImg2 from "./images/background-2.jpg";
 import backgroundImg3 from "./images/background-3.jpg";
 import backgroundImg4 from "./images/background-4.jpg";
 import profilePic from "./images/profile-pic.jpg";
-import logo from "./images/logo.png";
+import logo from "./images/CakeFarm.jpeg";
 import defaultProfilePic from "./images/default-profile.png";
 import profile from "./images/profile.jpeg";
 import allFoodImage from "./images/cat_allFood.png";

@@ -59,53 +59,57 @@ export default function FoodItemCard({ item, isDisabled = false }) {
 
   return (
     <div className={`foodItemCard ${isDisabled ? 'disabled' : ''}`}>
+      {/* ─── Image ─── */}
       <div className="img-div">
         <img
-          src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${
-            item.image
-          }`}
-          alt=""
+          src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${item.image}`}
+          alt={item.productName}
           loading="lazy"
         />
+        {/* Veg/non-veg indicator */}
+        <div className={`veg-badge ${item.vegetarian ? 'veg' : 'nonveg'}`} title={item.vegetarian ? 'Vegetarian' : 'Non-Vegetarian'} />
+
         {isDisabled && (
           <div className="disabled-overlay">
             <span>Ordering Closed</span>
           </div>
         )}
       </div>
+
+      {/* ─── Body ─── */}
       <div className="item-description">
-        <h2>{item.productName}</h2>
-        <p>{item.description} </p>
+        <h2 title={item.productName}>{item.productName}</h2>
+        <p>{item.description}</p>
+
         <div className="item-rating">
           <span>
+            <IoMdStar className="icon star" />
             {item.rating}
-            <IoMdStar className="icon star" />{" "}
           </span>
           <span>
             <GoDotFill className="icon veg" />
-            veg
+            {item.vegetarian ? 'Veg' : 'Non-Veg'}
           </span>
         </div>
+
         <div className="item-cost">
           <span>
-            <LiaRupeeSignSolid className="icon rupee" /> {item.price}
+            <LiaRupeeSignSolid className="icon rupee" />
+            {item.price}
           </span>
+
           <div className="add-to-cart">
             {!itemQuantity ? (
-              <FaCirclePlus className="icon" onClick={handleAddItem} />
+              <motion.div whileTap={{ scale: 0.85 }} onClick={handleAddItem}>
+                <FaCirclePlus className="icon" />
+              </motion.div>
             ) : (
               <div className="item-count">
-                <motion.div
-                  whileTap={{ scale: 0.85 }}
-                  onClick={handleItemDecrement}
-                >
+                <motion.div whileTap={{ scale: 0.85 }} onClick={handleItemDecrement}>
                   <GoDash className="icon-btn minus" />
                 </motion.div>
                 <span>{itemQuantity}</span>
-                <motion.div
-                  whileTap={{ scale: 0.75 }}
-                  onClick={handleItemIncrement}
-                >
+                <motion.div whileTap={{ scale: 0.75 }} onClick={handleItemIncrement}>
                   <GoPlus className="icon-btn plus" />
                 </motion.div>
               </div>

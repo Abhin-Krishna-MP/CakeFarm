@@ -4,6 +4,8 @@ import {
   deleteProduct,
   deleteUser,
   updateProduct,
+  updateCategory,
+  deleteCategory,
 } from "../controllers/admin.controller.js";
 import { getAllOrders, updateOrderStatus } from "../controllers/order.controller.js";
 import { getAllUsers } from "../controllers/user.controllers.js";
@@ -31,6 +33,12 @@ router.route("/user/:userId").delete(deleteUser);
 router
   .route("/create-category")
   .post(validate, verifyJwt, verifyAdmin, createCategory);
+router
+  .route("/update-category/:categoryId")
+  .put(validate, verifyJwt, verifyAdmin, updateCategory);
+router
+  .route("/delete-category/:categoryId")
+  .delete(verifyJwt, verifyAdmin, deleteCategory);
 router
   .route("/create-product")
   .post(productValidator(), validate, verifyJwt, verifyAdmin, createProduct);

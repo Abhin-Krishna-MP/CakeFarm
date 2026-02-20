@@ -15,12 +15,13 @@ import {
 } from "../../features/order/orderAction";
 import io from "socket.io-client";
 
-function OrderListChild({ order }) {
+function OrderListChild({ order, onSelect }) {
   const { selectedOrderItem, setSelectedOrderItem } = useContext(context);
 
   const handleOrderClick = (order) => {
     // set the selected order with order obj to display order items
     setSelectedOrderItem(order);
+    if (onSelect) onSelect();
   };
 
   return (
@@ -93,6 +94,7 @@ export default function Orders() {
   const [departmentFilter, setDepartmentFilter] = useState("All");
   const [divisionFilter, setDivisionFilter] = useState("All");
   const [semesterFilter, setSemesterFilter] = useState("All");
+  const [mobileShowDetail, setMobileShowDetail] = useState(false);
   
   const orderList = useSelector((state) => state.orders.orderList);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -233,7 +235,7 @@ export default function Orders() {
   };
 
   return (
-    <div className="orders">
+    <div className={`orders${mobileShowDetail ? " show-detail" : ""}`}>
       <div className="order-list-wrapper">
         <div className="heading-wrapper">
           <p className="heading">Orders ({filteredOrders.length})</p>
@@ -323,7 +325,11 @@ export default function Orders() {
         <div className="order-list">
           {filteredOrders.length > 0 ? (
             filteredOrders.map((order, index) => (
-              <OrderListChild key={order.orderId || index} order={order} />
+              <OrderListChild
+                key={order.orderId || index}
+                order={order}
+                onSelect={() => setMobileShowDetail(true)}
+              />
             ))
           ) : (
             <div className="no-orders">
@@ -334,6 +340,15 @@ export default function Orders() {
       </div>
 
       <div className="order-list-items-wrapper">
+        {/* Mobile back button */}
+        <button
+          className="mobile-back-btn"
+          onClick={() => setMobileShowDetail(false)}
+          aria-label="Back to orders list"
+        >
+          ← Back to Orders
+        </button>
+
         <div className="order-update">
           <p>Order Items Info</p>
           <label>Order Status:</label>

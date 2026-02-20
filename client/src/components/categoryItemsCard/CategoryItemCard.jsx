@@ -1,8 +1,8 @@
 import React from "react";
 import "./categoryItemsCard.scss";
-import { allFoodImage } from "../../assets";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../features/userActions/product/productAction";
+import { MdOutlineRestaurantMenu, MdOutlineGridView } from "react-icons/md";
 
 export default function CategoryItemCard({
   id,
@@ -15,28 +15,50 @@ export default function CategoryItemCard({
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
 
-  const handleOnClick = (id, categoryId) => {
+  const handleOnClick = () => {
     itemName === "All"
       ? dispatch(getProducts(token))
       : dispatch(getProducts(token, categoryId));
     setActiveSlide(id);
   };
+
+  const imageUrl = imgSrc
+    ? `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${imgSrc}`
+    : null;
+
+  const isActive = activeSlide === id;
+
   return (
-    <div
-      className="categoryItemCard"
-      onClick={() => handleOnClick(id, categoryId)}
+    <button
+      className={`cat-pill${isActive ? " active" : ""}`}
+      onClick={handleOnClick}
+      type="button"
     >
-      <img
-        src={`${
-          import.meta.env.VITE_API_BASE_IMAGE_URI
-        }/assets/images/${imgSrc}`}
-        alt="All"
-        loading="lazy"
-      />
-      <p>{itemName}</p>
-      <div
-        className={`curr-sel ${activeSlide === id ? "" : "hide-curr-sel"} `}
-      />
-    </div>
+      {/* shimmer sweep layer */}
+      <span className="cat-pill__shimmer" aria-hidden="true" />
+
+      <span className="cat-pill__thumb">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={itemName}
+            loading="lazy"
+            onError={(e) => {
+              e.target.style.display = "none";
+              e.target.nextSibling.style.display = "flex";
+            }}
+          />
+        ) : null}
+        <span
+          className="cat-pill__fallback"
+          style={{ display: imageUrl ? "none" : "flex" }}
+        >
+          {itemName === "All"
+            ? <MdOutlineGridView className="cat-pill__icon" />
+            : <MdOutlineRestaurantMenu className="cat-pill__icon" />}
+        </span>
+      </span>
+      <span className="cat-pill__label">{itemName}</span>
+    </button>
   );
 }

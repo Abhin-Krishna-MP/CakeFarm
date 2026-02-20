@@ -3,60 +3,69 @@
 .dropDown {
   height: max-content;
   width: fit-content;
-  position: relative !important;
+  position: relative;
 
-  button {
-    padding: 0.5em;
-    font-style: normal;
-    font-size: $font-size-option;
-    font-weight: $font-weight-bold;
+  > button {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5em;
-    color: black;
-    border: none;
-    background-color: $bg-fill-color-green;
+    gap: 0.4rem;
+    color: $text-primary;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
     cursor: pointer;
-    border-radius: $border-radius-medium;
-    width: max-content;
+    border-radius: 10px;
+    transition: background 0.2s, border-color 0.2s;
+    min-height: 36px;
+
+    svg { font-size: 1rem; }
+
+    &:hover {
+      background: rgba(255,193,7,0.1);
+      border-color: rgba(255,193,7,0.3);
+      color: $bg-fill-color-1;
+    }
   }
 
   ul {
-    position: absolute !important;
-    top: 2em;
-
-    width: 0px;
-    height: 0px;
-    padding: 0.5em;
-    margin-top: 1em;
-    background-color: $bg-secondary;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 100;
+    min-width: 140px;
+    padding: 0.4rem;
+    background: $bg-primary;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
-    border-radius: $border-radius-medium;
-    align-items: center;
-    opacity: 0;
-    box-shadow: $box-shadow-dark;
+    gap: 2px;
+    overflow: hidden;
 
     li {
-      list-style: none;
-      margin: 0;
-      width: 100%;
-      padding: 0.5em;
-      font-weight: $font-weight-medium;
-      font-size: $font-size-base;
-      color: #fff;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: $text-secondary;
       cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
 
       &:hover {
-        background-color: $bg-primary;
-        border-radius: $border-radius-light;
+        background: rgba(255,255,255,0.06);
+        color: $text-primary;
       }
-    }
 
-    .selected {
-      background-color: $bg-primary;
+      &.selected {
+        background: rgba(255,193,7,0.12);
+        color: $bg-fill-color-1;
+        font-weight: 600;
+      }
     }
   }
 }

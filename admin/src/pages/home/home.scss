@@ -4,14 +4,122 @@
   width: 100%;
   height: 100vh;
   display: flex;
-  background-color: grey; // temp color
+  flex-direction: column;
+  background-color: $bg-secondary;
+  overflow: hidden;
+
+  // ── Mobile top bar (hidden on desktop) ──────────────────────────
+  .mobile-header {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1rem;
+    height: 56px;
+    background: $bg-primary;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+    z-index: 100;
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: background 0.15s;
+
+      span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: $text-primary;
+        border-radius: 2px;
+        transition: background 0.2s;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.06);
+        span { background: $bg-fill-color-1; }
+      }
+    }
+
+    .mobile-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: $text-primary;
+    }
+  }
+
+  // ── Sidebar backdrop overlay (mobile) ───────────────────────────
+  .sidebar-overlay {
+    display: none;
+  }
+
+  // ── Main content row (sidebar + panel) ──────────────────────────
+  .content-row {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
 
   .menu {
-    width: 6%;
+    width: 220px;
+    flex-shrink: 0;
+    height: 100%;
+    transition: transform 0.3s ease;
   }
 
   .menu-items {
-    width: 94%;
+    flex: 1;
     height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
+
+  // ── Mobile breakpoint ────────────────────────────────────────────
+  @media (max-width: 768px) {
+    .mobile-header {
+      display: flex;
+    }
+
+    .sidebar-overlay {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 200;
+      animation: overlayFadeIn 0.2s ease both;
+    }
+
+    .content-row {
+      height: calc(100vh - 56px);
+    }
+
+    .menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100%;
+      z-index: 300;
+      transform: translateX(-100%);
+
+      &.open {
+        transform: translateX(0);
+      }
+    }
+
+    .menu-items {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

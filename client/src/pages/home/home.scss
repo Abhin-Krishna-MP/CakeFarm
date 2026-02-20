@@ -1,44 +1,147 @@
-@import "../../styles/global";
+@import "../../styles/_global.scss";
 
+/* ─── Home Page ─── */
 .home {
   width: 100%;
   min-height: 100vh;
   background-color: $bg-secondary;
   position: relative;
 
+  /* Cart drawer overlay */
   .cart {
-    position: absolute;
+    position: fixed;
     right: 0;
-    z-index: 9;
+    top: 0;
+    height: 100vh;
+    z-index: 250;
+    width: 100%;
+    max-width: 420px;
+    filter: drop-shadow(-8px 0 40px rgba(0,0,0,0.5));
+
+    @media (min-width: 640px) { width: 380px; }
+  }
+
+  /* Cart backdrop */
+  .cart-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 240;
+    animation: fadeIn 0.2s ease;
   }
 
   .home-wrapper {
-    width: 70%;
-    width: 70%;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 1rem 0;
-    // background-color: $bg-primary;
-    // border: 1px solid rgba(211, 211, 211, 0.089);
+    padding: 2rem 1rem 5rem; /* bottom padding for mobile bottom nav */
 
-    h1 {
-      color: $text-primary;
-      font-weight: $font-weight-medium;
-      padding: 0.2rem;
-      margin-left: 4rem;
-      display: inline-block;
-      border-bottom: 2px solid $bg-fill-color-green;
+    @media (min-width: 768px) { padding: 2.5rem 1.5rem 2rem; }
+    @media (min-width: 1024px) { padding: 3.5rem 2rem 2rem; }
+
+    /* Section heading */
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $text-primary;
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: -4px;
+          width: 36px;
+          height: 2px;
+          background: $bg-fill-color-1;
+          border-radius: 2px;
+        }
+      }
     }
 
+    /* Category section */
+    .category-div {
+      margin-top: 1.5rem;
+      margin-bottom: 1.25rem;
+
+      @media (min-width: 1024px) { margin-top: 2.5rem; margin-bottom: 1.75rem; }
+
+      .category-section-label {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 1rem;
+
+        .pulse-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: $bg-fill-color-1;
+          flex-shrink: 0;
+          animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        h2 {
+          font-size: 0.72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: $text-2-primary;
+          margin: 0;
+        }
+
+        .line {
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(90deg, rgba(255,193,7,0.25), transparent);
+        }
+      }
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1);   opacity: 1;   }
+      50%       { transform: scale(1.6); opacity: 0.6; }
+    }
+
+    /* Backward compat heading */
+    .category-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $text-primary;
+      margin: 1.5rem 0 1rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 2px solid $bg-fill-color-1;
+      display: inline-block;
+    }
+
+    /* ─── Food items grid ─── */
     .food-items-wrapper {
-      margin-top: 2rem;
-      // background-color: teal;
-      width: 100%;
-      height: max-content;
       display: grid;
-      grid-template-columns: max-content max-content max-content;
-      grid-column-gap: 4rem;
-      row-gap: 4rem;
-      justify-content: center;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+
+      @media (min-width: 640px)  { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+      @media (min-width: 768px)  { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+      @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
+      @media (min-width: 1280px) { grid-template-columns: repeat(5, 1fr); }
+    }
+
+    /* Empty / loading states */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: $text-2-primary;
+
+      .empty-emoji { font-size: 3.5rem; margin-bottom: 1rem; display: block; }
+      h3 { font-size: 1.1rem; color: $text-primary; margin-bottom: 0.5rem; }
+      p  { font-size: 0.875rem; }
     }
   }
 }
+

@@ -58,10 +58,13 @@ const authSlice = createSlice({
 
     updateUserInfo: (state, action) => {
       state.userData = action.payload.data;
+      localStorage.setItem("user", JSON.stringify(action.payload.data));
     },
 
     updateUserAvatar: (state, action) => {
       state.userData.avatar = action.payload;
+      const stored = JSON.parse(localStorage.getItem("user") || "{}");
+      localStorage.setItem("user", JSON.stringify({ ...stored, avatar: action.payload }));
     },
 
     logOut: (state, action) => {
