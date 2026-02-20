@@ -19,6 +19,28 @@ export default function Lunch() {
     fetchLunchProducts();
   }, []);
 
+  // Auto-close ordering when deadline passes — no refresh needed
+  useEffect(() => {
+    if (!deadlineTime || !deadlineTime.includes(":")) return;
+
+    const [hours, minutes] = deadlineTime.split(":");
+    const deadline = new Date();
+    deadline.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+    const msUntilDeadline = deadline - Date.now();
+
+    if (msUntilDeadline <= 0) {
+      setIsOrderingOpen(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setIsOrderingOpen(false);
+    }, msUntilDeadline);
+
+    return () => clearTimeout(timer);
+  }, [deadlineTime]);
+
   const checkLunchStatus = async () => {
     try {
       const response = await fetch(

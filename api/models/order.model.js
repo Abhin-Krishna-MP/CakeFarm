@@ -264,6 +264,7 @@ class OrderModel {
             vegetarian: product?.vegetarian,
             price: product?.price,
             categoryId: product?.categoryId,
+            isLunchItem: product?.isLunchItem || false,
           });
         }
       }
@@ -319,6 +320,7 @@ class OrderModel {
             vegetarian: product?.vegetarian,
             price: product?.price,
             categoryId: product?.categoryId,
+            isLunchItem: product?.isLunchItem || false,
             // User details
             user: user ? {
               userId: user.userId,

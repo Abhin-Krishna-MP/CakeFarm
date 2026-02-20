@@ -100,11 +100,58 @@ export default function CartItems() {
   const { token } = useSelector((select) => select.auth);
   const dispatch = useDispatch();
 
+  // Track lunch ordering status if any lunch items are in cart
+  const [lunchOrderingOpen, setLunchOrderingOpen] = useState(true);
+  const hasLunchItems = cart.cartItems?.some((item) => item.isLunchItem);
+
+  useEffect(() => {
+    if (!hasLunchItems) return;
+
+    const checkLunchStatus = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URI}/lunch/status`
+        );
+        const data = await res.json();
+        if (data.data) setLunchOrderingOpen(data.data.isOpen);
+      } catch (e) {}
+    };
+
+    checkLunchStatus();
+
+    // Auto-close: set a timer to switch to closed at the deadline
+    const scheduleAutoClose = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URI}/lunch/status`
+        );
+        const data = await res.json();
+        if (data.data?.orderDeadlineTime) {
+          const [hours, minutes] = data.data.orderDeadlineTime.split(":");
+          const deadline = new Date();
+          deadline.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+          const ms = deadline - Date.now();
+          if (ms > 0) {
+            setTimeout(() => setLunchOrderingOpen(false), ms);
+          }
+        }
+      } catch (e) {}
+    };
+
+    scheduleAutoClose();
+  }, [hasLunchItems]);
+
   const handlePlaceOrder = () => {
+    if (hasLunchItems && !lunchOrderingOpen) {
+      alert(
+        "Lunch ordering time has passed. Please remove lunch items from your cart before placing the order."
+      );
+      return;
+    }
     if (cart.cartItems.length) {
       dispatch(createOrder(token, cart.cartItems));
     } else {
-      alert("empy cart");
+      alert("empty cart");
     }
   };
 
@@ -113,6 +160,11 @@ export default function CartItems() {
       <RxCross2 className="close-cart" onClick={() => setIsToggleCart(false)} />
       <div className="cart-items-cont">
         {!cart.cartItems.length && <h1>No items in cart...</h1>}
+        {hasLunchItems && !lunchOrderingOpen && (
+          <div className="lunch-closed-warning">
+            ⏰ Lunch ordering time has passed. Remove lunch items to place an order.
+          </div>
+        )}
         {cart.cartItems?.map((cartItem, index) => (
           <CartItem key={index} cartItem={cartItem} />
         ))}
@@ -124,7 +176,15 @@ export default function CartItems() {
               <span>Total:</span> <LiaRupeeSignSolid className="icon" />
               {cart.totalCost}
             </p>
-            <button onClick={handlePlaceOrder}>
+            <button
+              onClick={handlePlaceOrder}
+              disabled={hasLunchItems && !lunchOrderingOpen}
+              style={
+                hasLunchItems && !lunchOrderingOpen
+                  ? { opacity: 0.5, cursor: "not-allowed" }
+                  : {}
+              }
+            >
               Place Order
               <FaArrowRight className="icon" />
             </button>

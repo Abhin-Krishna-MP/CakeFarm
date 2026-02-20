@@ -65,6 +65,7 @@ export const transformUserOrderData = (rawUserOrderData) => {
             quantity: order.quantity,
             subtotal: order.subtotal,
             categoryId: order.categoryId,
+            isLunchItem: order.isLunchItem || false,
             createdAt: order.createdAt,
           });
         } else {
@@ -91,6 +92,7 @@ export const transformUserOrderData = (rawUserOrderData) => {
                 quantity: order.quantity,
                 subtotal: order.subtotal,
                 categoryId: order.categoryId,
+                isLunchItem: order.isLunchItem || false,
                 createdAt: order.createdAt,
               },
             ],

@@ -1,4 +1,6 @@
 import OrderModel from "../models/order.model.js";
+import { LunchSettingsModel } from "../models/lunchSettings.model.js";
+import { ProductModel } from "../models/product.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -7,6 +9,21 @@ import { transformUserOrderData } from "../utils/helper.js";
 export const placeOrder = asyncHandler(async (req, res) => {
   const cart = req.body;
   const userId = req.user.userId;
+
+  // Check if any cart items are lunch items — if so, verify ordering is still open
+  if (cart.cartItems && cart.cartItems.length > 0) {
+    const productIds = cart.cartItems.map((item) => item.productId);
+    const { Product } = await import("../models/product.model.js");
+    const products = await Product.find({ productId: { $in: productIds } }).lean();
+    const hasLunchItem = products.some((p) => p.isLunchItem);
+
+    if (hasLunchItem) {
+      const isOpen = await LunchSettingsModel.isOrderingOpen();
+      if (!isOpen) {
+        throw new ApiError(400, "Lunch ordering time has passed. Cannot place lunch order.");
+      }
+    }
+  }
 
   const orderId = await OrderModel.createOrder(userId, cart); // fucntion returns the orderId
 

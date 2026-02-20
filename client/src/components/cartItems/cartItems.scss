@@ -26,6 +26,16 @@
     gap: 0.4em;
     max-height: 70vh;
     overflow-y: scroll;
+
+    .lunch-closed-warning {
+      background: rgba(240, 12, 45, 0.12);
+      border-left: 3px solid #f00c2d;
+      color: #ff6b7a;
+      padding: 0.7rem 1rem;
+      border-radius: $border-radius-light;
+      font-size: $font-size-small;
+      line-height: 1.4;
+    }
   }
 
   .cart-bottom {

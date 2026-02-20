@@ -37,7 +37,11 @@ const createOrder = (token, cartItems) => async (dispatch) => {
     dispatch(clearCart());
   } catch (error) {
     console.log(error);
-    dispatch(createOrderFailure(error.response.data));
+    const message = error.response?.data?.message || "Failed to place order";
+    if (message.toLowerCase().includes("lunch ordering time")) {
+      alert("⏰ " + message);
+    }
+    dispatch(createOrderFailure(error.response?.data || { message }));
   }
 };
 
