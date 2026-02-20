@@ -157,9 +157,15 @@ export default function CartItems() {
 
   return (
     <div className="cart-items">
-      <RxCross2 className="close-cart" onClick={() => setIsToggleCart(false)} />
+      {/* Header */}
+      <div className="cart-header">
+        <h2>🛒 Your Cart {cart.cartItems.length > 0 && `(${cart.cartItems.length})`}</h2>
+        <RxCross2 className="close-cart" onClick={() => setIsToggleCart(false)} />
+      </div>
+
+      {/* Items list */}
       <div className="cart-items-cont">
-        {!cart.cartItems.length && <h1>No items in cart...</h1>}
+        {!cart.cartItems.length && <h1>Your cart is empty</h1>}
         {hasLunchItems && !lunchOrderingOpen && (
           <div className="lunch-closed-warning">
             ⏰ Lunch ordering time has passed. Remove lunch items to place an order.
@@ -169,21 +175,21 @@ export default function CartItems() {
           <CartItem key={index} cartItem={cartItem} />
         ))}
       </div>
+
+      {/* Sticky checkout bar */}
       <div className="cart-bottom">
         {!!cart.cartItems.length && (
           <>
-            <p>
-              <span>Total:</span> <LiaRupeeSignSolid className="icon" />
-              {cart.totalCost}
-            </p>
+            <div className="cart-total-row">
+              <p>
+                <span>Total:</span>
+                <LiaRupeeSignSolid className="icon" />
+                {cart.totalCost}
+              </p>
+            </div>
             <button
               onClick={handlePlaceOrder}
               disabled={hasLunchItems && !lunchOrderingOpen}
-              style={
-                hasLunchItems && !lunchOrderingOpen
-                  ? { opacity: 0.5, cursor: "not-allowed" }
-                  : {}
-              }
             >
               Place Order
               <FaArrowRight className="icon" />

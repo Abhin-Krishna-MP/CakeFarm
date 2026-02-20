@@ -3,27 +3,32 @@
 .lunch-settings {
   width: 100%;
   height: 100%;
-  background-color: $bg-secondary;
+  background: $bg-secondary;
   padding: 2rem;
   overflow-y: auto;
 
   .settings-wrapper {
-    max-width: 800px;
+    max-width: 640px;
     margin: 0 auto;
-    background-color: $bg-primary;
+    background: $bg-primary;
     padding: 2rem;
-    border-radius: $border-radius-medium;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    animation: fadeInUp 0.4s ease both;
 
     h1 {
-      font-size: $font-size-xxl;
+      font-size: 1.4rem;
+      font-weight: 700;
       color: $text-primary;
       margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
     .settings-form {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1.25rem;
 
       .form-group {
         display: flex;
@@ -31,91 +36,81 @@
         gap: 0.5rem;
 
         label {
-          font-size: $font-size-option;
+          font-size: 0.82rem;
+          font-weight: 600;
           color: $text-primary;
-          font-weight: $font-weight-medium;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.6rem;
 
-          input[type="checkbox"] {
-            width: 1.2rem;
-            height: 1.2rem;
+          input[type='checkbox'] {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
+            accent-color: $bg-fill-color-1;
           }
         }
 
-        input[type="time"] {
-          padding: 0.8rem;
-          background-color: $bg-fill-secondary;
-          border: 1px solid rgba(128, 128, 128, 0.3);
-          border-radius: $border-radius-light;
+        input[type='time'] {
+          padding: 0.7rem 0.9rem;
+          background: rgba(255,255,255,0.04);
+          border: 1.5px solid rgba(255,255,255,0.08);
+          border-radius: 10px;
           color: $text-primary;
           font-size: $font-size-option;
           outline: none;
-          max-width: 200px;
+          max-width: 180px;
+          font-family: inherit;
+          transition: border-color 0.2s;
 
-          &:focus {
-            border-color: $bg-fill-color-green;
-          }
-
-          &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-          }
+          &:focus   { border-color: $bg-fill-color-1; }
+          &:disabled { opacity: 0.4; cursor: not-allowed; }
         }
 
         small {
           color: $text-2-primary;
-          font-size: $font-size-small;
+          font-size: 0.75rem;
         }
       }
 
       .save-btn {
-        padding: 0.8rem 2rem;
-        background-color: $bg-fill-color-green;
-        color: black;
+        padding: 0.75rem 2rem;
+        background: $bg-fill-color-1;
+        color: #000;
         border: none;
-        border-radius: $border-radius-medium;
+        border-radius: 10px;
         font-size: $font-size-option;
-        font-weight: $font-weight-semibold;
+        font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s;
-        max-width: 200px;
-
-        &:hover:not(:disabled) {
-          opacity: 0.9;
-          transform: scale(1.02);
-        }
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
+        align-self: flex-start;
+        transition: background 0.2s, transform 0.1s;
+        &:hover  { background: $bg-fill-color-1-hover; }
+        &:active { transform: scale(0.97); }
       }
     }
+  }
+}
 
-    .info-box {
-      margin-top: 2rem;
-      padding: 1.5rem;
-      background-color: rgba(18, 196, 88, 0.1);
-      border-left: 4px solid $bg-fill-color-green;
-      border-radius: $border-radius-light;
+/* ─── Mobile responsive ─── */
+@media (max-width: 768px) {
+  .lunch-settings {
+    padding: 1rem;
 
-      h3 {
-        color: $text-primary;
-        font-size: $font-size-option-large;
-        margin-bottom: 1rem;
-      }
+    .settings-wrapper {
+      padding: 1.25rem 1rem;
+      border-radius: 12px;
 
-      ul {
-        list-style-position: inside;
-        color: $text-primary;
-        font-size: $font-size-base;
-        line-height: 1.8;
+      .settings-form {
+        .form-group {
+          input[type='time'] {
+            max-width: 100%;
+            width: 100%;
+          }
+        }
 
-        li {
-          margin-bottom: 0.5rem;
+        .save-btn {
+          width: 100%;
+          text-align: center;
         }
       }
     }

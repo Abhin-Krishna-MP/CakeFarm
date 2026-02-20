@@ -20,6 +20,10 @@ const categorySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    categoryImage: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
@@ -29,7 +33,7 @@ const Category = mongoose.model("Category", categorySchema);
 
 class categoriesModel {
   // create category
-  static createCategory = async (categoryName, categoryDescription) => {
+  static createCategory = async (categoryName, categoryDescription, categoryImage = "") => {
     try {
       // generate a unique uuid for the category
       const categoryId = generateUUID();
@@ -39,6 +43,7 @@ class categoriesModel {
         categoryId,
         categoryName,
         description: categoryDescription,
+        categoryImage,
       });
 
       await category.save();
@@ -79,6 +84,30 @@ class categoriesModel {
     } catch (error) {
       console.log("error getting category by name", error);
       throw error;
+    }
+  };
+
+  static updateCategory = async (categoryId, updateFields) => {
+    try {
+      const updated = await Category.findOneAndUpdate(
+        { categoryId },
+        { $set: updateFields },
+        { new: true, runValidators: true }
+      ).lean();
+      return updated;
+    } catch (error) {
+      console.log("error updating category", error);
+      return null;
+    }
+  };
+
+  static deleteCategory = async (categoryId) => {
+    try {
+      const result = await Category.findOneAndDelete({ categoryId });
+      return !!result;
+    } catch (error) {
+      console.log("error deleting category", error);
+      return false;
     }
   };
 }

@@ -15,7 +15,6 @@ import { deleteUser, getAllUsers } from "../../features/users/usersAction";
 
 const UserListChild = ({ user }) => {
   const [toggleEditMode, setToggleEditMode] = useState(false);
-  const [imgFile, setImgFile] = useState(null);
 
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -35,8 +34,13 @@ const UserListChild = ({ user }) => {
       </div> */}
       <div className="user-name-avatar">
         <img
-          src={imgFile ? URL.createObjectURL(imgFile) : profilePic}
+          src={
+            user.avatar
+              ? `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/${user.avatar}`
+              : profilePic
+          }
           alt={user.username}
+          onError={(e) => { e.currentTarget.src = profilePic; }}
         />
         <input type="text" value={user.username} disabled={!toggleEditMode} />
       </div>

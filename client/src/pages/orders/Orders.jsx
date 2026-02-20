@@ -5,7 +5,7 @@ import {
   IoIosArrowDown,
   IoIosArrowUp,
   LiaRupeeSignSolid,
-  RiHomeFill,
+  HiHome,
   mealsImage,
 } from "../../constants";
 import DropDown from "../../components/dropDown/DropDown";
@@ -21,58 +21,36 @@ const OrderItemInfo = ({ item }) => {
   return (
     <div className="order-item-info">
       <div className="item-img-name">
-        {" "}
         <img
-          src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${
-            item.image
-          }`}
+          src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${item.image}`}
           alt={item.productName}
           loading="lazy"
         />
         <p>{item.productName}</p>
       </div>
-      <p>x{item.quantity}</p>
-      <p>
-        <LiaRupeeSignSolid /> {item.price}
-      </p>
+      <p>×{item.quantity}</p>
+      <p><LiaRupeeSignSolid />{item.price}</p>
     </div>
   );
 };
 
 const OrderItem = ({ order }) => {
   const [dropOrderItemInfo, setDropOrderItemInfo] = useState(false);
+  const statusClass = order.orderStatus?.toLowerCase();
+
   return (
     <div className="order-item">
       <OutsideClickHandler onOutsideClick={() => setDropOrderItemInfo(false)}>
-        <div
-          className="order-info"
-          onClick={() => setDropOrderItemInfo(!dropOrderItemInfo)}
-        >
-          <p>
-            <span>Order no:</span> {order.orderNumber}
-          </p>
-
-          <p>
-            <span>Status:</span> {order.orderStatus}
-          </p>
-
-          <p className="date">
-            {/* <span>Date:</span> 14.01.2024 */}
-            14.01.2024
-          </p>
-          <p>
-            <span>Total:</span>
-            <LiaRupeeSignSolid />
-            {order.total}
-          </p>
+        <div className="order-info" onClick={() => setDropOrderItemInfo(!dropOrderItemInfo)}>
+          <p><span>Order no:</span> #{order.orderNumber}</p>
+          <span className={`status-badge ${statusClass}`}>{order.orderStatus}</span>
+          <p><LiaRupeeSignSolid />{order.total}</p>
           {dropOrderItemInfo ? <IoIosArrowDown /> : <IoIosArrowUp />}
         </div>
+
         <motion.div
           initial={{ height: 0, opacity: 0 }}
-          animate={{
-            height: dropOrderItemInfo ? "auto" : 0,
-            opacity: dropOrderItemInfo ? 1 : 0,
-          }}
+          animate={{ height: dropOrderItemInfo ? "auto" : 0, opacity: dropOrderItemInfo ? 1 : 0 }}
           transition={{ duration: 0.2 }}
           className="order-items"
         >
@@ -114,40 +92,39 @@ export default function Orders() {
   return (
     <div className="orders">
       <Navbar />
-      <Link to={"/"}>
-        <RiHomeFill className="home-icon" />
-      </Link>
       <div className="orders-wrapper">
         <motion.div
-          variants={slideIn("up", "spring", 0.2, 2)}
+          variants={slideIn("up", "spring", 0.2, 0.8)}
           initial="hidden"
           animate="show"
           className="orders-head"
         >
           <h1>My Orders</h1>
-          <div className="order-tabs">
-            <button
-              className={orderTab === "all" ? "active" : ""}
-              onClick={() => setOrderTab("all")}
-            >
-              All Orders
-            </button>
-            <button
-              className={orderTab === "lunch" ? "active" : ""}
-              onClick={() => setOrderTab("lunch")}
-            >
-              Lunch Orders
-            </button>
-          </div>
-          <div className="selector">
-            <DropDown
-              selectedValue={selectedValue}
-              setSelectedValue={setSelectedValue}
-              items={["All", "placed", "Delivered", "cancelled"]}
-            />
+          <div className="order-controls">
+            <div className="order-tabs">
+              <button className={orderTab === "all" ? "active" : ""} onClick={() => setOrderTab("all")}>
+                All
+              </button>
+              <button className={orderTab === "lunch" ? "active" : ""} onClick={() => setOrderTab("lunch")}>
+                🍱 Lunch
+              </button>
+            </div>
+            <div className="selector">
+              <DropDown
+                selectedValue={selectedValue}
+                setSelectedValue={setSelectedValue}
+                items={["All", "placed", "Delivered", "cancelled"]}
+              />
+            </div>
           </div>
         </motion.div>
         <div className="order-summary">
+          {filteredOrders?.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#a09cb8' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
+              <p>No orders found</p>
+            </div>
+          )}
           {filteredOrders?.map((order, index) => (
             <OrderItem key={index} order={order} />
           ))}
@@ -156,3 +133,4 @@ export default function Orders() {
     </div>
   );
 }
+

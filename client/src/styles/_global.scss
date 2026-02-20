@@ -1,15 +1,17 @@
-/* Colors */
-$bg-primary: #18171c;
-$bg-secondary: #100f14;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-$bg-fill-color-1: #e5570f;
-$bg-fill-color-1-hover: #cf4f0f;
-$bg-fill-color-green: #12c458;
-$bg-fill-color-red: red;
+/* Colors */
+$bg-primary: #121212;
+$bg-secondary: #000000;
+
+$bg-fill-color-1: #FFC107;
+$bg-fill-color-1-hover: #FFB300;
+$bg-fill-color-green: #4CAF50;
+$bg-fill-color-red: #F44336;
 $bg-1-color: whitesmoke;
 
 $text-primary: #ffffff;
-$text-2-primary: grey;
+$text-2-primary: #9E9E9E;
 
 $text-primary-hover: #7a7a7a;
 $text-secondary: rgb(245, 245, 245);
@@ -46,49 +48,148 @@ $border-radius-light: 5px;
 $border-radius-medium: 10px;
 $border-radius-high: 20px;
 
-/* Reset Styles */
-* {
+/* ─── Reset & Base ─── */
+*, *::before, *::after {
   box-sizing: border-box;
-  scroll-behavior: smooth scroll;
   padding: 0;
   margin: 0;
-  font-family: "Roboto", sans-serif;
-  // color: $text-primary;
+}
 
-  /* Width and Track */
-  ::-webkit-scrollbar {
-    width: 5px; /* Set the width of the scrollbar */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: $font-size-base;
+  line-height: 1.5;
+  color: $text-primary;
+  background-color: $bg-secondary;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  &:focus-visible { outline: 2px solid $bg-fill-color-1; outline-offset: 2px; }
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  &:focus { outline: none; }
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul, ol { list-style: none; }
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 999px;
+  &:hover { background: rgba(255,255,255,0.18); }
+}
+::-webkit-scrollbar-button { display: none; }
+
+/* ─── Global link helper ─── */
+.Link {
+  text-decoration: none;
+  color: $text-primary;
+}
+
+/* ─── Error / Success Messages ─── */
+.error-message {
+  font-size: $font-size-small;
+  color: $bg-fill-color-red;
+  text-align: center;
+  padding: 0.5em;
+  border-radius: 6px;
+  background: rgba(239,68,68,0.1);
+}
+
+/* ─── Status Badges ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
   }
 
-  ::-webkit-scrollbar-track {
-    background-color: $bg-secondary; /* Set the color of the track (the area behind the scrollbar) */
-  }
+  &.badge-placed    { background: rgba(59,130,246,0.15);  color: #3b82f6; }
+  &.badge-ready     { background: rgba(255,193,7,0.15);   color: #FFC107; }
+  &.badge-delivered { background: rgba(76,175,80,0.15);   color: #4CAF50; }
+  &.badge-cancelled { background: rgba(244,67,54,0.15);   color: #F44336; }
+}
 
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background-color: grey; /* Set the color of the scrollbar handle */
-    border-radius: 6px; /* Set the border-radius to round the corners of the handle */
-  }
+/* ─── Keyframe Animations ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+@keyframes tokenReveal {
+  0%   { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+  70%  { transform: scale(1.08) rotate(2deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
 
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: darkgrey; /* Change the color of the handle on hover */
-  }
-
-  /* Button (for up and down buttons on the scrollbar) */
-  ::-webkit-scrollbar-button {
-    display: none; /* Hide the scrollbar buttons */
-  }
-
-  .Link {
-    text-decoration: none;
-    color: $text-primary;
-  }
-
-  .error-message {
-    font-size: $font-size-small;
-    color: red;
-    text-align: center;
-    height: 1em;
-  }
+/* ─── Skeleton Loader ─── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
 }

@@ -7,14 +7,15 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { filterObject } from "../utils/helper.js";
 
 const createCategory = asyncHandler(async (req, res) => {
-  const { categoryName, categoryDesc } = req.body;
+  const { categoryName, categoryDesc, categoryImage } = req.body;
 
-  if (!categoryName && !categoryDesc)
-    throw new ApiError(400, "provide a category name and description");
+  if (!categoryName)
+    throw new ApiError(400, "provide a category name");
 
   const categoryRes = await categoriesModel.createCategory(
     categoryName,
-    categoryDesc
+    categoryDesc,
+    categoryImage || ""
   );
 
   if (!categoryRes) {
@@ -109,8 +110,43 @@ const deleteUser = asyncHandler(async (req, res, next) => {
     .status(201)
     .json(new ApiResponse(201, {}, "user deleted successfully"));
 });
+
+const updateCategory = asyncHandler(async (req, res) => {
+  const { categoryId } = req.params;
+  const { categoryName, categoryDesc, categoryImage } = req.body;
+
+  const updateFields = {};
+  if (categoryName)  updateFields.categoryName  = categoryName;
+  if (categoryDesc !== undefined) updateFields.description   = categoryDesc;
+  if (categoryImage !== undefined) updateFields.categoryImage = categoryImage;
+
+  const updated = await categoriesModel.updateCategory(categoryId, updateFields);
+
+  if (!updated)
+    throw new ApiError(404, "Category not found or update failed");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { category: updated }, "category updated successfully"));
+});
+
+const deleteCategory = asyncHandler(async (req, res) => {
+  const { categoryId } = req.params;
+
+  const result = await categoriesModel.deleteCategory(categoryId);
+
+  if (!result)
+    throw new ApiError(404, "Category not found or could not be deleted");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "category deleted successfully"));
+});
+
 export {
   createCategory,
+  updateCategory,
+  deleteCategory,
   updateProduct,
   deleteProduct,
   deleteUser,

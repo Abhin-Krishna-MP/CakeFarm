@@ -42,6 +42,33 @@ const categorySlice = createSlice({
         action.payload.message ||
         "something went wrong failed uploading category";
     },
+
+    updateCategoryRequest: (state) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+
+    updateCategorySuccess: (state, action) => {
+      state.isLoading = false;
+      state.uploadCategorySuccess = true;
+    },
+
+    updateCategoryError: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload?.message || "failed to update category";
+    },
+
+    deleteCategorySuccess: (state, action) => {
+      state.isLoading = false;
+      state.categories = (state.categories || []).filter(
+        (cat) => cat.categoryId !== action.payload
+      );
+    },
+
+    deleteCategoryError: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload?.message || "failed to delete category";
+    },
   },
 });
 
@@ -51,6 +78,11 @@ export const {
   getCategoryFailure,
   uploadCategorySuccess,
   uploadCategoryError,
+  updateCategoryRequest,
+  updateCategorySuccess,
+  updateCategoryError,
+  deleteCategorySuccess,
+  deleteCategoryError,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

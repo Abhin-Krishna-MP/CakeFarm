@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import "./home.scss";
 import Navbar from "../../components/navbar/Navbar";
 import CategoriesCarousel from "../../components/categoriesCarousel/CategoriesCarousel";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { fadeIn, menuVars, slideIn } from "../../utils/motion";
 import FoodItemCard from "../../components/foodItemsCard/FoodItemCard";
-import { foodItems } from "../../constants";
 import CartItems from "../../components/cartItems/CartItems";
 import context from "../../context/context";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -14,65 +13,93 @@ import { getProducts } from "../../features/userActions/product/productAction";
 
 export default function Home() {
   const { isToggleCart, setIsToggleCart } = useContext(context);
-
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const product = useSelector((state) => state.product);
 
-  // fetch all the products when component is mounted
   useEffect(() => {
     dispatch(getProducts(token));
   }, []);
 
+  const snackItems = product.products?.filter((item) => !item.isLunchItem) || [];
+
   return (
     <div className="home">
-      <OutsideClickHandler
-        onOutsideClick={() => isToggleCart && setIsToggleCart(false)}
-      >
+      <OutsideClickHandler onOutsideClick={() => isToggleCart && setIsToggleCart(false)}>
         <Navbar />
-        {isToggleCart && (
-          <motion.div
-            className="cart"
-            variants={menuVars}
-            initial="initial"
-            animate="animate"
-          >
-            <CartItems />
-          </motion.div>
-        )}
+
+        {/* Cart drawer */}
+        <AnimatePresence>
+          {isToggleCart && (
+            <>
+              <div className="cart-backdrop" onClick={() => setIsToggleCart(false)} />
+              <motion.div
+                className="cart"
+                variants={menuVars}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+              >
+                <CartItems />
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </OutsideClickHandler>
 
       <div className="home-wrapper">
+        {/* Categories */}
         <motion.div
-          variants={fadeIn("down", "spring", 0.1, 2)}
+          variants={fadeIn("down", "spring", 0.1, 0.8)}
           initial="hidden"
           animate="show"
           className="category-div"
         >
+          <div className="category-section-label">
+            <span className="pulse-dot" />
+            <h2>Browse Categories</h2>
+            <span className="line" />
+          </div>
           <CategoriesCarousel />
         </motion.div>
 
-        <motion.div
-          variants={slideIn("left", "spring", 0.1, 3)}
+        <motion.h1
+          variants={slideIn("left", "spring", 0.1, 0.8)}
           initial="hidden"
           animate="show"
+          className="category-name"
         >
-          <h1 className="category-name">Items</h1>
-        </motion.div>
+          Menu
+        </motion.h1>
+
         <div className="food-items-wrapper">
-          {product.products?.filter(item => !item.isLunchItem).map((item) => (
-            <FoodItemCard
+          {product.loading && (
+            [...Array(8)].map((_, i) => (
+              <div key={i} className="skeleton" style={{ height: 240, borderRadius: 16 }} />
+            ))
+          )}
+
+          {!product.loading && snackItems.length === 0 && (
+            <div className="empty-state">
+              <span className="empty-emoji">🍽️</span>
+              <h3>No items yet</h3>
+              <p>Check back soon — the menu is being prepared!</p>
+            </div>
+          )}
+
+          {snackItems.map((item) => (
+            <motion.div
               key={item.productId}
-              name={item.productName}
-              desc={item.description}
-              price={item.price}
-              rating={item.rating}
-              image={item.image}
-              item={item}
-            />
+              variants={fadeIn("up", "spring", 0.05, 0.6)}
+              initial="hidden"
+              animate="show"
+            >
+              <FoodItemCard item={item} />
+            </motion.div>
           ))}
         </div>
       </div>
     </div>
   );
 }
+

@@ -5,8 +5,8 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { IoMenu } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { CiUser } from "react-icons/ci";
-import { FaRegUser } from "react-icons/fa";
-import { BsBox2 } from "react-icons/bs";
+import { HiHome, HiOutlineClipboardList, HiOutlineUser } from "react-icons/hi";
+
 import { BsBoxArrowInLeft } from "react-icons/bs";
 import { IoMdStar } from "react-icons/io";
 import { GoDotFill } from "react-icons/go";
@@ -14,14 +14,12 @@ import { LiaRupeeSignSolid } from "react-icons/lia";
 import { FaCirclePlus } from "react-icons/fa6";
 import { GoDash } from "react-icons/go";
 import { GoPlus } from "react-icons/go";
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdOutlineRestaurant } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa6";
 import { CgOptions } from "react-icons/cg";
-import { RiHomeFill } from "react-icons/ri";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import { BiImageAdd } from "react-icons/bi";
-import { MdLunchDining } from "react-icons/md";
 import {
   backgroundImg1,
   backgroundImg2,
@@ -49,8 +47,9 @@ export {
   IoMenu,
   RxCross2,
   CiUser,
-  FaRegUser,
-  BsBox2,
+  HiHome,
+  HiOutlineClipboardList,
+  HiOutlineUser,
   BsBoxArrowInLeft,
   IoMdStar,
   GoDotFill,
@@ -59,13 +58,12 @@ export {
   GoDash,
   GoPlus,
   MdCancel,
+  MdOutlineRestaurant,
   FaArrowRight,
   CgOptions,
-  RiHomeFill,
   IoIosArrowUp,
   IoIosArrowDown,
   BiImageAdd,
-  MdLunchDining,
   backgroundImg1,
   backgroundImg2,
   backgroundImg3,
@@ -86,22 +84,22 @@ export {
 export const menuLinks = [
   {
     id: "home",
-    icon: RiHomeFill,
+    icon: HiHome,
     link: "/",
   },
   {
     id: "lunch",
-    icon: MdLunchDining,
+    icon: MdOutlineRestaurant,
     link: "/lunch",
   },
   {
     id: "myProfile",
-    icon: FaRegUser,
+    icon: HiOutlineUser,
     link: "/profile",
   },
   {
     id: "orders",
-    icon: BsBox2,
+    icon: HiOutlineClipboardList,
     link: "/orders",
   },
   // {

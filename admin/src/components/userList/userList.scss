@@ -1,97 +1,147 @@
 @import "../../styles/global";
+
 .user-list {
   width: 100%;
   height: 100%;
-  background-color: $bg-primary;
+  background: $bg-primary;
   color: $text-primary;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   .head {
-    padding: 1rem;
+    padding: 1.25rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 
     p {
-      font-size: $font-size-xl;
-      // padding: 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
     }
+
     input {
-      outline: none !important;
-      border: none;
-      background-color: $bg-fill-secondary;
-      border-radius: $border-radius-medium;
-      padding: 1em;
-      font-size: $font-size-option;
+      padding: 0.55rem 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
       color: $text-primary;
+      font-size: 0.88rem;
+      outline: none;
+      width: 220px;
+      transition: border-color 0.2s;
+
+      &::placeholder { color: $text-2-primary; }
+      &:focus { border-color: $bg-fill-color-1; }
     }
   }
 
   .user-list-wrapper {
-    width: 100%;
-    height: calc(100% - 9rem);
-    overflow-y: scroll;
-
-    // .list-header {
-    //   display: grid;
-    //   grid-template-columns: repeat(5, 1fr);
-    //   justify-items: start;
-    //   align-items: center;
-
-    //   margin: 0.5em 1em;
-    //   padding: 0.5em 2em;
-    //   li {
-    //     list-style: none;
-    //   }
-    // }
+    flex: 1;
+    overflow-y: auto;
   }
 }
 
 .user-list-child {
-  border: 1px solid rgba(128, 128, 128, 0.116);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   justify-items: center;
   align-items: center;
-  margin: 0.5em 1em;
-  padding: 0.5em 2em;
-  gap: 5em;
+  padding: 0.75rem 1.5rem;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+
+  &:hover { background: rgba(255,255,255,0.03); }
+
   input,
   p {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    color: $text-primary;
+    font-size: 0.82rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
     outline: none;
-    border: none;
-    background-color: $bg-fill-secondary;
-    color: white;
-    font-size: $font-size-base;
-    padding: 0.5em;
-    border-radius: $border-radius-light;
+    width: 100%;
   }
+
+  p { border: none; background: none; font-size: 0.85rem; }
 
   .user-name-avatar {
     display: flex;
     align-items: center;
-    gap: 1em;
+    gap: 0.75rem;
+    width: 100%;
+    justify-self: start;
 
     img {
-      width: 4em;
-      height: 4em;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    p {
+      font-weight: 600;
+      font-size: 0.88rem;
+      background: none;
+      border: none;
+      padding: 0;
     }
   }
+}
 
-  .user-update {
-    :nth-child(1) {
-      color: teal;
+/* ─── Mobile responsive ─── */
+@media (max-width: 768px) {
+  .user-list .head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+
+    input { width: 100%; }
+  }
+
+  // Swap 5-col grid for vertical card layout
+  .user-list-child {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
+    margin: 0.5rem 0.75rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    border-bottom: none;
+
+    &:hover { background: rgba(255,255,255,0.05); }
+
+    .user-name-avatar {
+      width: 100%;
     }
 
-    :nth-child(2) {
-      color: red;
+    .user-email,
+    .user-role {
+      width: 100%;
     }
 
-    .icon {
-      margin: 0 0.5em;
-      font-size: $font-size-header;
-      cursor: pointer;
+    .user-update {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 0.25rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+
+      .icon {
+        font-size: 1.25rem;
+        color: #f87171;
+        cursor: pointer;
+        transition: transform 0.15s;
+        &:hover { transform: scale(1.2); }
+      }
     }
   }
 }
