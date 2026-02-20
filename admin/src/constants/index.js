@@ -8,6 +8,7 @@ import { GrContactInfo } from "react-icons/gr";
 import { BsCurrencyRupee } from "react-icons/bs";
 import { IoIosArrowDown } from "react-icons/io";
 import { AiOutlineEdit } from "react-icons/ai";
+import { MdLunchDining } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
@@ -49,6 +50,7 @@ export {
   FaRegRectangleList,
   FaEye,
   FaEyeSlash,
+  MdLunchDining,
   backgroundImg1,
   backgroundImg2,
   backgroundImg3,

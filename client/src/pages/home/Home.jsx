@@ -60,7 +60,7 @@ export default function Home() {
           <h1 className="category-name">Items</h1>
         </motion.div>
         <div className="food-items-wrapper">
-          {product.products?.map((item) => (
+          {product.products?.filter(item => !item.isLunchItem).map((item) => (
             <FoodItemCard
               key={item.productId}
               name={item.productName}

@@ -24,13 +24,43 @@
 
     .orders-head {
       display: flex;
-      gap: 5rem;
+      gap: 2rem;
       color: $text-primary;
+      align-items: center;
+      flex-wrap: wrap;
 
       h1 {
         padding: 0;
         display: inline-block;
         font-weight: $font-weight-medium;
+      }
+
+      .order-tabs {
+        display: flex;
+        gap: 0.5rem;
+        background-color: $bg-secondary;
+        padding: 0.3rem;
+        border-radius: $border-radius-medium;
+
+        button {
+          padding: 0.6rem 1.5rem;
+          background-color: transparent;
+          color: $text-2-primary;
+          border: none;
+          border-radius: $border-radius-light;
+          cursor: pointer;
+          font-size: $font-size-option;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background-color: rgba(18, 196, 88, 0.1);
+          }
+
+          &.active {
+            background-color: $bg-fill-color-green;
+            color: white;
+          }
+        }
       }
     }
     .order-summary {

@@ -58,7 +58,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     "description",
     "vegetarian",
     "price",
-    "category",
+    "stock",
+    "categoryId",
+    "isLunchItem",
   ]);
 
   const updatedProduct = await ProductModel.updateProducts(

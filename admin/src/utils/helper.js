@@ -1,9 +1,15 @@
 // function to filter order by status of order
-export const filterOrdersByStatus = (orders, status) =>
-  orders.filter((order) => {
-    console.log("order: ", order);
-    return order.orderStatus === status.toLowerCase();
+export const filterOrdersByStatus = (orders, status) => {
+  if (!orders || !Array.isArray(orders)) {
+    return [];
+  }
+  
+  return orders.filter((order) => {
+    // Check both orderStatus and status fields for compatibility
+    const orderStatus = order.status || order.orderStatus;
+    return orderStatus && orderStatus.toLowerCase() === status.toLowerCase();
   });
+};
 
 export const searchValueInArrObj = (array, value) => {
   const res = [];

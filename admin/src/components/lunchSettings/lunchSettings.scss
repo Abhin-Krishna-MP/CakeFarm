@@ -1,0 +1,123 @@
+@import "../../styles/global";
+
+.lunch-settings {
+  width: 100%;
+  height: 100%;
+  background-color: $bg-secondary;
+  padding: 2rem;
+  overflow-y: auto;
+
+  .settings-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: $bg-primary;
+    padding: 2rem;
+    border-radius: $border-radius-medium;
+
+    h1 {
+      font-size: $font-size-xxl;
+      color: $text-primary;
+      margin-bottom: 2rem;
+    }
+
+    .settings-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-size: $font-size-option;
+          color: $text-primary;
+          font-weight: $font-weight-medium;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+          }
+        }
+
+        input[type="time"] {
+          padding: 0.8rem;
+          background-color: $bg-fill-secondary;
+          border: 1px solid rgba(128, 128, 128, 0.3);
+          border-radius: $border-radius-light;
+          color: $text-primary;
+          font-size: $font-size-option;
+          outline: none;
+          max-width: 200px;
+
+          &:focus {
+            border-color: $bg-fill-color-green;
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+
+        small {
+          color: $text-2-primary;
+          font-size: $font-size-small;
+        }
+      }
+
+      .save-btn {
+        padding: 0.8rem 2rem;
+        background-color: $bg-fill-color-green;
+        color: black;
+        border: none;
+        border-radius: $border-radius-medium;
+        font-size: $font-size-option;
+        font-weight: $font-weight-semibold;
+        cursor: pointer;
+        transition: all 0.2s;
+        max-width: 200px;
+
+        &:hover:not(:disabled) {
+          opacity: 0.9;
+          transform: scale(1.02);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .info-box {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background-color: rgba(18, 196, 88, 0.1);
+      border-left: 4px solid $bg-fill-color-green;
+      border-radius: $border-radius-light;
+
+      h3 {
+        color: $text-primary;
+        font-size: $font-size-option-large;
+        margin-bottom: 1rem;
+      }
+
+      ul {
+        list-style-position: inside;
+        color: $text-primary;
+        font-size: $font-size-base;
+        line-height: 1.8;
+
+        li {
+          margin-bottom: 0.5rem;
+        }
+      }
+    }
+  }
+}

@@ -17,7 +17,7 @@ import {
   incrementItem,
 } from "../../features/userActions/cart/cartAction";
 
-export default function FoodItemCard({ item }) {
+export default function FoodItemCard({ item, isDisabled = false }) {
   // state for checking whether an item in added to cart or not
   const [isAddedTocart, setIsAddedTocart] = useState(false);
   const [itemQuantity, setItemQuantity] = useState(0);
@@ -34,6 +34,7 @@ export default function FoodItemCard({ item }) {
 
   // handle adding items to cart
   const handleAddItem = () => {
+    if (isDisabled) return; // prevent adding if disabled
     dispatch(addItemToCart(item)); // add curent item to cart
     setIsAddedTocart(true);
   };
@@ -47,15 +48,17 @@ export default function FoodItemCard({ item }) {
   };
 
   const handleItemIncrement = () => {
+    if (isDisabled) return; // prevent increment if disabled
     dispatch(incrementItem(item)); // increment item
   };
 
   const handleItemDecrement = () => {
+    if (isDisabled) return; // prevent decrement if disabled
     dispatch(decrementItem(item)); // decrement item
   };
 
   return (
-    <div className="foodItemCard">
+    <div className={`foodItemCard ${isDisabled ? 'disabled' : ''}`}>
       <div className="img-div">
         <img
           src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${
@@ -64,6 +67,11 @@ export default function FoodItemCard({ item }) {
           alt=""
           loading="lazy"
         />
+        {isDisabled && (
+          <div className="disabled-overlay">
+            <span>Ordering Closed</span>
+          </div>
+        )}
       </div>
       <div className="item-description">
         <h2>{item.productName}</h2>

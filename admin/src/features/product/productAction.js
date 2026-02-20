@@ -92,10 +92,68 @@ export const addProduct = (file, productData, token) => async (dispatch) => {
         );
 
         dispatch(uploadProductSuccess(res.data));
+        dispatch(getProducts(token)); // Refresh product list
       }
     }
   } catch (error) {
     console.log(error);
     dispatch(uploadProductError(error.response.data));
+  }
+};
+
+export const updateProduct = (token, productId, productData, imageFile) => async (dispatch) => {
+  try {
+    dispatch(uploadProductRequest());
+
+    let imageFilename = null;
+
+    // Upload image first if provided
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("file", imageFile);
+
+      const uploadConfig = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      };
+
+      const uploadRes = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URI}/users/upload-images`,
+        formData,
+        uploadConfig
+      );
+
+      if (uploadRes.data && uploadRes.data.data) {
+        // Extract just the filename from the response
+        const imageUrl = uploadRes.data.data.imageUrl || uploadRes.data.data.url;
+        // Get filename only (remove /assets/images/ prefix if present)
+        imageFilename = uploadRes.data.data.filename || imageUrl.split('/').pop();
+      }
+    }
+
+    // Update product with new data and image filename if uploaded
+    const updatePayload = {
+      ...productData,
+      ...(imageFilename && { image: imageFilename }),
+    };
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const api_URI = `${import.meta.env.VITE_API_BASE_URI}/admin/update-product/${productId}`;
+
+    const res = await axios.put(api_URI, updatePayload, config);
+    
+    dispatch(uploadProductSuccess(res.data));
+    dispatch(getProducts(token)); // Refresh product list
+  } catch (error) {
+    console.log("Error updating product:", error);
+    dispatch(uploadProductError(error?.response?.data || "Error updating product"));
   }
 };

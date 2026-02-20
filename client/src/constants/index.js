@@ -21,6 +21,7 @@ import { RiHomeFill } from "react-icons/ri";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import { BiImageAdd } from "react-icons/bi";
+import { MdLunchDining } from "react-icons/md";
 import {
   backgroundImg1,
   backgroundImg2,
@@ -64,6 +65,7 @@ export {
   IoIosArrowUp,
   IoIosArrowDown,
   BiImageAdd,
+  MdLunchDining,
   backgroundImg1,
   backgroundImg2,
   backgroundImg3,
@@ -86,6 +88,11 @@ export const menuLinks = [
     id: "home",
     icon: RiHomeFill,
     link: "/",
+  },
+  {
+    id: "lunch",
+    icon: MdLunchDining,
+    link: "/lunch",
   },
   {
     id: "myProfile",

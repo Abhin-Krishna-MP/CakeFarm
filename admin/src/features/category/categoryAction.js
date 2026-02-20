@@ -38,18 +38,16 @@ const uploadCategory = (token, data) => async (dispatch) => {
       },
     };
 
-    const res = axios.post(
+    const res = await axios.post(
       `${import.meta.env.VITE_API_BASE_URI}/admin/create-category`,
       data,
       config
     );
 
-    console.log(res);
-
     dispatch(uploadCategorySuccess(res.data));
   } catch (error) {
     console.log(error);
-    dispatch(uploadCategoryError(error.response.data));
+    dispatch(uploadCategoryError(error?.response?.data || "Error creating category"));
   }
 };
 

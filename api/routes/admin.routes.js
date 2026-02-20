@@ -5,7 +5,7 @@ import {
   deleteUser,
   updateProduct,
 } from "../controllers/admin.controller.js";
-import { updateOrderStatus } from "../controllers/order.controller.js";
+import { getAllOrders, updateOrderStatus } from "../controllers/order.controller.js";
 import { getAllUsers } from "../controllers/user.controllers.js";
 import { verifyAdmin } from "../middlewares/admin.authMiddleware.js";
 import { verifyJwt } from "../middlewares/jwt.authMiddleware.js";
@@ -20,6 +20,9 @@ const router = Router();
 // get all users
 router.route("/get-all-users").get(verifyJwt, verifyAdmin, getAllUsers);
 
+// get all orders
+router.route("/get-all-orders").get(verifyJwt, verifyAdmin, getAllOrders);
+
 // delete
 // router.route("/user/:userId").delete(verifyJwt, verifyAdmin, deleteUser);
 router.route("/user/:userId").delete(deleteUser);
@@ -33,7 +36,7 @@ router
   .post(productValidator(), validate, verifyJwt, verifyAdmin, createProduct);
 router
   .route("/update-product/:productId")
-  .patch(validate, verifyJwt, verifyAdmin, updateProduct);
+  .put(validate, verifyJwt, verifyAdmin, updateProduct);
 router
   .route("/delete-product/:productId")
   .delete(verifyJwt, verifyAdmin, deleteProduct);

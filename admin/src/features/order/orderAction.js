@@ -18,13 +18,13 @@ const getOrderList = (token) => async (dispatch) => {
     };
 
     const res = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URI}/users/order`,
+      `${import.meta.env.VITE_API_BASE_URI}/admin/get-all-orders`,
       config
     );
 
     dispatch(orderListSuccess(res.data));
   } catch (error) {
-    dispatch(orderListFailure(error.response.data));
+    dispatch(orderListFailure(error.response?.data || "Error fetching orders"));
   }
 };
 

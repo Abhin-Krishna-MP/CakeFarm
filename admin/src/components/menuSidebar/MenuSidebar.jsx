@@ -4,6 +4,7 @@ import {
   FaRegRectangleList,
   GrContactInfo,
   PiArchiveBox,
+  MdLunchDining,
   profilePic,
 } from "../../constants/index";
 import "./menuSidebar.scss";
@@ -46,6 +47,13 @@ export default function MenuSidebar({ selectedMenu, setSelectedMenu }) {
           onClick={() => setSelectedMenu(4)}
         >
           <FaRegRectangleList className="icon" />
+        </li>
+        <li
+          className={`${selectedMenu === 5 ? "li-active" : ""}`}
+          onClick={() => setSelectedMenu(5)}
+          title="Lunch Settings"
+        >
+          <MdLunchDining className="icon" />
         </li>
       </ul>
       <div className="bottom">

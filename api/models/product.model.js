@@ -38,10 +38,19 @@ const productSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    stock: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     categoryId: {
       type: String,
       required: true,
       ref: "Category",
+    },
+    isLunchItem: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
@@ -66,6 +75,7 @@ class ProductModel {
         vegetarian: product.vegetarian,
         price: product.price,
         categoryId: product.categoryId,
+        isLunchItem: product.isLunchItem || false,
       });
 
       await newProduct.save();
@@ -132,6 +142,17 @@ class ProductModel {
       return products;
     } catch (error) {
       console.log("Error getting products", error);
+      throw new ApiError(404, error.message);
+    }
+  };
+
+  // Get all lunch products
+  static getLunchProducts = async () => {
+    try {
+      const lunchProducts = await Product.find({ isLunchItem: true }).lean();
+      return lunchProducts;
+    } catch (error) {
+      console.log("Error getting lunch products", error);
       throw new ApiError(404, error.message);
     }
   };

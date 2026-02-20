@@ -274,6 +274,71 @@ class OrderModel {
       throw error;
     }
   };
+
+  // get all orders (for admin)
+  static getAllOrders = async () => {
+    try {
+      const allOrders = await Order.find({})
+        .sort({ orderNumber: -1 })
+        .lean();
+
+      // Manually fetch product and user details for each order
+      const { Product } = await import("./product.model.js");
+      const { User } = await import("./user.model.js");
+      
+      // Transform the data to include user and product information
+      const transformedOrders = [];
+      for (const order of allOrders) {
+        // Fetch user details
+        const user = await User.findOne({ userId: order.userId }).lean();
+        
+        for (const item of order.orderItems) {
+          // Fetch product details
+          const product = await Product.findOne({ productId: item.productId }).lean();
+          
+          transformedOrders.push({
+            orderId: order.orderId,
+            userId: order.userId,
+            pickUpTime: order.pickUpTime,
+            expiryDate: order.expiryDate,
+            total: order.total,
+            orderNumber: order.orderNumber,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+            orderItemsId: item.orderItemsId,
+            productId: item.productId,
+            quantity: item.quantity,
+            subtotal: item.subtotal,
+            orderStatusId: order.orderStatus.orderStatusId,
+            status: order.orderStatus.status,
+            // Product details
+            productName: product?.productName,
+            image: product?.image,
+            rating: product?.rating,
+            description: product?.description,
+            vegetarian: product?.vegetarian,
+            price: product?.price,
+            categoryId: product?.categoryId,
+            // User details
+            user: user ? {
+              userId: user.userId,
+              username: user.username,
+              email: user.email,
+              registerNumber: user.registerNumber,
+              department: user.department,
+              semester: user.semester,
+              division: user.division,
+            } : null,
+          });
+        }
+      }
+
+      return transformedOrders;
+    } catch (error) {
+      console.log("error while getting all orders : ", error);
+      throw error;
+    }
+  };
 }
 
 export default OrderModel;

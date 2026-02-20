@@ -23,7 +23,12 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false, // Not required for Google OAuth users
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows multiple null values
     },
     avatar: {
       type: String,
@@ -33,6 +38,22 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    registerNumber: {
+      type: String,
+      required: false,
+    },
+    department: {
+      type: String,
+      required: false,
+    },
+    semester: {
+      type: String,
+      required: false,
+    },
+    division: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true }

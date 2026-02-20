@@ -87,6 +87,7 @@ const OrderItem = ({ order }) => {
 
 export default function Orders() {
   const [selectedValue, setSelectedValue] = useState("All");
+  const [orderTab, setOrderTab] = useState("all"); // "all" or "lunch"
 
   // console.log(selectedValue);
   const dispatch = useDispatch();
@@ -96,6 +97,20 @@ export default function Orders() {
   useEffect(() => {
     dispatch(getOrderHistory(token));
   }, []);
+
+  // Filter orders based on tab selection
+  const filteredOrders = orderHistory?.filter((order) => {
+    // Filter by lunch tab
+    if (orderTab === "lunch") {
+      const isLunchOrder = order.items?.some((item) => item.isLunchItem === true);
+      if (!isLunchOrder) return false;
+    }
+    // Filter by status dropdown
+    if (selectedValue !== "All") {
+      if (order.orderStatus?.toLowerCase() !== selectedValue.toLowerCase()) return false;
+    }
+    return true;
+  });
   return (
     <div className="orders">
       <Navbar />
@@ -110,6 +125,20 @@ export default function Orders() {
           className="orders-head"
         >
           <h1>My Orders</h1>
+          <div className="order-tabs">
+            <button
+              className={orderTab === "all" ? "active" : ""}
+              onClick={() => setOrderTab("all")}
+            >
+              All Orders
+            </button>
+            <button
+              className={orderTab === "lunch" ? "active" : ""}
+              onClick={() => setOrderTab("lunch")}
+            >
+              Lunch Orders
+            </button>
+          </div>
           <div className="selector">
             <DropDown
               selectedValue={selectedValue}
@@ -119,7 +148,7 @@ export default function Orders() {
           </div>
         </motion.div>
         <div className="order-summary">
-          {orderHistory?.map((order, index) => (
+          {filteredOrders?.map((order, index) => (
             <OrderItem key={index} order={order} />
           ))}
         </div>

@@ -141,7 +141,17 @@ const uploadOtherImages = (req, res) => {
       return res.status(400).json({ message: "Please upload a valid image" });
     }
 
-    res.status(201).json({ message: "Image uploaded successfully" });
+    // Return the image URL/path
+    const imageUrl = `/assets/images/${req.file.filename}`;
+    
+    res.status(201).json({ 
+      message: "Image uploaded successfully",
+      data: {
+        imageUrl: imageUrl,
+        filename: req.file.filename,
+        path: req.file.path
+      }
+    });
   });
 };
 

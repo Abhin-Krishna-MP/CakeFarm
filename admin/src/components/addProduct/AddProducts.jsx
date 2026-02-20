@@ -11,6 +11,8 @@ import { addProduct } from "../../features/product/productAction";
 export default function AddProducts() {
   const [productFile, setProductFile] = useState(null);
   const [categoryFile, setCategoryFile] = useState(null);
+  const [isLunchItem, setIsLunchItem] = useState(false);
+  const [lunchCategory, setLunchCategory] = useState(null);
 
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
@@ -21,11 +23,18 @@ export default function AddProducts() {
     dispatch(getCategory(token));
   }, []);
 
+  useEffect(() => {
+    // Find or create "Lunch" category
+    const lunch = categories?.find(cat => cat.categoryName.toLowerCase() === 'lunch');
+    setLunchCategory(lunch);
+  }, [categories]);
+
   const productNameRef = useRef();
   const productRatingRef = useRef();
   const productDescRef = useRef();
   const productVegRef = useRef();
   const productPriceRef = useRef();
+  const productStockRef = useRef();
   const productCatRef = useRef();
 
   // category ref
@@ -37,6 +46,11 @@ export default function AddProducts() {
   const handleAddProduct = (e) => {
     e.preventDefault();
 
+    // Auto-select Lunch category if isLunchItem is true
+    const selectedCategory = isLunchItem && lunchCategory 
+      ? lunchCategory.categoryId 
+      : productCatRef.current.value;
+
     const product = {
       productName: productNameRef.current.value,
       image: productFile?.name.replace(/\s+/g, "_"),
@@ -44,7 +58,9 @@ export default function AddProducts() {
       description: productDescRef.current.value,
       vegetarian: parseInt(productVegRef.current.value),
       price: parseInt(productPriceRef.current.value),
-      categoryId: productCatRef.current.value,
+      stock: parseInt(productStockRef.current.value) || 0,
+      categoryId: selectedCategory,
+      isLunchItem: isLunchItem,
     };
 
     console.log(productFile, product, token);
@@ -56,8 +72,10 @@ export default function AddProducts() {
     productDescRef.current.value = "";
     productVegRef.current.value = "";
     productPriceRef.current.value = "";
+    productStockRef.current.value = "";
     productCatRef.current.value = "";
     setProductFile(null);
+    setIsLunchItem(false);
   };
 
   // upload category item
@@ -71,7 +89,13 @@ export default function AddProducts() {
 
     console.log(category);
 
-    dispatch(uploadCategory(token, category));
+    dispatch(uploadCategory(token, category)).then(() => {
+      // Refresh categories list after successful upload
+      dispatch(getCategory(token));
+      // Clear form
+      categoryNameRef.current.value = "";
+      categoryDescRef.current.value = "";
+    });
   };
 
   return (
@@ -129,9 +153,11 @@ export default function AddProducts() {
               id="select-category"
               required
               ref={productCatRef}
+              disabled={isLunchItem && lunchCategory}
+              value={isLunchItem && lunchCategory ? lunchCategory.categoryId : undefined}
             >
               {categories?.map((category) => (
-                <option value={category.categoryId}>
+                <option key={category.categoryId} value={category.categoryId}>
                   {category.categoryName}
                 </option>
               ))}
@@ -160,6 +186,17 @@ export default function AddProducts() {
             />
           </div>
 
+          <div className="stock-wrap">
+            <label htmlFor="product-stock">Stock Count</label>
+            <input
+              type="number"
+              id="product-stock"
+              placeholder="Enter stock count..."
+              required
+              ref={productStockRef}
+            />
+          </div>
+
           <div className="desc-wrap">
             <label htmlFor="product-desc">Description</label>
             <textarea
@@ -170,6 +207,18 @@ export default function AddProducts() {
               ref={productDescRef}
             ></textarea>
           </div>
+
+          <div className="lunch-item-wrap">
+            <label>
+              <input
+                type="checkbox"
+                checked={isLunchItem}
+                onChange={(e) => setIsLunchItem(e.target.checked)}
+              />
+              <span>Mark as Lunch Item</span>
+            </label>
+          </div>
+
           <button type="submit">Add Product</button>
         </form>
       </div>

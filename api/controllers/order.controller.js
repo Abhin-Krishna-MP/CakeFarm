@@ -14,6 +14,12 @@ export const placeOrder = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Error creating order");
   }
 
+  // Emit socket event to notify admin panel of new order
+  const io = req.app.get("io");
+  if (io) {
+    io.emit("newOrder", { orderId, userId });
+  }
+
   return res
     .status(201)
     .json(new ApiResponse(201, { orderId }, "Order created successfully"));
@@ -34,6 +40,12 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 
   if (!orderStatRes) {
     throw new ApiError(500, "error updating order status");
+  }
+
+  // Emit socket event to notify admin panel of order status update
+  const io = req.app.get("io");
+  if (io) {
+    io.emit("orderStatusUpdated", { orderStatusId, status });
   }
 
   return res
@@ -62,6 +74,27 @@ export const getAllUserOrders = asyncHandler(async (req, res) => {
         200,
         { userOrders: filteredOrders },
         "order fetched successfully"
+      )
+    );
+});
+
+// get all orders (admin only)
+export const getAllOrders = asyncHandler(async (req, res) => {
+  const allOrders = await OrderModel.getAllOrders();
+
+  if (!allOrders) {
+    throw new ApiError(500, "Error while getting all orders");
+  }
+
+  const filteredOrders = await transformUserOrderData(allOrders);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { userOrders: filteredOrders },
+        "orders fetched successfully"
       )
     );
 });

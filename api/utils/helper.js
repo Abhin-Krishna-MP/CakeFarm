@@ -54,6 +54,7 @@ export const transformUserOrderData = (rawUserOrderData) => {
 
         if (existingOrder) {
           existingOrder.items.push({
+            orderItemsId: order.orderItemsId,
             productId: order.productId,
             productName: order.productName,
             image: order.image,
@@ -62,6 +63,7 @@ export const transformUserOrderData = (rawUserOrderData) => {
             vegetarian: order.vegetarian,
             price: order.price,
             quantity: order.quantity,
+            subtotal: order.subtotal,
             categoryId: order.categoryId,
             createdAt: order.createdAt,
           });
@@ -70,9 +72,15 @@ export const transformUserOrderData = (rawUserOrderData) => {
             orderId: order.orderId,
             orderNumber: order.orderNumber,
             orderStatus: order.status,
+            status: order.status, // Add both for compatibility
+            pickUpTime: order.pickUpTime,
+            expiryDate: order.expiryDate,
             total: order.total,
+            userId: order.userId,
+            user: order.user || null, // Include user info
             items: [
               {
+                orderItemsId: order.orderItemsId,
                 productId: order.productId,
                 productName: order.productName,
                 image: order.image,
@@ -81,6 +89,7 @@ export const transformUserOrderData = (rawUserOrderData) => {
                 vegetarian: order.vegetarian,
                 price: order.price,
                 quantity: order.quantity,
+                subtotal: order.subtotal,
                 categoryId: order.categoryId,
                 createdAt: order.createdAt,
               },

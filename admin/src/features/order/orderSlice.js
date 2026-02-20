@@ -27,12 +27,14 @@ const orderSlice = createSlice({
     },
 
     orderListSuccess: (state, action) => {
+      state.isLoading = false;
       state.message = action.payload.message;
       state.orderList = action.payload.data.userOrders;
       state.success = action.payload.success;
     },
 
     orderListFailure: (state, action) => {
+      state.isLoading = false;
       state.error = action.payload.message;
       state.success = action.payload.success;
     },
