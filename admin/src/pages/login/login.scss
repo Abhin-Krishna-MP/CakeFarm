@@ -16,7 +16,7 @@
     position: absolute;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(255,193,7,0.12) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(253,187,46,0.12) 0%, transparent 70%);
     top: -100px;
     right: -100px;
     border-radius: 50%;
@@ -26,8 +26,8 @@
   .login-wrapper {
     width: 420px;
     background-color: $bg-primary;
-    border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+    border: 1px solid #E5E5E5;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.13);
     display: flex;
     border-radius: 20px;
     animation: scaleIn 0.4s ease both;
@@ -75,27 +75,27 @@
           padding: 0.75rem 1rem;
           font-size: $font-size-base;
           color: $text-primary;
-          border: 1.5px solid rgba(255,255,255,0.08);
+          border: 1.5px solid #E5E5E5;
           outline: none;
-          background-color: rgba(255,255,255,0.04);
+          background-color: #F0EDE6;
           border-radius: 10px;
           margin-bottom: 1rem;
           transition: border-color 0.2s;
 
           &::placeholder { color: $text-2-primary; }
-          &:focus { border-color: $bg-fill-color-1; background: rgba(255,255,255,0.06); }
+          &:focus { border-color: $bg-fill-color-1; background: rgba(0,0,0,0.04); }
         }
 
         .pass-div {
           display: flex;
           align-items: center;
-          border: 1.5px solid rgba(255,255,255,0.08);
+          border: 1.5px solid #E5E5E5;
           border-radius: 10px;
-          background: rgba(255,255,255,0.04);
+          background: #F0EDE6;
           margin-bottom: 1rem;
           transition: border-color 0.2s;
 
-          &:focus-within { border-color: $bg-fill-color-1; background: rgba(255,255,255,0.06); }
+          &:focus-within { border-color: $bg-fill-color-1; background: rgba(0,0,0,0.04); }
 
           input {
             flex: 1;

@@ -14,7 +14,7 @@
     height: 100%;
     overflow-y: auto;
     padding: 1.5rem;
-    border-right: 1px solid rgba(255,255,255,0.05);
+    border-right: 1px solid #E5E5E5;
 
     &:last-child { border-right: none; }
 
@@ -23,7 +23,7 @@
       font-weight: 700;
       color: $text-primary;
       padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid #E5E5E5;
       margin-bottom: 1.5rem;
     }
 
@@ -44,14 +44,14 @@
         justify-content: space-between;
         gap: 0.5rem;
         padding: 0.55rem 0.75rem;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.07);
+        background: rgba(0,0,0,0.02);
+        border: 1px solid #E5E5E5;
         border-radius: 10px;
         transition: border-color 0.2s, background 0.2s;
 
         &.editing {
           border-color: $bg-fill-color-1;
-          background: rgba(255,193,7,0.06);
+          background: rgba(253,187,46,0.06);
         }
 
         .cat-name {
@@ -82,11 +82,11 @@
         }
 
         .edit-btn {
-          background: rgba(255,193,7,0.1);
+          background: rgba(253,187,46,0.1);
           color: $bg-fill-color-1;
-          border: 1px solid rgba(255,193,7,0.25);
+          border: 1px solid rgba(253,187,46,0.25);
 
-          &:hover { background: rgba(255,193,7,0.22); border-color: $bg-fill-color-1; }
+          &:hover { background: rgba(253,187,46,0.22); border-color: $bg-fill-color-1; }
         }
 
         .delete-btn {
@@ -125,15 +125,15 @@
 
           .confirm-no {
             padding: 0.25rem 0.65rem;
-            background: rgba(255,255,255,0.06);
+            background: rgba(0,0,0,0.04);
             color: $text-2-primary;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid #E5E5E5;
             border-radius: 6px;
             font-size: 0.72rem;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.15s;
-            &:hover { background: rgba(255,255,255,0.1); color: $text-primary; }
+            &:hover { background: rgba(0,0,0,0.06); color: $text-primary; }
           }
         }
       }
@@ -164,8 +164,8 @@
         textarea,
         select {
           padding: 0.7rem 0.9rem;
-          background: rgba(255,255,255,0.04);
-          border: 1.5px solid rgba(255,255,255,0.08);
+          background: #F0EDE6;
+          border: 1.5px solid #E5E5E5;
           color: $text-primary;
           font-size: $font-size-base;
           border-radius: 10px;
@@ -174,7 +174,7 @@
           font-family: inherit;
 
           &::placeholder { color: $text-2-primary; }
-          &:focus { border-color: $bg-fill-color-1; background: rgba(255,255,255,0.06); }
+          &:focus { border-color: $bg-fill-color-1; background: rgba(0,0,0,0.04); }
 
           option { background: $bg-primary; color: $text-primary; }
         }
@@ -186,7 +186,7 @@
       .product-img-wrap,
       .category-img-wrap {
         width: 100%;
-        border: 2px dashed rgba(255,255,255,0.1);
+        border: 2px dashed #E5E5E5;
         border-radius: 12px;
         padding: 1.5rem;
         align-items: center;
@@ -194,11 +194,11 @@
         cursor: pointer;
         transition: border-color 0.2s, background 0.2s;
 
-        &:hover { border-color: rgba(255,193,7,0.4); }
+        &:hover { border-color: rgba(253,187,46,0.4); }
 
         &.dragging {
           border-color: $bg-fill-color-1;
-          background: rgba(255,193,7,0.07);
+          background: rgba(253,187,46,0.07);
           .icon { color: $bg-fill-color-1; }
         }
 
@@ -217,7 +217,7 @@
 
         .icon {
           font-size: 2.8rem;
-          color: rgba(255,255,255,0.2);
+          color: rgba(0,0,0,0.2);
           cursor: pointer;
           transition: color 0.2s;
           &:hover { color: $bg-fill-color-1; }
@@ -253,9 +253,9 @@
         align-items: center;
         gap: 0.75rem;
         padding: 0.75rem 1rem;
-        background: rgba(255,255,255,0.04);
+        background: #F0EDE6;
         border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.08);
+        border: 1px solid #E5E5E5;
         margin-bottom: 0.75rem;
 
         label {
@@ -304,16 +304,16 @@
         .cancel-btn {
           flex: 1;
           padding: 0.8rem;
-          background: rgba(255,255,255,0.05);
+          background: rgba(0,0,0,0.03);
           color: $text-2-primary;
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid #E5E5E5;
           border-radius: 10px;
           font-size: $font-size-base;
           font-weight: 600;
           cursor: pointer;
           transition: background 0.2s, color 0.2s;
 
-          &:hover { background: rgba(255,255,255,0.09); color: $text-primary; }
+          &:hover { background: rgba(0,0,0,0.06); color: $text-primary; }
         }
       }
     }
@@ -333,7 +333,7 @@
       height: auto;
       overflow-y: visible;
       border-right: none;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid #E5E5E5;
       padding: 1.25rem 1rem;
 
       &:last-child { border-bottom: none; }

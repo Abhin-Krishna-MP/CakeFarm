@@ -1,27 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Colors */
-$bg-primary: #121212;
-$bg-secondary: #000000;
+/* Colors — Light Soft-Minimalist Theme */
+$bg-primary: #FFFFFF;
+$bg-secondary: #F8F6F0;
 
-$bg-fill-secondary: rgba(59, 59, 59, 0.2);
+$bg-fill-secondary: rgba(0, 0, 0, 0.04);
 
-$bg-fill-color-1: #FFC107;
-$bg-fill-color-1-hover: #FFB300;
-$bg-fill-color-green: #4CAF50;
-$bg-fill-color-red: #F44336;
-$bg-1-color: whitesmoke;
+$bg-fill-color-1: #FDBB2E;
+$bg-fill-color-1-hover: #F5A800;
+$bg-fill-color-green: #22c55e;
+$bg-fill-color-red: #ef4444;
+$bg-1-color: #F0EDE6;
 
-$text-primary: #ffffff;
-$text-2-primary: #9E9E9E;
+$text-primary: #1A1A1A;
+$text-2-primary: #8A8A8A;
 
-$text-primary-hover: #7a7a7a;
-$text-secondary: rgb(245, 245, 245);
-$text-secondary-2: red;
+$text-primary-hover: #4A4A4A;
+$text-secondary: #4A4A4A;
+$text-secondary-2: #ef4444;
 
-$btn-1-bg: #12c458;
-$btn-2-bg: #f00c2d;
-$btn-3-bg: #ed3d54;
+$btn-1-bg: #22c55e;
+$btn-2-bg: #ef4444;
+$btn-3-bg: #dc2626;
+
+$card-bg: #FFFFFF;
+$card-border: #E5E5E5;
+$card-shadow: 0 2px 12px rgba(0,0,0,0.08);
+$card-shadow-hover: 0 6px 24px rgba(0,0,0,0.12);
 
 /* Font Sizes */
 $font-size-small: 0.875em; // 14px / 16px = 0.875em
@@ -97,9 +102,9 @@ ul, ol { list-style: none; }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.15);
   border-radius: 999px;
-  &:hover { background: rgba(255,255,255,0.18); }
+  &:hover { background: rgba(0,0,0,0.25); }
 }
 ::-webkit-scrollbar-button { display: none; }
 
@@ -125,10 +130,10 @@ ul, ol { list-style: none; }
   letter-spacing: 0.02em;
   text-transform: capitalize;
 
-  &.placed    { background: rgba(59,130,246,0.15);  color: #3b82f6; }
-  &.ready     { background: rgba(255,193,7,0.15);   color: #FFC107; }
-  &.delivered { background: rgba(76,175,80,0.15);   color: #4CAF50; }
-  &.cancelled { background: rgba(244,67,54,0.15);   color: #F44336; }
+  &.placed    { background: rgba(59,130,246,0.10);  color: #2563eb; }
+  &.ready     { background: rgba(253,187,46,0.12);  color: #d97706; }
+  &.delivered { background: rgba(34,197,94,0.10);   color: #16a34a; }
+  &.cancelled { background: rgba(239,68,68,0.10);   color: #dc2626; }
 }
 
 /* ─── Keyframe Animations ─── */
@@ -156,9 +161,9 @@ ul, ol { list-style: none; }
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(255,255,255,0.04) 25%,
-    rgba(255,255,255,0.08) 50%,
-    rgba(255,255,255,0.04) 75%
+    #F0EDE6 25%,
+    #E5E0D5 50%,
+    #F0EDE6 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;

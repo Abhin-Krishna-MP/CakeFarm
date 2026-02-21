@@ -13,7 +13,7 @@
     background: $bg-primary;
     padding: 2rem;
     border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid #E5E5E5;
     animation: fadeInUp 0.4s ease both;
 
     h1 {
@@ -22,7 +22,7 @@
       color: $text-primary;
       margin-bottom: 2rem;
       padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid #E5E5E5;
     }
 
     .settings-form {
@@ -53,8 +53,8 @@
 
         input[type='time'] {
           padding: 0.7rem 0.9rem;
-          background: rgba(255,255,255,0.04);
-          border: 1.5px solid rgba(255,255,255,0.08);
+          background: #F0EDE6;
+          border: 1.5px solid #E5E5E5;
           border-radius: 10px;
           color: $text-primary;
           font-size: $font-size-option;
