@@ -65,4 +65,5 @@ const getOrderHistory = (token) => async (dispatch) => {
     dispatch(getOrderHistoryFailure(error.response.data));
   }
 };
+
 export { createOrder, getOrderHistory };

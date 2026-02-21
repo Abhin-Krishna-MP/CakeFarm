@@ -1,0 +1,491 @@
+@import "../../styles/_global.scss";
+
+// ─── Design tokens ────────────────────────────────────────────────────────────
+$yellow:        #FFB800;
+$yellow-dark:   #E5A500;
+$yellow-light:  rgba(255, 184, 0, 0.18);
+$white:         #FFFFFF;
+$page-bg:       #F8F6F0;   // must match .orders background for notch trick
+$notch-d:       22px;
+
+// ─── Wrapper ──────────────────────────────────────────────────────────────────
+.ot-wrapper {
+  position: relative;
+  // Horizontal margin gives space for the side-notches that bleed outside
+  margin: 0.6rem calc(#{$notch-d} / 2);
+  filter: drop-shadow(0 6px 22px rgba(0, 0, 0, 0.13));
+  border-radius: 16px;
+}
+
+// ─── Shared half base ─────────────────────────────────────────────────────────
+.ot-half {
+  position: relative;
+  overflow: hidden;
+  transition: transform  0.7s ease-in-out,
+              box-shadow 0.7s ease-in-out,
+              opacity    0.7s ease-in-out,
+              margin-top 0.7s ease-in-out;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  TOP HALF  (white)
+// ══════════════════════════════════════════════════════════════════════════════
+.ot-top {
+  background: $white;
+  border-radius: 16px 16px 0 0;
+  padding: 0 1.25rem 1rem;
+  overflow: visible; // allow ::after wave to hang below
+
+  // Wavy bottom edge — white teeth dip into yellow area when joined,
+  // hang into the gap when torn. Always visible.
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 20'%3E%3Cpath d='M0,0 L400,0 L400,10 Q387,18 375,10 Q362,2 350,10 Q337,18 325,10 Q312,2 300,10 Q287,18 275,10 Q262,2 250,10 Q237,18 225,10 Q212,2 200,10 Q187,18 175,10 Q162,2 150,10 Q137,18 125,10 Q112,2 100,10 Q87,18 75,10 Q62,2 50,10 Q37,18 25,10 Q12,2 0,10 Z' fill='white'/%3E%3C/svg%3E") no-repeat;
+    background-size: 100% 100%;
+    z-index: 8;
+  }
+
+  // Faint yellow geometric triangle watermark pattern
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 28px,
+        rgba(255, 184, 0, 0.07) 28px,
+        rgba(255, 184, 0, 0.07) 30px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // Ensure all direct children sit above the watermark
+  > * { position: relative; z-index: 1; }
+}
+
+// Diagonal stripe bar at the very top ─────────────────────────────────────────
+.ot-stripe-bar {
+  height: 14px;
+  margin: 0 -1.25rem 1rem;
+  background: repeating-linear-gradient(
+    -55deg,
+    $yellow 0px,
+    $yellow 10px,
+    $white  10px,
+    $white  18px
+  );
+  border-radius: 16px 16px 0 0;
+}
+
+// Order ID row ─────────────────────────────────────────────────────────────────
+.ot-order-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.ot-order-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ot-order-num {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #555;
+}
+
+// Status badge ─────────────────────────────────────────────────────────────────
+.ot-badge {
+  margin-left: auto;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  letter-spacing: 0.04em;
+
+  &--placed     { background: rgba(59,  130, 246, 0.12); color: #3b82f6; }
+  &--ready      { background: rgba(245, 158,  11, 0.14); color: #d97706; }
+  &--processing { background: rgba(168,  85, 247, 0.12); color: #9333ea; }
+  &--completed  { background: rgba(34,  197,  94, 0.12); color: #16a34a; }
+  &--delivered  { background: rgba(34,  197,  94, 0.12); color: #16a34a; }
+  &--cancelled  { background: rgba(239,  68,  68, 0.12); color: #dc2626; }
+  &--expired    { background: rgba(107, 114, 128, 0.12); color: #6b7280; }
+  &--active     { background: rgba(59,  130, 246, 0.12); color: #3b82f6; }
+}
+
+// Item headline (big yellow text like "Spaghetti, Pizza") ─────────────────────
+.ot-headline {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: $yellow-dark;
+  margin: 0 0 0.85rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Time / Date meta row ────────────────────────────────────────────────────────
+.ot-meta-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.ot-meta-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  &--right { margin-left: auto; }
+}
+
+.ot-meta-label {
+  font-size: 0.65rem;
+  color: #AAA;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.ot-meta-val {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  letter-spacing: -0.01em;
+}
+
+// Items collapsible toggle ────────────────────────────────────────────────────
+.ot-items-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: rgba(255, 184, 0, 0.09);
+  border: 1px solid rgba(255, 184, 0, 0.22);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: #333;
+  font-weight: 500;
+  transition: background 0.15s;
+  margin-bottom: 0.1rem;
+
+  &:hover { background: rgba(255, 184, 0, 0.16); }
+
+  .ot-items-preview {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 80%;
+
+    em {
+      font-style: normal;
+      color: #999;
+      font-size: 0.78rem;
+    }
+  }
+
+  svg {
+    color: #999;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+}
+
+// Items list ──────────────────────────────────────────────────────────────────
+.ot-items-list { overflow: hidden; }
+
+.ot-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #F5F0E8;
+
+  &:last-child { border-bottom: none; }
+
+  img {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .ot-item-name {
+    flex: 1;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #1A1A1A;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ot-item-qty {
+    font-size: 0.78rem;
+    color: #888;
+    white-space: nowrap;
+  }
+
+  .ot-item-price {
+    font-size: 0.8rem;
+    color: #1A1A1A;
+    font-weight: 600;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    svg { font-size: 0.72rem; }
+  }
+}
+
+// Decorative barcode ──────────────────────────────────────────────────────────
+.ot-barcode {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 42px;
+  margin: 0.9rem 0 0.3rem;
+}
+
+.ot-bar {
+  display: inline-block;
+  background: #1A1A1A;
+  border-radius: 1px;
+  // narrow
+  &--n { width: 2px;  height: 100%; }
+  // medium
+  &--m { width: 3px;  height: 85%; }
+  // wide
+  &--w { width: 5px;  height: 100%; }
+}
+
+.ot-serial {
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: #AAA;
+  text-transform: uppercase;
+  margin: 0;
+  padding-bottom: 1rem;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  TEAR ZONE  (the seam between white top and yellow bottom)
+// ══════════════════════════════════════════════════════════════════════════════
+.ot-tear-zone {
+  position: relative;
+  height: 0;            // wave seam is now handled by ::after on the halves
+  background: transparent;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+  overflow: visible;    // notch circles bleed out
+}
+
+// Semi-circle notches ──────────────────────────────────────────────────────────
+.ot-notch {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: $notch-d;
+  height: $notch-d;
+  border-radius: 50%;
+  background: $page-bg;
+  z-index: 4;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.10);
+
+  &--left  { left:  calc(-1 * #{$notch-d} / 2); }
+  &--right { right: calc(-1 * #{$notch-d} / 2); }
+}
+
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  BOTTOM HALF  (mustard yellow)
+// ══════════════════════════════════════════════════════════════════════════════
+.ot-bottom {
+  background: $yellow;
+  border-radius: 0 0 16px 16px;
+  padding: 0.9rem 1.25rem 1.1rem;
+  overflow: visible; // allow ::after wave to rise above
+  // Explicit base — gives the browser a defined origin to interpolate from
+  transform: translateY(0) rotate(0deg);
+
+  // Wavy top edge — yellow teeth rise into white area when joined,
+  // extend into the gap when torn. Always visible.
+  &::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 20'%3E%3Cpath d='M0,20 L400,20 L400,10 Q387,18 375,10 Q362,2 350,10 Q337,18 325,10 Q312,2 300,10 Q287,18 275,10 Q262,2 250,10 Q237,18 225,10 Q212,2 200,10 Q187,18 175,10 Q162,2 150,10 Q137,18 125,10 Q112,2 100,10 Q87,18 75,10 Q62,2 50,10 Q37,18 25,10 Q12,2 0,10 Z' fill='%23FFB800'/%3E%3C/svg%3E") no-repeat;
+    background-size: 100% 100%;
+    z-index: 8;
+  }
+
+  // Subtle geometric watermark on yellow (large faint triangles)
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 32px,
+        rgba(255, 255, 255, 0.08) 32px,
+        rgba(255, 255, 255, 0.08) 35px
+      );
+    border-radius: 0 0 16px 16px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  > * { position: relative; z-index: 1; }
+}
+
+.ot-bottom-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+// Left column: name + price ───────────────────────────────────────────────────
+.ot-bottom-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ot-b-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-style: italic;
+}
+
+.ot-b-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ot-b-price {
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: $white;
+  gap: 1px;
+
+  svg { font-size: 1.1rem; }
+}
+
+// Right column: QR code ───────────────────────────────────────────────────────
+.ot-bottom-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.ot-qr-wrap {
+  padding: 7px;
+  background: $white;
+  border-radius: 8px;
+  line-height: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  svg { display: block; }
+}
+
+.ot-scan-hint {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.ot-no-token {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  DELIVERED WATERMARK STAMP
+// ══════════════════════════════════════════════════════════════════════════════
+.ot-stamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-22deg);
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: #22c55e;
+  border: 3.5px solid #22c55e;
+  border-radius: 6px;
+  padding: 2px 12px;
+  opacity: 0.22;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 6;
+  user-select: none;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  TORN STATE  — ticketStatus === "delivered"
+// ══════════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════════
+//  GAP SPACER  — sits between tear-zone and bottom half
+//  height: 0 by default, animates to a small offset in torn state.
+//  No background — transparent, so the page background shows through naturally.
+// ══════════════════════════════════════════════════════════════════════════════
+.ot-gap {
+  height: 0;
+  overflow: hidden;
+  // No background — page bg bleeds through the transparent gap
+  transition: height 0.7s ease-in-out;
+  position: relative;
+  z-index: 0;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  TORN STATE  — ticketStatus === "delivered"
+// ══════════════════════════════════════════════════════════════════════════════
+.ot-torn {
+  // Open the gap — ::after waves on each half are already always present
+  .ot-gap { height: 2rem; }
+
+  // Hide the notch circles while torn
+  .ot-tear-zone { opacity: 0; pointer-events: none; }
+}

@@ -9,68 +9,25 @@ import {
   mealsImage,
 } from "../../constants";
 import DropDown from "../../components/dropDown/DropDown";
-import { motion, useAnimate } from "framer-motion";
+import { motion } from "framer-motion";
 import { slideIn } from "../../utils/motion";
 import { Link } from "react-router-dom";
 import OutsideClickHandler from "react-outside-click-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderHistory } from "../../features/userActions/order/orderAction.js";
-// import { getOrderHistory } from "../../features/userActions/order/orderAction";
-
-const OrderItemInfo = ({ item }) => {
-  return (
-    <div className="order-item-info">
-      <div className="item-img-name">
-        <img
-          src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${item.image}`}
-          alt={item.productName}
-          loading="lazy"
-        />
-        <p>{item.productName}</p>
-      </div>
-      <p>×{item.quantity}</p>
-      <p><LiaRupeeSignSolid />{item.price}</p>
-    </div>
-  );
-};
-
-const OrderItem = ({ order }) => {
-  const [dropOrderItemInfo, setDropOrderItemInfo] = useState(false);
-  const statusClass = order.orderStatus?.toLowerCase();
-
-  return (
-    <div className="order-item">
-      <OutsideClickHandler onOutsideClick={() => setDropOrderItemInfo(false)}>
-        <div className="order-info" onClick={() => setDropOrderItemInfo(!dropOrderItemInfo)}>
-          <p><span>Order no:</span> #{order.orderNumber}</p>
-          <span className={`status-badge ${statusClass}`}>{order.orderStatus}</span>
-          <p><LiaRupeeSignSolid />{order.total}</p>
-          {dropOrderItemInfo ? <IoIosArrowDown /> : <IoIosArrowUp />}
-        </div>
-
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: dropOrderItemInfo ? "auto" : 0, opacity: dropOrderItemInfo ? 1 : 0 }}
-          transition={{ duration: 0.2 }}
-          className="order-items"
-        >
-          {order.items?.map((item, index) => (
-            <OrderItemInfo key={index} item={item} />
-          ))}
-        </motion.div>
-      </OutsideClickHandler>
-    </div>
-  );
-};
+import OrderTicket from "../../components/orderTicket/OrderTicket";
+import useOrderSocket from "../../hooks/useOrderSocket";
 
 export default function Orders() {
   const [selectedValue, setSelectedValue] = useState("All");
   const [orderTab, setOrderTab] = useState("all"); // "all" or "lunch"
 
-  // console.log(selectedValue);
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
-  const orderHistory = useSelector((state) => state.order.orderHistory); // get the order history from the state object
+  const orderHistory = useSelector((state) => state.order.orderHistory);
+
+  // Subscribe to real-time socket events so tickets tear without a reload
+  useOrderSocket();
 
   useEffect(() => {
     dispatch(getOrderHistory(token));
@@ -126,7 +83,7 @@ export default function Orders() {
             </div>
           )}
           {filteredOrders?.map((order, index) => (
-            <OrderItem key={index} order={order} />
+            <OrderTicket key={order.orderId || index} order={order} />
           ))}
         </div>
       </div>

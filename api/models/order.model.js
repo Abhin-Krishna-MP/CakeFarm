@@ -4,7 +4,7 @@ import {
   getOrderExpiryDate,
   getYesterdaysDate,
 } from "../utils/helper.js";
-import { generateUUID } from "../utils/uuid.js";
+import { generateUUID, generateOrderToken } from "../utils/uuid.js";
 
 // Define OrderItem Sub-schema
 const orderItemSchema = new mongoose.Schema(
@@ -82,6 +82,17 @@ const orderSchema = new mongoose.Schema(
     },
     orderItems: [orderItemSchema],
     orderStatus: orderStatusSchema,
+    // Digital ticket fields
+    orderToken: {
+      type: String,
+      unique: true,
+      sparse: true, // sparse so pre-existing orders without a token don't collide on null
+    },
+    ticketStatus: {
+      type: String,
+      enum: ["active", "delivered"],
+      default: "active",
+    },
   },
   { timestamps: true }
 );
@@ -124,6 +135,81 @@ class OrderModel {
       return result.modifiedCount > 0;
     } catch (error) {
       console.log("error while updating order status:", error);
+      return false;
+    }
+  };
+
+  // get a single order by its secure token (for QR code verification)
+  static getOrderByToken = async (orderToken) => {
+    try {
+      const order = await Order.findOne({ orderToken }).lean();
+      if (!order) return null;
+
+      const { Product } = await import("./product.model.js");
+      const { User } = await import("./user.model.js");
+
+      const user = await User.findOne({ userId: order.userId }).lean();
+
+      const transformedItems = [];
+      for (const item of order.orderItems) {
+        const product = await Product.findOne({ productId: item.productId }).lean();
+
+        transformedItems.push({
+          orderId: order.orderId,
+          userId: order.userId,
+          pickUpTime: order.pickUpTime,
+          expiryDate: order.expiryDate,
+          total: order.total,
+          orderNumber: order.orderNumber,
+          orderToken: order.orderToken,
+          ticketStatus: order.ticketStatus || "active",
+          createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+          orderItemsId: item.orderItemsId,
+          productId: item.productId,
+          quantity: item.quantity,
+          subtotal: item.subtotal,
+          orderStatusId: order.orderStatus.orderStatusId,
+          status: order.orderStatus.status,
+          productName: product?.productName,
+          image: product?.image,
+          rating: product?.rating,
+          description: product?.description,
+          vegetarian: product?.vegetarian,
+          price: product?.price,
+          categoryId: product?.categoryId,
+          isLunchItem: product?.isLunchItem || false,
+          user: user
+            ? {
+                userId: user.userId,
+                username: user.username,
+                email: user.email,
+                registerNumber: user.registerNumber,
+                department: user.department,
+                semester: user.semester,
+                division: user.division,
+              }
+            : null,
+        });
+      }
+
+      return transformedItems;
+    } catch (error) {
+      console.log("error while getting order by token: " + error);
+      throw error;
+    }
+  };
+
+  // mark order ticket as delivered (triggered by admin QR scan)
+  static markAsDelivered = async (orderToken) => {
+    try {
+      const result = await Order.updateOne(
+        { orderToken },
+        { $set: { ticketStatus: "delivered" } }
+      );
+      return result.modifiedCount > 0;
+    } catch (error) {
+      console.log("error while marking order as delivered: " + error);
       return false;
     }
   };
@@ -185,6 +271,8 @@ class OrderModel {
         total,
         orderItems,
         orderStatus,
+        orderToken: generateOrderToken(), // unique secure token for digital ticket QR code
+        ticketStatus: "active",
       });
 
       await order.save({ session });
@@ -254,6 +342,8 @@ class OrderModel {
             productId: item.productId,
             quantity: item.quantity,
             subtotal: item.subtotal,
+            orderToken: order.orderToken,
+            ticketStatus: order.ticketStatus || "active",
             orderStatusId: order.orderStatus.orderStatusId,
             status: order.orderStatus.status,
             // Product details
@@ -310,6 +400,8 @@ class OrderModel {
             productId: item.productId,
             quantity: item.quantity,
             subtotal: item.subtotal,
+            orderToken: order.orderToken,
+            ticketStatus: order.ticketStatus || "active",
             orderStatusId: order.orderStatus.orderStatusId,
             status: order.orderStatus.status,
             // Product details

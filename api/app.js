@@ -26,9 +26,12 @@ const httpServer = http.createServer(app);
 // Initialize Socket.io
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN,
+    origin: process.env.CORS_ORIGIN || "*",
     credentials: true,
   },
+  // Allow both websocket and long-polling so firewalls / proxies don't
+  // silently drop the upgrade and leave the client with no connection.
+  transports: ["websocket", "polling"],
 });
 
 // Socket.io connection handler

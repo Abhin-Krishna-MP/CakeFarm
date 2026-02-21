@@ -18,6 +18,7 @@ import { placeOrderValidator } from "../validators/order.validator.js";
 import {
   getAllUserOrders,
   placeOrder,
+  getOrderByToken,
 } from "../controllers/order.controller.js";
 const router = Router();
 
@@ -37,4 +38,8 @@ router.route("/order").get(validate, verifyJwt, getAllUserOrders);
 router
   .route("/order")
   .post(placeOrderValidator(), validate, verifyJwt, placeOrder);
+
+// Public route: anyone who scans a QR code can view order details
+router.route("/order/verify/:token").get(getOrderByToken);
+
 export default router;

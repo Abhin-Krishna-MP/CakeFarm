@@ -74,6 +74,8 @@ export const transformUserOrderData = (rawUserOrderData) => {
             orderNumber: order.orderNumber,
             orderStatus: order.status,
             status: order.status, // Add both for compatibility
+            orderToken: order.orderToken,
+            ticketStatus: order.ticketStatus || "active",
             pickUpTime: order.pickUpTime,
             expiryDate: order.expiryDate,
             total: order.total,

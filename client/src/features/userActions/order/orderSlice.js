@@ -42,6 +42,16 @@ const orderSlice = createSlice({
       state.error = action.payload.message;
       state.success = action.payload.success;
     },
+
+    // Real-time: called by the socket "orderDelivered" event to flip the
+    // ticket to its torn state without any network round-trip.
+    setTicketDelivered: (state, action) => {
+      const orderToken = action.payload;
+      const order = state.orderHistory?.find((o) => o.orderToken === orderToken);
+      if (order) {
+        order.ticketStatus = "delivered";
+      }
+    },
   },
 });
 
@@ -51,6 +61,7 @@ export const {
   createOrderFailure,
   getOrderHistorySuccess,
   getOrderHistoryFailure,
+  setTicketDelivered,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

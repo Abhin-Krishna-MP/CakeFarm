@@ -7,6 +7,7 @@ import Profile from "./pages/profile/Profile";
 import CompleteProfile from "./pages/completeProfile/CompleteProfile";
 import AuthSuccess from "./pages/authSuccess/AuthSuccess";
 import Lunch from "./pages/lunch/Lunch";
+import VerifyOrder from "./pages/verifyOrder/VerifyOrder";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -50,6 +51,8 @@ function App() {
               user && user.userId ? <Lunch /> : <Navigate to="/login" />
             }
           />
+          {/* Public: QR code scan lands here — no auth required */}
+          <Route path="/orders/verify/:token" element={<VerifyOrder />} />
         </Routes>
       </BrowserRouter>
     </div>

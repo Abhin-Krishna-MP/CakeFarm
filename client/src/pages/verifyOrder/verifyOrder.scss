@@ -1,0 +1,227 @@
+@import "../../styles/_global.scss";
+
+/* ═══════════════════════════════════════════
+   VERIFY ORDER PAGE
+═══════════════════════════════════════════ */
+.vo-page {
+  min-height: 100vh;
+  width: 100%;
+  background: $bg-secondary;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.vo-container {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Header ── */
+.vo-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: $text-primary;
+    margin: 0;
+  }
+}
+
+.vo-back-link {
+  font-size: 0.82rem;
+  color: $text-2-primary;
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: color 0.15s;
+
+  &:hover { color: $text-primary; }
+}
+
+.vo-customer-name {
+  font-size: 0.82rem;
+  color: $text-2-primary;
+
+  span { font-weight: 500; color: $text-primary; }
+}
+
+/* ── Loading / Error ── */
+.vo-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 0.75rem;
+  color: $text-2-primary;
+  text-align: center;
+
+  h2 { color: $text-primary; font-size: 1.3rem; }
+  p  { font-size: 0.9rem; max-width: 300px; }
+}
+
+.vo-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #E5E5E5;
+  border-top-color: $bg-fill-color-1;
+  border-radius: 50%;
+  animation: vo-spin 0.7s linear infinite;
+}
+
+@keyframes vo-spin {
+  to { transform: rotate(360deg); }
+}
+
+.vo-error-icon { font-size: 2.5rem; }
+
+.vo-home-link {
+  margin-top: 0.5rem;
+  display: inline-block;
+  padding: 0.55rem 1.25rem;
+  background: $bg-fill-color-1;
+  color: #1A1A1A;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+
+  &:hover { background: $bg-fill-color-1-hover; }
+}
+
+/* ── Admin Panel ── */
+.vo-admin-panel {
+  background: #ffffff;
+  border: 1.5px solid #EBEBEB;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vo-admin-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-2-primary;
+  margin: 0;
+}
+
+.vo-deliver-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: #22c55e;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s, transform 0.1s;
+  letter-spacing: 0.02em;
+
+  &:hover:not(:disabled) {
+    background: darken(#22c55e, 8%);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.vo-btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: vo-spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+.vo-already-delivered {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: #16a34a;
+  font-weight: 500;
+}
+
+/* ── Status chip (non-admin view) ── */
+.vo-status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  align-self: center;
+
+  &--active    { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+  &--delivered { background: rgba(34, 197, 94, 0.12);  color: #16a34a; }
+}
+
+/* ── Toast ── */
+.vo-toast {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+  white-space: nowrap;
+  animation: vo-fade-in 0.25s ease;
+
+  &--success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+  &--error   { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: inherit;
+    opacity: 0.6;
+    padding: 0;
+    transition: opacity 0.15s;
+
+    &:hover { opacity: 1; }
+  }
+}
+
+@keyframes vo-fade-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

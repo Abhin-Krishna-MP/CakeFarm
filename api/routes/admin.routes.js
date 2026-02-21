@@ -7,7 +7,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "../controllers/admin.controller.js";
-import { getAllOrders, updateOrderStatus } from "../controllers/order.controller.js";
+import { getAllOrders, updateOrderStatus, markOrderDelivered } from "../controllers/order.controller.js";
 import { getAllUsers } from "../controllers/user.controllers.js";
 import { verifyAdmin } from "../middlewares/admin.authMiddleware.js";
 import { verifyJwt } from "../middlewares/jwt.authMiddleware.js";
@@ -52,4 +52,10 @@ router
   .route("/update-order-status")
   // .patch(validate, verifyJwt, verifyAdmin, updateOrderStatus);
   .patch(updateOrderStatus);
+
+// Digital ticket: mark an order as delivered via scanned QR token
+router
+  .route("/update-ticket-status")
+  .patch(verifyJwt, verifyAdmin, markOrderDelivered);
+
 export default router;

@@ -115,3 +115,53 @@ export const getAllOrders = asyncHandler(async (req, res) => {
       )
     );
 });
+
+// GET /api/v1/users/order/verify/:token — public, resolves QR scan for any viewer
+export const getOrderByToken = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+
+  if (!token) {
+    throw new ApiError(400, "Order token is required");
+  }
+
+  const orderRows = await OrderModel.getOrderByToken(token);
+
+  if (!orderRows || orderRows.length === 0) {
+    throw new ApiError(404, "Order not found or invalid token");
+  }
+
+  const filteredOrder = await transformUserOrderData(orderRows);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { order: filteredOrder[0] }, "Order fetched successfully")
+    );
+});
+
+// PATCH /api/v1/admin/update-ticket-status — admin only, marks ticket as delivered
+export const markOrderDelivered = asyncHandler(async (req, res) => {
+  const { orderToken } = req.body;
+
+  if (!orderToken) {
+    throw new ApiError(400, "orderToken is required");
+  }
+
+  const result = await OrderModel.markAsDelivered(orderToken);
+
+  if (!result) {
+    throw new ApiError(404, "Order not found or already marked as delivered");
+  }
+
+  // Broadcast via Socket.io so the user's ticket UI tears in real-time
+  const io = req.app.get("io");
+  if (io) {
+    io.emit("orderDelivered", { orderToken });
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { orderToken }, "Order marked as delivered successfully")
+    );
+});
