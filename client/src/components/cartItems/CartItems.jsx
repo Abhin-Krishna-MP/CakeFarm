@@ -1,16 +1,30 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import "./cartItems.scss";
 import {
   GoDash,
   GoPlus,
-  mealsImage,
   LiaRupeeSignSolid,
   MdCancel,
   FaArrowRight,
   RxCross2,
 } from "../../constants";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import context from "../../context/context";
+
+/* Stagger container for cart items list */
+const cartListVars = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.12 } },
+};
+
+/* Per-item entry animation (used with stagger parent) */
+const cartItemEntryVar = {
+  hidden: { opacity: 0, y: 22, scale: 0.94 },
+  show: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { type: 'spring', stiffness: 280, damping: 22 },
+  },
+};
 import { useDispatch, useSelector } from "react-redux";
 import {
   decrementItem,
@@ -19,76 +33,147 @@ import {
 } from "../../features/userActions/cart/cartAction";
 import { createOrder } from "../../features/userActions/order/orderAction";
 
+/* ─── Slide-to-confirm order button ─── */
+const SlideToOrder = ({ onConfirm, disabled }) => {
+  const trackRef = useRef(null);
+  const x = useMotionValue(0);
+  const [trackWidth, setTrackWidth] = useState(0);
+  const [confirmed, setConfirmed] = useState(false);
+  const THUMB = 56;
+  const PAD = 5;
+
+  useEffect(() => {
+    if (trackRef.current) setTrackWidth(trackRef.current.offsetWidth);
+  }, []);
+
+  const maxTravel = trackWidth - THUMB - PAD * 2;
+  // shimmer opacity fades as user drags right
+  const shimmerOpacity = useTransform(x, [0, maxTravel * 0.5], [1, 0]);
+  // label opacity fades as thumb approaches end
+  const labelOpacity = useTransform(x, [0, maxTravel * 0.45], [1, 0]);
+  // progress fill width
+  const fillWidth = useTransform(x, [0, maxTravel], ['0%', '100%']);
+
+  const handleDragEnd = (_, info) => {
+    if (!trackRef.current) return;
+    if (info.offset.x >= maxTravel * 0.78) {
+      animate(x, maxTravel, { duration: 0.06 });
+      setConfirmed(true);
+      setTimeout(() => {
+        onConfirm();
+        animate(x, 0, { duration: 0.5, type: 'spring', stiffness: 120, damping: 18 });
+        setConfirmed(false);
+      }, 600);
+    } else {
+      animate(x, 0, { duration: 0.4, type: 'spring', stiffness: 200, damping: 22 });
+    }
+  };
+
+  return (
+    <div
+      ref={trackRef}
+      className={`slide-to-order${disabled ? ' disabled' : ''}${confirmed ? ' confirmed' : ''}`}
+    >
+      {/* Progress fill */}
+      <motion.div className="slide-fill" style={{ width: fillWidth }} />
+
+      {/* Shimmer sweep */}
+      <motion.div className="slide-shimmer" style={{ opacity: shimmerOpacity }} />
+
+      {/* Label */}
+      <motion.span className="slide-label" style={{ opacity: labelOpacity }}>
+        {confirmed ? '✓ Confirmed!' : 'Slide to place order'}
+      </motion.span>
+
+      {/* Thumb */}
+      <motion.div
+        className="slide-thumb"
+        drag={disabled ? false : 'x'}
+        dragConstraints={trackRef}
+        dragMomentum={false}
+        dragElastic={0}
+        style={{ x }}
+        onDragEnd={handleDragEnd}
+        whileDrag={{ scale: 1.12 }}
+        whileTap={{ scale: 1.05 }}
+      >
+        <motion.div
+          animate={confirmed ? { rotate: 0 } : {}}
+          className="thumb-inner"
+        >
+          {confirmed
+            ? <span className="check">✓</span>
+            : <FaArrowRight className="icon" />}
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+};
+
 const CartItem = ({ cartItem }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const [itemQuantity, setItemQuantity] = useState(0);
 
-  useEffect(() => {
-    getCurrentQuantity(); // gets the current item quantity
-  }, [cartItems]);
-
-  const handleRemoveItem = () => {
-    dispatch(removeItemFromCart(cartItem));
-  };
+  useEffect(() => { getCurrentQuantity(); }, [cartItems]);
 
   const getCurrentQuantity = () => {
-    const matchItem = cartItems?.find(
-      (item) => item.productId === cartItem.productId
-    );
-    setItemQuantity(matchItem?.quantity);
-  };
-
-  const handleItemIncrement = () => {
-    dispatch(incrementItem(cartItem)); // increment item
-  };
-
-  const handleItemDecrement = () => {
-    dispatch(decrementItem(cartItem)); // decrement item
+    const matchItem = cartItems?.find((item) => item.productId === cartItem.productId);
+    setItemQuantity(matchItem?.quantity || 0);
   };
 
   return (
-    <div className="cart-item">
-      <div className="item-info">
+    <motion.div
+      className="cart-item"
+      variants={cartItemEntryVar}
+      layout
+      exit={{ opacity: 0, x: 56, scale: 0.9, transition: { duration: 0.2 } }}
+    >
+      {/* Image */}
+      <div className="cart-item-img">
         <img
-          src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${
-            cartItem.image
-          }`}
-          alt=""
+          src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${cartItem.image}`}
+          alt={cartItem.productName}
         />
-        <p>{cartItem.productName}</p>
       </div>
-      <div className="cart-item-right">
-        <div className="item-count">
-          <motion.div
-            className="icon-holder"
-            whileTap={{ scale: 0.85 }}
-            onClick={handleItemDecrement}
-          >
-            <GoDash className="icon-btn minus" />
-          </motion.div>
-          <span>{itemQuantity}</span>
-          <motion.div
-            className="icon-holder"
+
+      {/* Info */}
+      <div className="cart-item-body">
+        <p className="cart-item-name">{cartItem.productName}</p>
+        <div className="cart-item-meta">
+          <span className="unit-price">
+            <LiaRupeeSignSolid className="rp" />
+            {cartItem.price} each
+          </span>
+        </div>
+
+        {/* Controls row */}
+        <div className="cart-item-controls">
+          <div className="qty-pill">
+            <motion.button whileTap={{ scale: 0.8 }} onClick={() => dispatch(decrementItem(cartItem))}>
+              <GoDash />
+            </motion.button>
+            <span>{itemQuantity}</span>
+            <motion.button whileTap={{ scale: 0.8 }} onClick={() => dispatch(incrementItem(cartItem))}>
+              <GoPlus />
+            </motion.button>
+          </div>
+
+          <span className="line-total">
+            <LiaRupeeSignSolid className="rp" />
+            {(cartItem.price * itemQuantity).toFixed(0)}
+          </span>
+
+          <motion.button
+            className="remove-btn"
             whileTap={{ scale: 0.75 }}
-            onClick={handleItemIncrement}
+            onClick={() => dispatch(removeItemFromCart(cartItem))}
           >
-            <GoPlus className="icon-btn plus" />
-          </motion.div>
+            <MdCancel />
+          </motion.button>
         </div>
-        <div className="item-cost">
-          <LiaRupeeSignSolid className="icon" />
-          {cartItem.price}
-        </div>
-        <motion.div
-          whileTap={{ scale: 0.75 }}
-          className="item-cancel"
-          onClick={handleRemoveItem}
-        >
-          <MdCancel />
-        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -157,46 +242,87 @@ export default function CartItems() {
 
   return (
     <div className="cart-items">
-      {/* Header */}
-      <div className="cart-header">
-        <h2>🛒 Your Cart {cart.cartItems.length > 0 && `(${cart.cartItems.length})`}</h2>
-        <RxCross2 className="close-cart" onClick={() => setIsToggleCart(false)} />
+      {/* ─── Mobile drag handle ─── */}
+      <div className="drag-handle-wrap">
+        <div className="drag-handle" />
       </div>
 
-      {/* Items list */}
-      <div className="cart-items-cont">
-        {!cart.cartItems.length && <h1>Your cart is empty</h1>}
-        {hasLunchItems && !lunchOrderingOpen && (
-          <div className="lunch-closed-warning">
-            ⏰ Lunch ordering time has passed. Remove lunch items to place an order.
+      {/* ─── Header ─── */}
+      <div className="cart-header">
+        <div className="cart-header-left">
+          <span className="cart-icon-badge">🛒</span>
+          <div>
+            <h2>Your Cart</h2>
+            {cart.cartItems.length > 0 && (
+              <p className="cart-sub">{cart.cartItems.length} item{cart.cartItems.length > 1 ? 's' : ''} · ₹{cart.totalCost}</p>
+            )}
+          </div>
+        </div>
+        <motion.button
+          className="close-cart"
+          whileTap={{ scale: 0.88 }}
+          onClick={() => setIsToggleCart(false)}
+        >
+          <RxCross2 />
+        </motion.button>
+      </div>
+
+      {/* ─── Items list ─── */}
+      <motion.div
+        className="cart-items-cont"
+        variants={cartListVars}
+        initial="hidden"
+        animate="show"
+      >
+        {!cart.cartItems.length && (
+          <div className="empty-cart">
+            <div className="empty-icon">🛍️</div>
+            <h3>Nothing here yet</h3>
+            <p>Add some delicious items from the menu</p>
           </div>
         )}
-        {cart.cartItems?.map((cartItem, index) => (
-          <CartItem key={index} cartItem={cartItem} />
-        ))}
-      </div>
-
-      {/* Sticky checkout bar */}
-      <div className="cart-bottom">
-        {!!cart.cartItems.length && (
-          <>
-            <div className="cart-total-row">
-              <p>
-                <span>Total:</span>
-                <LiaRupeeSignSolid className="icon" />
-                {cart.totalCost}
-              </p>
-            </div>
-            <button
-              onClick={handlePlaceOrder}
-              disabled={hasLunchItems && !lunchOrderingOpen}
-            >
-              Place Order
-              <FaArrowRight className="icon" />
-            </button>
-          </>
+        {hasLunchItems && !lunchOrderingOpen && (
+          <div className="lunch-closed-warning">
+            <span>⏰</span>
+            <p>Lunch ordering has closed. Remove lunch items to place an order.</p>
+          </div>
         )}
-      </div>
+        <AnimatePresence>
+          {cart.cartItems?.map((cartItem, index) => (
+            <CartItem key={cartItem.productId || index} cartItem={cartItem} />
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* ─── Checkout Panel ─── */}
+      {!!cart.cartItems.length && (
+        <div className="cart-bottom">
+          {/* Order Summary */}
+          <div className="order-summary">
+            <div className="summary-row">
+              <span>Subtotal</span>
+              <span className="val">₹{cart.totalCost}</span>
+            </div>
+            <div className="summary-row">
+              <span>Delivery</span>
+              <span className="val free">FREE</span>
+            </div>
+            <div className="summary-divider" />
+            <div className="summary-row total">
+              <span>Total</span>
+              <span className="val">₹{cart.totalCost}</span>
+            </div>
+          </div>
+
+          {/* Slide to order */}
+          <SlideToOrder
+            onConfirm={handlePlaceOrder}
+            disabled={hasLunchItems && !lunchOrderingOpen}
+          />
+
+          <p className="secure-note">🔒 Secure checkout · No hidden charges</p>
+        </div>
+      )}
     </div>
   );
 }

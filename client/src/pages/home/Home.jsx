@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./home.scss";
 import Navbar from "../../components/navbar/Navbar";
 import CategoriesCarousel from "../../components/categoriesCarousel/CategoriesCarousel";
 import { motion, AnimatePresence } from "framer-motion";
-import { fadeIn, menuVars, slideIn } from "../../utils/motion";
+import { fadeIn, slideIn, cartDrawerVars, cartMobileVars } from "../../utils/motion";
 import FoodItemCard from "../../components/foodItemsCard/FoodItemCard";
 import CartItems from "../../components/cartItems/CartItems";
 import context from "../../context/context";
@@ -17,11 +17,19 @@ export default function Home() {
   const token = useSelector((state) => state.auth.token);
   const product = useSelector((state) => state.product);
 
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
   useEffect(() => {
     dispatch(getProducts(token));
   }, []);
 
-  const snackItems = product.products?.filter((item) => !item.isLunchItem) || [];
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const allItems = product.products || [];
 
   return (
     <div className="home">
@@ -32,10 +40,17 @@ export default function Home() {
         <AnimatePresence>
           {isToggleCart && (
             <>
-              <div className="cart-backdrop" onClick={() => setIsToggleCart(false)} />
+              <motion.div
+                className="cart-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.22 }}
+                onClick={() => setIsToggleCart(false)}
+              />
               <motion.div
                 className="cart"
-                variants={menuVars}
+                variants={isMobile ? cartMobileVars : cartDrawerVars}
                 initial="initial"
                 animate="animate"
                 exit="exit"
@@ -79,7 +94,7 @@ export default function Home() {
             ))
           )}
 
-          {!product.loading && snackItems.length === 0 && (
+          {!product.loading && allItems.length === 0 && (
             <div className="empty-state">
               <span className="empty-emoji">🍽️</span>
               <h3>No items yet</h3>
@@ -87,7 +102,7 @@ export default function Home() {
             </div>
           )}
 
-          {snackItems.map((item) => (
+          {allItems.map((item) => (
             <motion.div
               key={item.productId}
               variants={fadeIn("up", "spring", 0.05, 0.6)}

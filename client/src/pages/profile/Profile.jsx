@@ -1,12 +1,13 @@
 import React, { useRef, useState } from "react";
 import "./profile.scss";
-import { FaEye, FaEyeSlash, BiImageAdd } from "../../constants";
+import { FaEye, FaEyeSlash, BiImageAdd, BsBoxArrowInLeft } from "../../constants";
 import Navbar from "../../components/navbar/Navbar";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateUserDetails,
   updateUserProfile,
+  logout,
 } from "../../features/auth/authAction";
 export default function Profile() {
   const [hidePass, setHidePass] = useState(false);
@@ -24,6 +25,8 @@ export default function Profile() {
   // select user state
   const user = useSelector((select) => select.auth.userData);
   const dispatch = useDispatch();
+
+  const handleLogout = () => dispatch(logout());
 
   const handleUpdateUserProfile = () => {
     // e.preventDefault();
@@ -136,6 +139,14 @@ export default function Profile() {
             whileTap={{ scale: 0.95 }}
           >
             Update
+          </motion.button>
+        </div>
+
+        {/* ─── Logout ─── */}
+        <div className="profile-logout">
+          <motion.button onClick={handleLogout} whileTap={{ scale: 0.97 }}>
+            <BsBoxArrowInLeft className="icon" />
+            Sign Out
           </motion.button>
         </div>
       </div>

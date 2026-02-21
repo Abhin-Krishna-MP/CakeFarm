@@ -21,55 +21,49 @@
 .cat-pill {
   position: relative;
   display: inline-flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.46rem 1.05rem 0.46rem 0.5rem;
-  background: $bg-primary;
-  border: 1.5px solid rgba(255, 255, 255, 0.09);
-  border-radius: 999px;
+  gap: 0.4rem;
+  padding: 0.6rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
   outline: none;
   user-select: none;
-  overflow: hidden; /* clips the shimmer sweep */
+  overflow: visible;
   animation: pill-in 0.35s ease both;
+  scroll-snap-align: start;
   transition:
-    background  0.28s ease,
-    border-color 0.28s ease,
-    transform   0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow  0.28s ease;
+    background  0.22s ease,
+    transform   0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* ── shimmer sweep layer ── */
-  &__shimmer {
-    pointer-events: none;
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      100deg,
-      transparent 20%,
-      rgba(255, 255, 255, 0.12) 50%,
-      transparent 80%
-    );
-    transform: translateX(-100%) skewX(-15deg);
-    transition: none;
+  @media (min-width: 480px) {
+    padding: 0.65rem 0.9rem;
   }
+
+  /* shimmer hidden in light theme */
+  &__shimmer { display: none; }
 
   /* thumbnail circle */
   &__thumb {
-    width: 28px;
-    height: 28px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.06);
+    background: #F0EDE6;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.28s ease, transform 0.22s ease;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
     position: relative;
     z-index: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+    @media (min-width: 480px) { width: 64px; height: 64px; }
 
     img {
       width: 100%;
@@ -87,61 +81,58 @@
   }
 
   &__icon {
-    font-size: 1rem;
+    font-size: 1.6rem;
     color: $text-2-primary;
-    transition: color 0.28s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: color 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: block;
     position: relative;
     z-index: 1;
   }
 
   &__label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: $text-2-primary;
-    letter-spacing: 0.015em;
-    transition: color 0.28s ease, font-weight 0.1s;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: $text-secondary;
+    letter-spacing: 0.01em;
+    transition: color 0.22s ease, font-weight 0.1s;
     position: relative;
     z-index: 1;
+    text-align: center;
+
+    @media (min-width: 480px) { font-size: 0.78rem; }
   }
 
   /* ── Hover ── */
   &:hover {
-    background: rgba(255, 193, 7, 0.1);
-    border-color: rgba(255, 193, 7, 0.4);
-    transform: translateY(-3px) scale(1.04);
-    box-shadow:
-      0 6px 20px rgba(255, 193, 7, 0.18),
-      0 2px 8px  rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px);
 
-    .cat-pill__shimmer {
-      animation: shimmer-sweep 0.55s ease forwards;
+    .cat-pill__thumb {
+      box-shadow: 0 6px 18px rgba(253,187,46,0.3);
+      transform: scale(1.06);
     }
-    .cat-pill__label { color: $bg-fill-color-1; }
-    .cat-pill__icon  { color: $bg-fill-color-1; transform: scale(1.2) rotate(-5deg); }
-    .cat-pill__thumb { transform: scale(1.08); }
+    .cat-pill__label { color: $text-primary; font-weight: 600; }
+    .cat-pill__icon  { color: $bg-fill-color-1; transform: scale(1.15) rotate(-5deg); }
   }
 
   /* ── Active / selected ── */
   &.active {
-    background: linear-gradient(135deg, #FFD54F 0%, #FFC107 55%, #FFB300 100%);
-    border-color: #FFD54F;
-    transform: translateY(-2px) scale(1.05);
-    animation: pill-in 0.35s ease both, glow-pulse 2.4s ease-in-out infinite;
+    transform: translateY(-2px);
+
+    .cat-pill__thumb {
+      box-shadow: 0 0 0 3px $bg-fill-color-1, 0 4px 14px rgba(253,187,46,0.35);
+      transform: scale(1.08);
+    }
 
     .cat-pill__label {
-      color: #1a1a1a;
+      color: $text-primary;
       font-weight: 700;
-      letter-spacing: 0.02em;
     }
-    .cat-pill__icon  { color: #1a1a1a; }
-    .cat-pill__thumb { background: rgba(0, 0, 0, 0.14); }
+    .cat-pill__icon  { color: $bg-fill-color-1; }
   }
 
   /* ── Press feedback ── */
   &:active:not(.active) {
     transform: translateY(0) scale(0.97);
-    box-shadow: none;
   }
 }
 

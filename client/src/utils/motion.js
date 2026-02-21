@@ -125,3 +125,33 @@ export const staggerContainer = (staggerChildren, delayChildren) => {
     },
   };
 };
+
+/* ─── Cart drawer — desktop: slide from right ─── */
+export const cartDrawerVars = {
+  initial: { x: "108%", opacity: 0 },
+  animate: {
+    x: 0,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 360, damping: 30, mass: 0.85 },
+  },
+  exit: {
+    x: "112%",
+    opacity: 0,
+    transition: { type: "spring", stiffness: 420, damping: 38 },
+  },
+};
+
+/* ─── Cart drawer — mobile: slide up from bottom ─── */
+export const cartMobileVars = {
+  initial: { y: "100%", opacity: 0.55 },
+  animate: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 330, damping: 28, mass: 0.8 },
+  },
+  exit: {
+    y: "108%",
+    opacity: 0,
+    transition: { type: "spring", stiffness: 420, damping: 38 },
+  },
+};
