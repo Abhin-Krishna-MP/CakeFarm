@@ -74,35 +74,40 @@ const updateUserProfile = (file, token) => async (dispatch) => {
     const config2 = {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "Application/json",
+        "Content-Type": "application/json",
       },
     };
 
     if (file) {
       const data = new FormData();
-
       data.append("file", file);
 
-      const res = await axios.post(
+      // Step 1: upload the file to disk – server returns the confirmed filename
+      const uploadRes = await axios.post(
         `${import.meta.env.VITE_API_BASE_URI}/users/upload-profile`,
         data,
         config1
       );
 
-      if (res) {
-        await axios.patch(
-          `${import.meta.env.VITE_API_BASE_URI}/users/updateuser`,
-          {
-            avatar: file.name.replace(/\s+/g, "_"),
-          },
-          config2
-        );
-      }
+      // Use the server-confirmed filename (never guess from file.name)
+      const savedFilename =
+        uploadRes.data?.data?.filename ||
+        file.name.replace(/\s+/g, "_");
 
-      dispatch(updateUserAvatar(file.name.replace(/\s+/g, "_")));
+      // Step 2: persist the confirmed filename in the DB
+      const patchRes = await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URI}/users/updateuser`,
+        { avatar: savedFilename },
+        config2
+      );
+
+      // Step 3: update Redux + localStorage with the server-confirmed user
+      if (patchRes?.data?.data) {
+        dispatch(updateUserInfo(patchRes.data.data));
+      }
     }
   } catch (error) {
-    console.log(error);
+    console.log("updateUserProfile error:", error);
   }
 };
 

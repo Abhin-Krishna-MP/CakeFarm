@@ -15,10 +15,18 @@ import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSearchedProducts } from "../../features/userActions/product/productAction";
 
+const resolveAvatar = (avatar) => {
+  if (!avatar) return null;
+  if (avatar.startsWith("http")) return avatar;
+  return `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/${avatar}`;
+};
+
 export default function Navbar() {
   const { isToggleCart, setIsToggleCart } = useContext(context);
   const cart = useSelector((select) => select.cart);
   const token = useSelector((select) => select.auth.token);
+  const user = useSelector((select) => select.auth.userData);
+  const avatarSrc = resolveAvatar(user?.avatar);
   const dispatch = useDispatch();
   const inputRef = useRef();
   const timeoutRef = useRef(null);
@@ -84,7 +92,23 @@ export default function Navbar() {
             {item.id === "orders" && cart.itemsCount > 0 && (
               <span className="cart-badge">{cart.itemsCount}</span>
             )}
-            <item.icon className="icon" />
+            {item.id === "profile" && avatarSrc ? (
+              <img
+                src={avatarSrc}
+                alt="profile"
+                className="nav-avatar"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.style.display = "none";
+                  e.currentTarget.nextSibling.style.display = "block";
+                }}
+              />
+            ) : null}
+            {item.id === "profile" && avatarSrc ? (
+              <HiOutlineUser className="icon" style={{ display: "none" }} />
+            ) : (
+              <item.icon className="icon" />
+            )}
             <span>{item.label}</span>
           </Link>
         ))}

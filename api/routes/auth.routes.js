@@ -20,18 +20,21 @@ router.get(
   async (req, res) => {
     // Generate access token
     const accessToken = await UserModel.generateAccessToken(req.user);
-    
+
+    // Re-fetch so the redirect URL always carries the freshest avatar / profile
+    const freshUser = await UserModel.getUserById(req.user.userId);
+
     // Prepare user object without sensitive data
     const userObject = {
-      userId: req.user.userId,
-      email: req.user.email,
-      username: req.user.username,
-      role: req.user.role,
-      profilePic: req.user.profilePic,
-      registerNumber: req.user.registerNumber,
-      department: req.user.department,
-      semester: req.user.semester,
-      division: req.user.division,
+      userId: freshUser.userId,
+      email: freshUser.email,
+      username: freshUser.username,
+      role: freshUser.role,
+      avatar: freshUser.avatar,
+      registerNumber: freshUser.registerNumber,
+      department: freshUser.department,
+      semester: freshUser.semester,
+      division: freshUser.division,
     };
     
     // Redirect to frontend with user data
@@ -75,12 +78,15 @@ router.post(
 
     const accessToken = await UserModel.generateAccessToken(updatedUser);
 
+    // Strip sensitive fields before sending to client
+    const { password, __v, _id, ...safeUser } = updatedUser;
+
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          { user: updatedUser, accessToken },
+          { user: safeUser, accessToken },
           "Profile completed successfully"
         )
       );

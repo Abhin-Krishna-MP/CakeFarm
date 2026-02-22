@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { signInSuccess } from "../../features/auth/authSlice";
 import "./completeProfile.scss";
 import { logo } from "../../constants/index.js";
 
 export default function CompleteProfile() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const token = searchParams.get("token");
   const userId = searchParams.get("userId");
 
@@ -42,13 +45,16 @@ export default function CompleteProfile() {
       );
 
       if (response.data.success) {
-        // Store user data and token
-        localStorage.setItem("user", JSON.stringify(response.data.data.user));
-        localStorage.setItem("token", response.data.data.accessToken);
-        
-        // Redirect to home
+        const { user, accessToken } = response.data.data;
+
+        // Persist to localStorage
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", accessToken);
+
+        // Sync Redux state so the app is immediately aware of the session
+        dispatch(signInSuccess({ data: { user, accessToken } }));
+
         navigate("/");
-        window.location.reload();
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to complete profile");

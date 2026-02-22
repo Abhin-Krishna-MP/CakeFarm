@@ -170,6 +170,19 @@
 
     .icon { font-size: 1.4rem; }
 
+    .nav-avatar {
+      width: 1.55rem;
+      height: 1.55rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    &.active .nav-avatar {
+      border-color: $bg-fill-color-1;
+    }
+
     span {
       font-size: 0.0rem;  /* hidden for inactive */
       font-weight: 700;

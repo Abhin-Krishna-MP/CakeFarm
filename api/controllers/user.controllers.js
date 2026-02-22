@@ -89,8 +89,10 @@ const loginUser = asyncHandler(async (req, res) => {
   // if user is authenticated, create jwt token
   const { accessToken } = await generateAccessToken(existesUser.userId);
 
-  // get the user document ignoring the password and other fields
-  const { password: pass, ...rest } = existesUser; // ignore rename of pass field
+  // Re-fetch the user so the response always contains the absolute latest
+  // data from the DB (e.g. avatar that was updated after the initial fetch)
+  const freshUser = await UserModel.getUserById(existesUser.userId);
+  const { password: pass, ...rest } = freshUser;
 
   // add more options to make cookie more secure and reliable
   const options = {
@@ -124,7 +126,11 @@ const uploadUserProfile = (req, res) => {
       return res.status(400).json({ message: "Please upload a valid image" });
     }
 
-    res.status(201).json({ message: "Image uploaded successfully" });
+    // Return the server-confirmed filename so the client never has to guess
+    res.status(201).json({
+      message: "Image uploaded successfully",
+      data: { filename: req.file.filename },
+    });
   });
 };
 

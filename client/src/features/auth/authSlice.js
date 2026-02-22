@@ -1,11 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const storedUser = JSON.parse(localStorage.getItem("user"));
+const storedUser = (() => {
+  try {
+    const raw = localStorage.getItem("user");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    localStorage.removeItem("user");
+    return null;
+  }
+})();
 const token = localStorage.getItem("token");
 
 const initialState = {
-  loggedIn: false,
-  userData: storedUser || {},
+  loggedIn: !!(storedUser && storedUser.userId),
+  userData: storedUser || null,
   token: token || null,
   message: null,
   error: null,
@@ -57,8 +65,10 @@ const authSlice = createSlice({
     },
 
     updateUserInfo: (state, action) => {
-      state.userData = action.payload.data;
-      localStorage.setItem("user", JSON.stringify(action.payload.data));
+      // action.payload = { user: rest } as dispatched from updateUserDetails
+      const user = action.payload.user ?? action.payload;
+      state.userData = user;
+      localStorage.setItem("user", JSON.stringify(user));
     },
 
     updateUserAvatar: (state, action) => {
@@ -70,6 +80,7 @@ const authSlice = createSlice({
     logOut: (state, action) => {
       state.userData = null;
       state.token = null;
+      state.loggedIn = false;
     },
   },
 });

@@ -91,7 +91,7 @@ const OrderTicket = ({ order, minimal = false }) => {
         {!minimal && (
           <button
             className="ot-items-toggle"
-            onClick={() => setExpanded((v) => !v)}
+            onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
             aria-expanded={expanded}
           >
             <span className="ot-items-preview">

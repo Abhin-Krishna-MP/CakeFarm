@@ -78,14 +78,19 @@ export default function Profile() {
           />
           <label className="fileLabel" htmlFor="fileInput">
             <img
-              src={`${
+              src={
                 imageFile
                   ? URL.createObjectURL(imageFile)
-                  : // : process.env.REACT_APP_IMAGES_URL + "/" + user.userData.avatar
-                    `${
-                      import.meta.env.VITE_API_BASE_IMAGE_URI
-                    }/assets/images/users/${user.avatar}`
-              }`}
+                  : user?.avatar?.startsWith("http")
+                  ? user.avatar
+                  : `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/${
+                      user?.avatar || "noProfile.png"
+                    }`
+              }
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/noProfile.png`;
+              }}
             />
             <span className="w-mark-add-img">
               <BiImageAdd />
