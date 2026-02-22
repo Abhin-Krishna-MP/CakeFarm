@@ -145,11 +145,14 @@
 
     .order-ticket-clickable {
       cursor: pointer;
-      transition: transform 0.15s, filter 0.15s;
+      transition: transform 0.15s;
 
       &:hover {
         transform: translateY(-2px);
-        filter: drop-shadow(0 8px 28px rgba(0,0,0,0.14));
+        // Target the halves directly — notches (in .ot-tear-zone) are excluded
+        // from both filters so they never cast a visible shadow ring.
+        .ot-top    { filter: drop-shadow(0 8px 26px rgba(0,0,0,0.16)); }
+        .ot-bottom { filter: drop-shadow(0 6px 18px rgba(0,0,0,0.12)); }
       }
 
       &:active { transform: translateY(0); }
@@ -194,6 +197,9 @@
     overscroll-behavior: contain;
     scrollbar-width: none;
     &::-webkit-scrollbar { display: none; }
+    // Notches must be invisible against the blurred dark overlay;
+    // transparent lets the ticket halves' own colors show through naturally.
+    --notch-bg: transparent;
   }
 
   .order-modal-close {

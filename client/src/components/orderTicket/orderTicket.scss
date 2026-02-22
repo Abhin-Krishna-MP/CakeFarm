@@ -13,7 +13,9 @@ $notch-d:       22px;
   position: relative;
   // Horizontal margin gives space for the side-notches that bleed outside
   margin: 0.6rem calc(#{$notch-d} / 2);
-  filter: drop-shadow(0 6px 22px rgba(0, 0, 0, 0.13));
+  // ⚠️ NO filter here — filter:drop-shadow would composite the notch circles
+  // into the shadow shape, creating a visible dark ring around them.
+  // Each half carries its own drop-shadow instead (see .ot-top / .ot-bottom).
   border-radius: 16px;
 }
 
@@ -35,6 +37,7 @@ $notch-d:       22px;
   border-radius: 16px 16px 0 0;
   padding: 0 1.25rem 1rem;
   overflow: visible; // allow ::after wave to hang below
+  filter: drop-shadow(0 5px 18px rgba(0, 0, 0, 0.11));
 
   // Wavy bottom edge — white teeth dip into yellow area when joined,
   // hang into the gap when torn. Always visible.
@@ -301,6 +304,9 @@ $notch-d:       22px;
 }
 
 // Semi-circle notches ──────────────────────────────────────────────────────────
+// --notch-bg is set to the page background so the circles vanish into it.
+// In the modal context (order-modal-scroll), --notch-bg is overridden to
+// transparent so no filled circle is visible against the dark overlay.
 .ot-notch {
   position: absolute;
   top: 50%;
@@ -308,9 +314,9 @@ $notch-d:       22px;
   width: $notch-d;
   height: $notch-d;
   border-radius: 50%;
-  background: $page-bg;
+  background: var(--notch-bg, #{$page-bg});
   z-index: 4;
-  box-shadow: inset 0 1px 4px rgba(0,0,0,0.10);
+  // No box-shadow — an inset ring outlines the circle shape, making it visible
 
   &--left  { left:  calc(-1 * #{$notch-d} / 2); }
   &--right { right: calc(-1 * #{$notch-d} / 2); }
@@ -326,6 +332,7 @@ $notch-d:       22px;
   border-radius: 0 0 16px 16px;
   padding: 0.9rem 1.25rem 1.1rem;
   overflow: visible; // allow ::after wave to rise above
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.09));
   // Explicit base — gives the browser a defined origin to interpolate from
   transform: translateY(0) rotate(0deg);
 
