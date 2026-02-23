@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import { io } from "socket.io-client";
 import OrderTicket from "../../components/orderTicket/OrderTicket";
 import { slideIn } from "../../utils/motion";
+import { FaArrowRight } from "../../constants";
 import "./verifyOrder.scss";
 
 /* ─────────────────────────────────────────────────────────────
@@ -17,6 +18,89 @@ const Toast = ({ message, type, onClose }) => (
     <button onClick={onClose} aria-label="close">×</button>
   </div>
 );
+
+/* ─────────────────────────────────────────────────────────────
+   Slide-to-Deliver — admin confirmation slider
+   Same pattern as cart's SlideToOrder, green theme
+───────────────────────────────────────────────────────────── */
+const SlideToDeliver = ({ onConfirm, alreadyDone }) => {
+  const trackRef = useRef(null);
+  const x = useMotionValue(0);
+  const [trackWidth, setTrackWidth] = useState(0);
+  const [confirmed, setConfirmed] = useState(false);
+  const THUMB = 56;
+  const PAD   = 5;
+
+  useEffect(() => {
+    if (trackRef.current) setTrackWidth(trackRef.current.offsetWidth);
+  }, []);
+
+  const maxTravel     = trackWidth - THUMB - PAD * 2;
+  const shimmerOpacity = useTransform(x, [0, maxTravel * 0.5], [1, 0]);
+  const labelOpacity   = useTransform(x, [0, maxTravel * 0.45], [1, 0]);
+  const fillWidth      = useTransform(x, [0, maxTravel], ["0%", "100%"]);
+
+  const handleDragEnd = (_, info) => {
+    if (!trackRef.current) return;
+    if (info.offset.x >= maxTravel * 0.78) {
+      animate(x, maxTravel, { duration: 0.06 });
+      setConfirmed(true);
+      setTimeout(() => {
+        onConfirm();
+        animate(x, 0, { duration: 0.5, type: "spring", stiffness: 120, damping: 18 });
+        setConfirmed(false);
+      }, 600);
+    } else {
+      animate(x, 0, { duration: 0.4, type: "spring", stiffness: 200, damping: 22 });
+    }
+  };
+
+  if (alreadyDone) {
+    return (
+      <div className="vo-delivered-badge">
+        <span className="vo-delivered-icon">✓</span>
+        <span>Ticket Delivered</span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={trackRef}
+      className={`vo-slide-deliver${confirmed ? " confirmed" : ""}`}
+    >
+      {/* Green progress fill */}
+      <motion.div className="vsd-fill" style={{ width: fillWidth }} />
+
+      {/* Shimmer sweep */}
+      <motion.div className="vsd-shimmer" style={{ opacity: shimmerOpacity }} />
+
+      {/* Label */}
+      <motion.span className="vsd-label" style={{ opacity: labelOpacity }}>
+        {confirmed ? "✓  Delivered!" : "Slide to mark delivered"}
+      </motion.span>
+
+      {/* Draggable thumb */}
+      <motion.div
+        className="vsd-thumb"
+        drag="x"
+        dragConstraints={trackRef}
+        dragMomentum={false}
+        dragElastic={0}
+        style={{ x }}
+        onDragEnd={handleDragEnd}
+        whileDrag={{ scale: 1.12 }}
+        whileTap={{ scale: 1.05 }}
+      >
+        <motion.div className="vsd-thumb-inner">
+          {confirmed
+            ? <span className="vsd-check">✓</span>
+            : <FaArrowRight className="vsd-arrow" />}
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+};
 
 /* ─────────────────────────────────────────────────────────────
    VerifyOrder
@@ -157,33 +241,19 @@ export default function VerifyOrder() {
         </div>
 
         {/* ── Ticket ── */}
-        <OrderTicket order={order} minimal />
+        <OrderTicket order={order} minimal={false} />
 
         {/* ── Admin controls ── */}
         {isAdmin && (
           <div className="vo-admin-panel">
-            <p className="vo-admin-label">Admin Actions</p>
-            {alreadyDelivered ? (
-              <div className="vo-already-delivered">
-                <span>✅</span>
-                <span>This order was already marked as delivered.</span>
-              </div>
-            ) : (
-              <button
-                className="vo-deliver-btn"
-                onClick={handleMarkDelivered}
-                disabled={marking}
-              >
-                {marking ? (
-                  <>
-                    <span className="vo-btn-spinner" />
-                    Updating…
-                  </>
-                ) : (
-                  "✓ Mark as Delivered"
-                )}
-              </button>
-            )}
+            <div className="vo-admin-header">
+              <span className="vo-admin-icon">🛡</span>
+              <span className="vo-admin-label">Admin · Mark as Delivered</span>
+            </div>
+            <SlideToDeliver
+              onConfirm={handleMarkDelivered}
+              alreadyDone={alreadyDelivered}
+            />
           </div>
         )}
 

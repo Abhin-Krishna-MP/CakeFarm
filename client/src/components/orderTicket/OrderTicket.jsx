@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import Barcode from "react-barcode";
 import { AnimatePresence, motion } from "framer-motion";
 import { LiaRupeeSignSolid, IoIosArrowDown, IoIosArrowUp } from "../../constants";
 import "./orderTicket.scss";
@@ -133,22 +134,24 @@ const OrderTicket = ({ order, minimal = false }) => {
           )}
         </AnimatePresence>
 
-        {/* Decorative barcode */}
-        <div className="ot-barcode" aria-hidden="true">
-          {Array.from({ length: 42 }).map((_, i) => (
-            <span
-              key={i}
-              className={`ot-bar ot-bar--${
-                i % 7 === 0 ? "w" : i % 5 === 0 ? "m" : "n"
-              }`}
-            />
-          ))}
+        {/* Real scannable barcode */}
+        <div className="ot-barcode-real">
+          <Barcode
+            value={order.orderToken || order.orderNumber?.toString() || "CAMPUSDINE"}
+            width={1.3}
+            height={38}
+            fontSize={0}
+            margin={0}
+            background="transparent"
+            lineColor="#1A1A1A"
+            displayValue={false}
+          />
+          <p className="ot-serial">
+            SERIAL · {order.orderToken
+              ? order.orderToken.slice(0, 14).toUpperCase()
+              : "—"}
+          </p>
         </div>
-        <p className="ot-serial">
-          SERIAL · {order.orderToken
-            ? order.orderToken.slice(0, 14).toUpperCase()
-            : "—"}
-        </p>
       </div>
 
       {/* ══════════════ TEAR ZONE (notches only) ══════════════ */}

@@ -5,6 +5,7 @@ import {
   GrContactInfo,
   PiArchiveBox,
   MdLunchDining,
+  MdQrCodeScanner,
   profilePic,
 } from "../../constants/index";
 import "./menuSidebar.scss";
@@ -12,11 +13,12 @@ import React from "react";
 import { logout } from "../../features/auth/authAction";
 
 const navItems = [
-  { id: 1, icon: PiArchiveBox, label: "Orders" },
-  { id: 2, icon: BiAddToQueue,  label: "Add Product" },
-  { id: 3, icon: GrContactInfo,  label: "Users" },
+  { id: 1, icon: PiArchiveBox,       label: "Orders" },
+  { id: 2, icon: BiAddToQueue,       label: "Add Product" },
+  { id: 3, icon: GrContactInfo,      label: "Users" },
   { id: 4, icon: FaRegRectangleList, label: "Products" },
-  { id: 5, icon: MdLunchDining,  label: "Lunch Settings" },
+  { id: 5, icon: MdLunchDining,      label: "Lunch Settings" },
+  { id: 6, icon: MdQrCodeScanner,    label: "Scan QR" },
 ];
 
 export default function MenuSidebar({ selectedMenu, setSelectedMenu, onClose }) {
