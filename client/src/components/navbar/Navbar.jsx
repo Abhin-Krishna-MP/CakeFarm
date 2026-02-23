@@ -136,9 +136,6 @@ export default function Navbar() {
             to={item.link}
             className={`bottom-nav-item ${location.pathname === item.link ? "active" : ""}`}
           >
-            {item.id === "orders" && cart.itemsCount > 0 && (
-              <span className="cart-badge">{cart.itemsCount}</span>
-            )}
             {item.id === "profile" && avatarSrc ? (
               <img
                 src={avatarSrc}

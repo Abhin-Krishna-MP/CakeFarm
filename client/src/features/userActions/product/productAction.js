@@ -3,6 +3,7 @@ import {
   getProductsFailure,
   getProductsRequest,
   getProductsSuccess,
+  setAllProducts,
 } from "./productSlice";
 
 const getProducts = (token, categoryId) => async (dispatch) => {
@@ -11,7 +12,7 @@ const getProducts = (token, categoryId) => async (dispatch) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`, // Include any authorization token if needed
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     };
@@ -25,6 +26,11 @@ const getProducts = (token, categoryId) => async (dispatch) => {
     const res = await axios.get(api_URI, config);
 
     dispatch(getProductsSuccess(res.data));
+
+    // Keep a full unfiltered copy for the Favourites view
+    if (!categoryId) {
+      dispatch(setAllProducts(res.data.data.products || []));
+    }
   } catch (error) {
     dispatch(getProductsFailure(error.response.data));
     console.log(error);

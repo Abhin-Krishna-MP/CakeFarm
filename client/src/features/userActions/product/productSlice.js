@@ -5,6 +5,7 @@ const initialState = {
   message: null,
   error: null,
   products: [],
+  allProducts: [], // full unfiltered product list — used by Favourites
 };
 
 const productSlice = createSlice({
@@ -24,6 +25,11 @@ const productSlice = createSlice({
       state.products = action.payload.data.products || [];
     },
 
+    // Called only when fetching ALL products (no categoryId filter)
+    setAllProducts: (state, action) => {
+      state.allProducts = action.payload;
+    },
+
     getProductsFailure: (state, action) => {
       state.isLoading = false;
       state.error = action.payload.message || "some error occured";
@@ -31,7 +37,7 @@ const productSlice = createSlice({
   },
 });
 
-export const { getProductsRequest, getProductsSuccess, getProductsFailure } =
+export const { getProductsRequest, getProductsSuccess, getProductsFailure, setAllProducts } =
   productSlice.actions;
 
 export default productSlice.reducer;

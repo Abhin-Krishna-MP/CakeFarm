@@ -9,6 +9,7 @@ import {
   GoDash,
   GoPlus,
 } from "../../constants";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,6 +17,7 @@ import {
   decrementItem,
   incrementItem,
 } from "../../features/userActions/cart/cartAction";
+import { toggleFavourite } from "../../features/userActions/favourites/favouritesSlice";
 
 export default function FoodItemCard({ item, isDisabled = false }) {
   // state for checking whether an item in added to cart or not
@@ -26,6 +28,15 @@ export default function FoodItemCard({ item, isDisabled = false }) {
 
   // cart state
   const cartItems = useSelector((state) => state.cart).cartItems;
+
+  // favourites state
+  const favouriteIds = useSelector((state) => state.favourites.productIds);
+  const isFavourite = favouriteIds.includes(item.productId);
+
+  const handleToggleFavourite = (e) => {
+    e.stopPropagation();
+    dispatch(toggleFavourite(item.productId));
+  };
   // console.log(cart);
 
   useEffect(() => {
@@ -69,6 +80,18 @@ export default function FoodItemCard({ item, isDisabled = false }) {
         {/* Veg/non-veg indicator */}
         <div className={`veg-badge ${item.vegetarian ? 'veg' : 'nonveg'}`} title={item.vegetarian ? 'Vegetarian' : 'Non-Vegetarian'} />
 
+        {/* Favourite button */}
+        <motion.button
+          className={`fav-btn${isFavourite ? ' fav-btn--active' : ''}`}
+          onClick={handleToggleFavourite}
+          title={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
+          type="button"
+          whileTap={{ scale: 0.8 }}
+          aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
+        >
+          {isFavourite ? <FaHeart /> : <FaRegHeart />}
+        </motion.button>
+
         {isDisabled && (
           <div className="disabled-overlay">
             <span>Ordering Closed</span>
@@ -87,7 +110,7 @@ export default function FoodItemCard({ item, isDisabled = false }) {
             {item.rating}
           </span>
           <span>
-            <GoDotFill className="icon veg" />
+            <GoDotFill className={`icon ${item.vegetarian ? 'veg' : 'nonveg'}`} />
             {item.vegetarian ? 'Veg' : 'Non-Veg'}
           </span>
         </div>

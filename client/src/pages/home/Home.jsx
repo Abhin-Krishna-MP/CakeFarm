@@ -17,7 +17,13 @@ export default function Home() {
     dispatch(getProducts(token));
   }, []);
 
+  const favourites = useSelector((state) => state.favourites);
   const allItems = product.products || [];
+  // Use the full unfiltered list for favourites so items from other categories are always found
+  const allProducts = product.allProducts?.length ? product.allProducts : allItems;
+  const displayItems = favourites.viewingFavourites
+    ? allProducts.filter((item) => favourites.productIds.includes(item.productId))
+    : allItems;
 
   return (
     <div className="home">
@@ -45,7 +51,7 @@ export default function Home() {
           animate="show"
           className="category-name"
         >
-          Menu
+          {favourites.viewingFavourites ? "Favourites" : "Menu"}
         </motion.h1>
 
         <div className="food-items-wrapper">
@@ -55,7 +61,15 @@ export default function Home() {
             ))
           )}
 
-          {!product.loading && allItems.length === 0 && (
+          {!product.loading && favourites.viewingFavourites && displayItems.length === 0 && (
+            <div className="empty-state">
+              <span className="empty-emoji">🤍</span>
+              <h3>No favourites yet</h3>
+              <p>Tap the heart on any item to save it here.</p>
+            </div>
+          )}
+
+          {!product.loading && !favourites.viewingFavourites && allItems.length === 0 && (
             <div className="empty-state">
               <span className="empty-emoji">🍽️</span>
               <h3>No items yet</h3>
@@ -63,7 +77,7 @@ export default function Home() {
             </div>
           )}
 
-          {allItems.map((item) => (
+          {displayItems.map((item) => (
             <motion.div
               key={item.productId}
               variants={fadeIn("up", "spring", 0.05, 0.6)}
