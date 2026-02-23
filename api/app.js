@@ -23,10 +23,14 @@ const app = express();
 
 const httpServer = http.createServer(app);
 
+// Build allowed-origins list (supports comma-separated values in CORS_ORIGIN)
+const _rawOrigins = (process.env.CORS_ORIGIN || "").split(",").map((o) => o.trim()).filter(Boolean);
+const _corsOrigin = _rawOrigins.length === 1 ? _rawOrigins[0] : _rawOrigins.length > 1 ? _rawOrigins : false;
+
 // Initialize Socket.io
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: _corsOrigin || "*",
     credentials: true,
   },
   // Allow both websocket and long-polling so firewalls / proxies don't
@@ -49,7 +53,7 @@ app.set("io", io);
 // global middlewares
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: _corsOrigin,
     credentials: true,
   })
 );

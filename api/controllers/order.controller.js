@@ -1,6 +1,6 @@
 import OrderModel from "../models/order.model.js";
 import { LunchSettingsModel } from "../models/lunchSettings.model.js";
-import { ProductModel } from "../models/product.model.js";
+import { ProductModel, Product } from "../models/product.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -13,7 +13,6 @@ export const placeOrder = asyncHandler(async (req, res) => {
   // Check if any cart items are lunch items — if so, verify ordering is still open
   if (cart.cartItems && cart.cartItems.length > 0) {
     const productIds = cart.cartItems.map((item) => item.productId);
-    const { Product } = await import("../models/product.model.js");
     const products = await Product.find({ productId: { $in: productIds } }).lean();
     const hasLunchItem = products.some((p) => p.isLunchItem);
 

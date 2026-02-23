@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./profile.scss";
-import { FaEye, FaEyeSlash, BiImageAdd, BsBoxArrowInLeft } from "../../constants";
+import { BiImageAdd, BsBoxArrowInLeft } from "../../constants";
 import Navbar from "../../components/navbar/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +19,7 @@ export default function Profile() {
 
   /* ── State ── */
   const [imageFile, setImageFile]   = useState(null);
-  const [editSection, setEditSection] = useState(null); // 'account' | 'academic' | 'password'
+  const [editSection, setEditSection] = useState(null); // 'account' | 'academic'
 
   const [accountForm, setAccountForm] = useState({ username: user?.username || "" });
   const [academicForm, setAcademicForm] = useState({
@@ -28,9 +28,6 @@ export default function Profile() {
     semester:       user?.semester       || "",
     division:       user?.division       || "",
   });
-  const [passForm, setPassForm] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
-  const [showOldPass, setShowOldPass] = useState(false);
-  const [showNewPass, setShowNewPass] = useState(false);
   const [toast, setToast] = useState(null);
 
   /* ── Helpers ── */
@@ -47,7 +44,6 @@ export default function Profile() {
       semester:       user?.semester       || "",
       division:       user?.division       || "",
     });
-    if (section === "password") setPassForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
     setEditSection(null);
   };
 
@@ -76,19 +72,6 @@ export default function Profile() {
     if (!Object.keys(cred).length) { setEditSection(null); return; }
     dispatch(updateUserDetails(cred, token));
     showToast("success", "Academic details saved!");
-    setEditSection(null);
-  };
-
-  const handleSavePassword = () => {
-    if (passForm.newPassword !== passForm.confirmPassword) {
-      showToast("error", "New passwords do not match"); return;
-    }
-    if (!passForm.oldPassword || !passForm.newPassword) {
-      showToast("error", "Fill all password fields"); return;
-    }
-    dispatch(updateUserDetails({ oldPassword: passForm.oldPassword, newPassword: passForm.newPassword }, token));
-    showToast("success", "Password updated!");
-    setPassForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
     setEditSection(null);
   };
 
@@ -239,44 +222,6 @@ export default function Profile() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* ─── Security ─── */}
-        <div className={`profile-card${editSection === "password" ? " editing" : ""}`}>
-          <div className="card-header">
-            <div className="card-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              Security
-            </div>
-            {editSection === "password"
-              ? <CardActions section="password" onSave={handleSavePassword} />
-              : <EditBtn section="password" label="Change" />}
-          </div>
-
-          {editSection !== "password" ? (
-            <p className="pf-value muted pw-dots">••••••••••</p>
-          ) : (
-            <div className="card-fields">
-              <div className="pf-field">
-                <label className="pf-label">Current Password</label>
-                <div className="pf-pass-wrap">
-                  <input className="pf-input" type={showOldPass ? "text" : "password"} value={passForm.oldPassword} onChange={(e) => setPassForm({ ...passForm, oldPassword: e.target.value })} placeholder="Current password" />
-                  <button className="pf-eye" onClick={() => setShowOldPass(!showOldPass)}>{showOldPass ? <FaEyeSlash /> : <FaEye />}</button>
-                </div>
-              </div>
-              <div className="pf-field">
-                <label className="pf-label">New Password</label>
-                <div className="pf-pass-wrap">
-                  <input className="pf-input" type={showNewPass ? "text" : "password"} value={passForm.newPassword} onChange={(e) => setPassForm({ ...passForm, newPassword: e.target.value })} placeholder="New password" />
-                  <button className="pf-eye" onClick={() => setShowNewPass(!showNewPass)}>{showNewPass ? <FaEyeSlash /> : <FaEye />}</button>
-                </div>
-              </div>
-              <div className="pf-field">
-                <label className="pf-label">Confirm New Password</label>
-                <input className="pf-input" type="password" value={passForm.confirmPassword} onChange={(e) => setPassForm({ ...passForm, confirmPassword: e.target.value })} placeholder="Re-enter new password" />
-              </div>
-            </div>
-          )}
         </div>
 
         {/* ─── Logout ─── */}
