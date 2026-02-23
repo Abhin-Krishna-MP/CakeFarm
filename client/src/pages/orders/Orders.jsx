@@ -1,131 +1,198 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import context from "../../context/context";
 import Navbar from "../../components/navbar/Navbar";
 import "./orders.scss";
-import {
-  IoSearchSharp,
-  RxCross2,
-} from "../../constants";
-import DropDown from "../../components/dropDown/DropDown";
+import { RxCross2 } from "../../constants";
 import { motion, AnimatePresence } from "framer-motion";
-import { slideIn } from "../../utils/motion";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderHistory } from "../../features/userActions/order/orderAction.js";
 import OrderTicket from "../../components/orderTicket/OrderTicket";
 import useOrderSocket from "../../hooks/useOrderSocket";
 
+const STATUS_FILTERS = ["all", "placed", "ready", "delivered", "cancelled"];
+
+const STATUS_COLORS = {
+  placed:    { bg: "rgba(59,130,246,0.12)",  color: "#2563eb" },
+  ready:     { bg: "rgba(245,158,11,0.12)",  color: "#d97706" },
+  delivered: { bg: "rgba(34,197,94,0.12)",   color: "#16a34a" },
+  cancelled: { bg: "rgba(239,68,68,0.12)",   color: "#dc2626" },
+};
+
 export default function Orders() {
-  const [selectedValue, setSelectedValue] = useState("All");
-  const [orderTab, setOrderTab] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [orderTab,      setOrderTab]      = useState("all");
+  const [statusFilter,  setStatusFilter]  = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const dispatch = useDispatch();
-  const { token } = useSelector((state) => state.auth);
-  const orderHistory = useSelector((state) => state.order.orderHistory);
+  const { navSearch, setNavSearch } = useContext(context);
 
-  // Subscribe to real-time socket events so tickets tear without a reload
+  const dispatch = useDispatch();
+  const { token }      = useSelector((s) => s.auth);
+  const orderHistory   = useSelector((s) => s.order.orderHistory);
+
   useOrderSocket();
 
-  useEffect(() => {
-    dispatch(getOrderHistory(token));
-  }, []);
+  useEffect(() => { dispatch(getOrderHistory(token)); }, []);
 
-  // Lock body scroll when modal is open
   useEffect(() => {
-    if (selectedOrder) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = selectedOrder ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [selectedOrder]);
 
-  const filteredOrders = orderHistory?.filter((order) => {
-    if (orderTab === "lunch") {
-      const isLunchOrder = order.items?.some((item) => item.isLunchItem === true);
-      if (!isLunchOrder) return false;
-    }
-    if (selectedValue !== "All") {
-      if (order.orderStatus?.toLowerCase() !== selectedValue.toLowerCase()) return false;
-    }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchesId = order.orderNumber?.toString().includes(q);
-      const matchesItem = order.items?.some((item) =>
-        item.productName?.toLowerCase().includes(q)
-      );
-      const matchesStatus = order.orderStatus?.toLowerCase().includes(q);
-      if (!matchesId && !matchesItem && !matchesStatus) return false;
-    }
-    return true;
-  });
+  /* ─── Filtered list ─── */
+  const filteredOrders = useMemo(() => {
+    return (orderHistory || []).filter((order) => {
+      if (orderTab === "lunch") {
+        if (!order.items?.some((i) => i.isLunchItem === true)) return false;
+      }
+      if (statusFilter !== "all") {
+        if (order.orderStatus?.toLowerCase() !== statusFilter) return false;
+      }
+      if (navSearch.trim()) {
+        const q = navSearch.toLowerCase();
+        const okId     = order.orderNumber?.toString().includes(q);
+        const okItem   = order.items?.some((i) => i.productName?.toLowerCase().includes(q));
+        const okStatus = order.orderStatus?.toLowerCase().includes(q);
+        if (!okId && !okItem && !okStatus) return false;
+      }
+      return true;
+    });
+  }, [orderHistory, orderTab, statusFilter, navSearch]);
+
+  /* ─── Stats ─── */
+  const stats = useMemo(() => {
+    const all = orderHistory || [];
+    return {
+      total:     all.length,
+      placed:    all.filter((o) => o.orderStatus?.toLowerCase() === "placed").length,
+      delivered: all.filter((o) => o.orderStatus?.toLowerCase() === "delivered").length,
+      cancelled: all.filter((o) => o.orderStatus?.toLowerCase() === "cancelled").length,
+    };
+  }, [orderHistory]);
 
   return (
-    <div className="orders">
+    <div className="orders-page">
       <Navbar />
-      <div className="orders-wrapper">
-        <motion.div
-          variants={slideIn("up", "spring", 0.2, 0.8)}
-          initial="hidden"
-          animate="show"
-          className="orders-head"
-        >
-          <div className="orders-head-top">
-            <h1>My Orders</h1>
-            <div className="order-controls">
-              <div className="order-tabs">
-                <button className={orderTab === "all" ? "active" : ""} onClick={() => setOrderTab("all")}>
-                  All
-                </button>
-                <button className={orderTab === "lunch" ? "active" : ""} onClick={() => setOrderTab("lunch")}>
-                  🍱 Lunch
-                </button>
-              </div>
-              <div className="selector">
-                <DropDown
-                  selectedValue={selectedValue}
-                  setSelectedValue={setSelectedValue}
-                  items={["All", "placed", "Delivered", "cancelled"]}
-                />
-              </div>
-            </div>
+
+      {/* ═══ HERO ═══ */}
+      <section className="orders-hero">
+        <div className="hero-orbs" aria-hidden="true">
+          <span /><span /><span /><span />
+        </div>
+
+        <div className="hero-inner">
+          <div className="hero-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+              <path d="M9 12h6M9 16h4"/>
+            </svg>
+            Order History
           </div>
-          <div className="order-search">
-            <IoSearchSharp className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search by order #, item name, status…"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button className="search-clear" onClick={() => setSearchQuery("")}>
-                <RxCross2 />
+
+          <h1 className="hero-title">My Orders</h1>
+          <p className="hero-sub">Track, review and manage all your food orders in one place</p>
+
+          {stats.total > 0 && (
+            <div className="hero-stats">
+              <span className="stat">{stats.total} <em>total</em></span>
+              <span className="divider" />
+              <span className="stat placed">{stats.placed} <em>placed</em></span>
+              <span className="divider" />
+              <span className="stat delivered">{stats.delivered} <em>delivered</em></span>
+              <span className="divider" />
+              <span className="stat cancelled">{stats.cancelled} <em>cancelled</em></span>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ═══ CONTENT ═══ */}
+      <div className="orders-container">
+
+        {/* ─── Toolbar ─── */}
+        <div className="toolbar">
+          {/* Type tabs */}
+          <div className="type-pills" role="group" aria-label="Order type">
+            <button
+              className={`pill ${orderTab === "all" ? "active" : ""}`}
+              onClick={() => setOrderTab("all")}
+            >All Orders</button>
+            <button
+              className={`pill lunch ${orderTab === "lunch" ? "active" : ""}`}
+              onClick={() => setOrderTab("lunch")}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/>
+                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+              </svg>
+              Lunch
+            </button>
+          </div>
+        </div>
+
+        {/* ─── Status pills ─── */}
+        <div className="status-pills" role="group" aria-label="Filter by status">
+          {STATUS_FILTERS.map((s) => (
+            <button
+              key={s}
+              className={`status-pill ${s} ${statusFilter === s ? "active" : ""}`}
+              onClick={() => setStatusFilter(s)}
+            >
+              {s === "all" ? "All Status" : s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {/* ─── Result count ─── */}
+        <p className="result-count">
+          {filteredOrders.length} {filteredOrders.length === 1 ? "order" : "orders"} found
+        </p>
+
+        {/* ─── Empty state ─── */}
+        {filteredOrders.length === 0 && (
+          <div className="empty-state">
+            <div className="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="1"/>
+                <path d="M9 12h6M9 16h4"/>
+              </svg>
+            </div>
+            <h3>{(orderHistory || []).length === 0 ? "No orders yet" : "No orders match"}</h3>
+            <p>
+              {(orderHistory || []).length === 0
+                ? "Start ordering and your history will appear here."
+                : "Try adjusting your search or filters."}
+            </p>
+              {(navSearch || orderTab !== "all" || statusFilter !== "all") && (
+              <button
+                className="reset-btn"
+                onClick={() => { setNavSearch(""); setOrderTab("all"); setStatusFilter("all"); }}
+              >
+                Reset Filters
               </button>
             )}
           </div>
-        </motion.div>
+        )}
 
-        <div className="order-summary">
-          {filteredOrders?.length === 0 && (
-            <div style={{ textAlign: "center", padding: "3rem", color: "#a09cb8" }}>
-              <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📦</div>
-              <p>No orders found</p>
-            </div>
-          )}
-          {filteredOrders?.map((order, index) => (
-            <div
-              key={order.orderId || index}
-              className="order-ticket-clickable"
-              onClick={() => setSelectedOrder(order)}
-            >
-              <OrderTicket order={order} />
-            </div>
-          ))}
-        </div>
+        {/* ─── Orders list ─── */}
+        {filteredOrders.length > 0 && (
+          <div className="orders-list">
+            {filteredOrders.map((order, i) => (
+              <div
+                key={order.orderId || i}
+                className="order-card-anim"
+                style={{ animationDelay: `${i * 0.04}s` }}
+                onClick={() => setSelectedOrder(order)}
+              >
+                <OrderTicket order={order} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* ── Full-screen ticket modal ── */}
+      {/* ═══ DETAIL MODAL ═══ */}
       <AnimatePresence>
         {selectedOrder && (
           <motion.div
@@ -144,7 +211,6 @@ export default function Orders() {
               transition={{ type: "spring", damping: 22, stiffness: 280 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close button — sits as a normal flex row, never clipped */}
               <div className="order-modal-close-row">
                 <motion.button
                   className="order-modal-close"
@@ -163,7 +229,6 @@ export default function Orders() {
                   <span className="omc-label">close</span>
                 </motion.button>
               </div>
-              {/* Ticket — scrollable independently */}
               <div className="order-modal-scroll">
                 <OrderTicket order={selectedOrder} minimal={true} />
               </div>

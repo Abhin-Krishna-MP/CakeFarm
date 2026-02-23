@@ -1,66 +1,27 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./home.scss";
 import Navbar from "../../components/navbar/Navbar";
 import CategoriesCarousel from "../../components/categoriesCarousel/CategoriesCarousel";
-import { motion, AnimatePresence } from "framer-motion";
-import { fadeIn, slideIn, cartDrawerVars, cartMobileVars } from "../../utils/motion";
+import { motion } from "framer-motion";
+import { fadeIn, slideIn } from "../../utils/motion";
 import FoodItemCard from "../../components/foodItemsCard/FoodItemCard";
-import CartItems from "../../components/cartItems/CartItems";
-import context from "../../context/context";
-import OutsideClickHandler from "react-outside-click-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../features/userActions/product/productAction";
 
 export default function Home() {
-  const { isToggleCart, setIsToggleCart } = useContext(context);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const product = useSelector((state) => state.product);
 
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
-
   useEffect(() => {
     dispatch(getProducts(token));
-  }, []);
-
-  useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 640);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   const allItems = product.products || [];
 
   return (
     <div className="home">
-      <OutsideClickHandler onOutsideClick={() => isToggleCart && setIsToggleCart(false)}>
-        <Navbar />
-
-        {/* Cart drawer */}
-        <AnimatePresence>
-          {isToggleCart && (
-            <>
-              <motion.div
-                className="cart-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.22 }}
-                onClick={() => setIsToggleCart(false)}
-              />
-              <motion.div
-                className="cart"
-                variants={isMobile ? cartMobileVars : cartDrawerVars}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-              >
-                <CartItems />
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-      </OutsideClickHandler>
+      <Navbar />
 
       <div className="home-wrapper">
         {/* Categories */}

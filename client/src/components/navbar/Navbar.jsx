@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./navbar.scss";
 import {
   IoSearchSharp,
@@ -22,23 +22,48 @@ const resolveAvatar = (avatar) => {
 };
 
 export default function Navbar() {
-  const { isToggleCart, setIsToggleCart } = useContext(context);
+  const { isToggleCart, setIsToggleCart, navSearch, setNavSearch } = useContext(context);
   const cart = useSelector((select) => select.cart);
   const token = useSelector((select) => select.auth.token);
   const user = useSelector((select) => select.auth.userData);
   const avatarSrc = resolveAvatar(user?.avatar);
   const dispatch = useDispatch();
-  const inputRef = useRef();
   const timeoutRef = useRef(null);
   const location = useLocation();
 
-  const handleSearchedProducts = () => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      if (inputRef.current?.value) {
-        dispatch(getSearchedProducts(token, inputRef.current.value));
-      }
-    }, 500);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const searchPlaceholder = {
+    "/":       "Search food…",
+    "/lunch":  "Search dishes…",
+    "/orders": "Search orders…",
+  }[location.pathname] ?? "Search…";
+
+  const routeClass = {
+    "/":       "route-home",
+    "/lunch":  "route-lunch",
+    "/orders": "route-orders",
+  }[location.pathname] ?? "";
+
+  useEffect(() => {
+    setNavSearch("");
+  }, [location.pathname]);
+
+  const handleSearch = (e) => {
+    const val = e.target.value;
+    setNavSearch(val);
+    if (location.pathname === "/") {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        dispatch(getSearchedProducts(token, val));
+      }, 500);
+    }
   };
 
   const bottomNavItems = [
@@ -51,31 +76,53 @@ export default function Navbar() {
   return (
     <>
       {/* ─── Top Navbar ─── */}
-      <div className="navbar">
+      <div className={`navbar${scrolled ? " scrolled" : ""}`}>
         <div className="left">
           <img src={logo} alt="CampusDine" />
         </div>
 
-        <div className="mid">
-          <div className="search-inp">
-            <input
-              type="text"
-              placeholder="Search food..."
-              ref={inputRef}
-              onChange={handleSearchedProducts}
-            />
-            <IoSearchSharp className="icon" onClick={handleSearchedProducts} />
+        {location.pathname !== "/profile" && (
+          <div className="mid">
+            <div className={`search-inp${routeClass ? " " + routeClass : ""}`}>
+              <span className="route-dot" aria-hidden="true" />
+              <input
+                type="text"
+                placeholder={searchPlaceholder}
+                value={navSearch}
+                onChange={handleSearch}
+              />
+              <IoSearchSharp className="icon" onClick={() => {
+                if (location.pathname === "/" && navSearch) {
+                  clearTimeout(timeoutRef.current);
+                  dispatch(getSearchedProducts(token, navSearch));
+                }
+              }} />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="right">
           {/* Cart icon */}
-          <div className="cart-div" onClick={() => setIsToggleCart(!isToggleCart)}>
+          <motion.div
+            className="cart-div"
+            onClick={() => setIsToggleCart(!isToggleCart)}
+            whileHover={{ y: -2, scale: 1.07 }}
+            whileTap={{ scale: 0.93 }}
+            transition={{ type: "spring", stiffness: 420, damping: 18 }}
+          >
             <LuShoppingCart className="icon" />
             {cart.itemsCount > 0 && (
-              <span className="items-count">{cart.itemsCount}</span>
+              <motion.span
+                className="items-count"
+                key={cart.itemsCount}
+                initial={{ scale: 0.4, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 20 }}
+              >
+                {cart.itemsCount}
+              </motion.span>
             )}
-          </div>
+          </motion.div>
 
 
         </div>

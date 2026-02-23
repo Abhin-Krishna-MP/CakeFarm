@@ -7,48 +7,6 @@
   background-color: $bg-secondary;
   position: relative;
 
-  /* Cart drawer overlay */
-  .cart {
-    position: fixed;
-    right: 0;
-    top: 0;
-    height: 100dvh;
-    z-index: 250;
-    width: 100%;
-    max-width: 420px;
-
-    /* ── Mobile: full-screen bottom sheet ── */
-    @media (max-width: 639px) {
-      top: auto;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      max-width: 100%;
-      width: 100%;
-      height: 96dvh;
-      border-radius: 24px 24px 0 0;
-      overflow: hidden;
-      box-shadow: 0 -12px 60px rgba(0,0,0,0.22), 0 -2px 10px rgba(0,0,0,0.1);
-    }
-
-    /* ── Desktop: right-side panel ── */
-    @media (min-width: 640px) {
-      width: 380px;
-      filter: drop-shadow(-8px 0 40px rgba(0,0,0,0.14));
-    }
-    @media (min-width: 768px) { max-width: 420px; }
-  }
-
-  /* Cart backdrop — blurred overlay */
-  .cart-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.42);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    z-index: 240;
-  }
-
   .home-wrapper {
     max-width: 1280px;
     margin: 0 auto;

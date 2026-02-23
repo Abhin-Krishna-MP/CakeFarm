@@ -1,165 +1,542 @@
 @import "../../styles/_global.scss";
 
-/* ─── Lunch Page ─── */
+/* ═══════════════════════════════════════════════════════
+   LUNCH PAGE  –  Modern & Professional
+═══════════════════════════════════════════════════════ */
+
 .lunch-page {
   min-height: 100vh;
-  background-color: $bg-secondary;
+  background: #F5F3EE;
+}
 
-  .lunch-container {
-    max-width: 1200px;
+/* ═══════════════════════════════════════════════════════
+   HERO BANNER
+═══════════════════════════════════════════════════════ */
+.lunch-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(140deg, #111111 0%, #1e1e1e 45%, #111111 100%);
+  padding: 4rem 1.25rem 3.25rem;
+
+  @media (min-width: 640px)  { padding: 5rem 2rem 4rem; }
+  @media (min-width: 1024px) { padding: 6rem 2rem 5rem; }
+
+  /* ─── Background orbs ─── */
+  .hero-orbs {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+
+    span {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(1px);
+
+      &:nth-child(1) {
+        width: 420px;
+        height: 420px;
+        top: -160px;
+        right: -100px;
+        background: radial-gradient(circle, rgba(253,187,46,0.14) 0%, transparent 70%);
+        animation: orb-breathe 8s ease-in-out infinite;
+      }
+      &:nth-child(2) {
+        width: 280px;
+        height: 280px;
+        bottom: -100px;
+        left: -60px;
+        background: radial-gradient(circle, rgba(253,187,46,0.09) 0%, transparent 70%);
+        animation: orb-breathe 10s ease-in-out infinite 2s;
+      }
+      &:nth-child(3) {
+        width: 160px;
+        height: 160px;
+        top: 30%;
+        left: 55%;
+        background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+        animation: orb-breathe 12s ease-in-out infinite 4s;
+      }
+      &:nth-child(4) {
+        width: 80px;
+        height: 80px;
+        top: 15%;
+        left: 20%;
+        background: radial-gradient(circle, rgba(253,187,46,0.07) 0%, transparent 70%);
+        animation: orb-breathe 7s ease-in-out infinite 1s;
+      }
+    }
+  }
+
+  /* ─── Inner content ─── */
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 1.5rem 1rem 5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
 
-    @media (min-width: 768px) { padding: 2rem 1.5rem; }
+  /* ─── Status pill ─── */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    border: 1px solid transparent;
 
-    /* ─── Header ─── */
-    .lunch-header {
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    &.open {
+      background: rgba(34, 197, 94, 0.14);
+      color: #4ade80;
+      border-color: rgba(34, 197, 94, 0.28);
+
+      .dot { animation: dot-pulse 2s ease-in-out infinite; }
+    }
+
+    &.closed {
+      background: rgba(239, 68, 68, 0.14);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.28);
+    }
+  }
+
+  /* ─── Title ─── */
+  .hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.875rem;
+
+    @media (min-width: 640px)  { font-size: 3.25rem; }
+    @media (min-width: 1024px) { font-size: 4rem; }
+
+    .hero-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      margin-right: 0.3em;
+      margin-bottom: 0.1em;
+      width: 1em;
+      height: 1em;
+      color: $bg-fill-color-1;
+      animation: icon-breathe 4s ease-in-out infinite;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        stroke: currentColor;
+      }
+    }
+  }
+
+  /* ─── Sub-heading ─── */
+  .hero-sub {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.52);
+    line-height: 1.65;
+    margin-bottom: 2rem;
+    max-width: 480px;
+
+    @media (min-width: 640px) { font-size: 1.1rem; }
+  }
+
+  /* ─── Countdown ─── */
+  .countdown-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+
+    .countdown-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .countdown {
       display: flex;
-      justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      gap: 1rem;
+      gap: 0.35rem;
 
-      h1 {
+      .tick {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 0.625rem 0.875rem;
+        min-width: 64px;
+        backdrop-filter: blur(8px);
+        transition: background 0.3s;
+
+        @media (min-width: 640px) { min-width: 76px; padding: 0.75rem 1rem; }
+
+        .num {
+          font-size: 1.75rem;
+          font-weight: 800;
+          color: $bg-fill-color-1;
+          line-height: 1;
+          font-variant-numeric: tabular-nums;
+          letter-spacing: -0.02em;
+
+          @media (min-width: 640px) { font-size: 2.2rem; }
+        }
+
+        .unit {
+          font-size: 0.62rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.35);
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+        }
+      }
+
+      .sep {
         font-size: 1.75rem;
-        font-weight: 700;
-        color: $text-primary;
+        font-weight: 800;
+        color: rgba(253, 187, 46, 0.4);
+        line-height: 1;
+        padding-top: 0.625rem;
+        animation: sep-blink 1s step-start infinite;
 
-        @media (min-width: 768px) { font-size: 2rem; }
-      }
-
-      .lunch-status {
-        .status-open,
-        .status-closed {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.6rem 1.25rem;
-          border-radius: 12px;
-          border: 1.5px solid #E5E5E5;
-
-          .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-
-            &.open {
-              background: $bg-fill-color-green;
-              box-shadow: 0 0 8px $bg-fill-color-green;
-              animation: pulse 2s infinite;
-            }
-
-            &.closed {
-              background: $bg-fill-color-red;
-            }
-          }
-
-          .status-text {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-
-            strong { font-size: 0.9rem; color: $text-primary; }
-            small  { font-size: 0.78rem; color: $text-2-primary; }
-          }
-        }
-
-        .status-open  {
-          background: rgba(34,197,94,0.08);
-          border-color: rgba(34,197,94,0.3);
-        }
-        .status-closed {
-          background: rgba(239,68,68,0.06);
-          border-color: rgba(239,68,68,0.25);
-        }
+        @media (min-width: 640px) { font-size: 2.2rem; padding-top: 0.75rem; }
       }
     }
+  }
 
-    /* ─── Closed notice banner ─── */
-    .closed-notice {
-      background: rgba(239,68,68,0.05);
-      border: 1px solid rgba(239,68,68,0.2);
-      border-left: 4px solid $bg-fill-color-red;
-      padding: 1.25rem 1.5rem;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
+  /* ─── Closed deadline chip ─── */
+  .deadline-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1.1rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 1.5rem;
 
-      h2 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: $text-primary;
-        margin-bottom: 0.4rem;
+    svg { opacity: 0.7; flex-shrink: 0; }
+    strong { color: $bg-fill-color-1; }
+  }
+
+  /* ─── Stats row ─── */
+  .hero-stats {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    padding: 0.45rem 1.25rem;
+    gap: 0.75rem;
+
+    .stat {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.75);
+
+      em {
+        font-style: normal;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.4);
+        margin-left: 2px;
       }
 
-      p {
-        font-size: 0.875rem;
-        color: $text-2-primary;
-        line-height: 1.5;
-        strong { color: $bg-fill-color-red; }
-      }
+      &.veg  { color: #4ade80; }
+      &.nonveg { color: #f87171; }
     }
 
-    /* ─── Content area ─── */
-    .lunch-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+    .divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.15);
+      flex-shrink: 0;
+    }
+  }
+}
 
-      @media (min-width: 1024px) {
-        flex-direction: row;
-        align-items: flex-start;
+/* ═══════════════════════════════════════════════════════
+   MAIN CONTAINER
+═══════════════════════════════════════════════════════ */
+.lunch-container {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 2rem 1rem 6rem;
+
+  @media (min-width: 640px)  { padding: 2.5rem 1.5rem 6rem; }
+  @media (min-width: 1024px) { padding: 3rem 2rem 6rem; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOOLBAR
+═══════════════════════════════════════════════════════ */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.875rem;
+  }
+
+  /* Filter pills */
+  .filter-pills {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1.5px solid #E8E5DF;
+      background: #FFFFFF;
+      color: $text-2-primary;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+
+      .veg-dot, .nonveg-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .veg-dot  { background: $bg-fill-color-green; }
+      .nonveg-dot { background: $bg-fill-color-red; }
+
+      &:hover {
+        border-color: #BDBBB5;
+        color: $text-primary;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.08);
       }
 
-      .lunch-items-section {
-        flex: 1;
-
-        h2 {
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: $text-primary;
-          margin-bottom: 1rem;
-          padding-bottom: 0.4rem;
-          border-bottom: 2px solid $bg-fill-color-1;
-          display: inline-block;
-        }
-
-        .loading, .no-items {
-          text-align: center;
-          padding: 3rem 1rem;
-          color: $text-2-primary;
-          font-size: 0.95rem;
-        }
-
-        .lunch-items-grid {
-          display: grid;
-          align-items: stretch;
-          grid-auto-rows: 1fr;
-          grid-template-columns: 1fr;
-          gap: 1rem;
-
-          @media (min-width: 380px)  { grid-template-columns: repeat(2, 1fr); }
-          @media (min-width: 768px)  { grid-template-columns: repeat(3, 1fr); }
-          @media (min-width: 1280px) { grid-template-columns: repeat(4, 1fr); }
-        }
+      &.active {
+        border-color: $bg-fill-color-1;
+        background: rgba(253, 187, 46, 0.1);
+        color: $text-primary;
+        box-shadow: 0 0 0 3px rgba(253, 187, 46, 0.15);
       }
 
-      /* Cart section on desktop */
-      .lunch-cart-section {
-        @media (min-width: 1024px) {
-          width: 360px;
-          position: sticky;
-          top: 80px;
-          max-height: calc(100vh - 100px);
-          overflow-y: auto;
-        }
+      &.veg.active {
+        border-color: $bg-fill-color-green;
+        background: rgba(34, 197, 94, 0.09);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+        color: darken(#22c55e, 12%);
+      }
+
+      &.nonveg.active {
+        border-color: $bg-fill-color-red;
+        background: rgba(239, 68, 68, 0.08);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        color: darken(#ef4444, 8%);
       }
     }
   }
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+/* Result count */
+.result-count {
+  font-size: 0.78rem;
+  color: $text-2-primary;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
 }
+
+/* ═══════════════════════════════════════════════════════
+   SKELETON CARDS
+═══════════════════════════════════════════════════════ */
+.skeleton-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+
+  .sk-img {
+    width: 100%;
+    height: 155px;
+    background: linear-gradient(90deg, #F0EDE6 25%, #E8E3D9 50%, #F0EDE6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .sk-body {
+    padding: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .sk-line {
+    height: 11px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #F0EDE6 25%, #E8E3D9 50%, #F0EDE6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+
+    &.w75 { width: 75%; }
+    &.w55 { width: 55%; }
+    &.w40 { width: 40%; }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 4.5rem 1rem 2rem;
+  max-width: 380px;
+  margin: 0 auto;
+
+  .empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #EEEBE4;
+    margin: 0 auto 1.25rem;
+    animation: icon-breathe 3.5s ease-in-out infinite;
+    color: #AAAAAA;
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: $text-2-primary;
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+  }
+
+  .reset-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.65rem 1.6rem;
+    background: #1A1A1A;
+    color: #FFFFFF;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+
+    &:hover {
+      background: #333;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOOD GRID
+═══════════════════════════════════════════════════════ */
+.lunch-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 380px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 640px)  { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 900px)  { grid-template-columns: repeat(4, 1fr); }
+  @media (min-width: 1200px) { grid-template-columns: repeat(5, 1fr); }
+
+  @media (min-width: 640px)  { gap: 1.1rem; }
+  @media (min-width: 1024px) { gap: 1.25rem; }
+}
+
+.card-anim {
+  animation: card-in 0.45s ease both;
+}
+
+/* ═══════════════════════════════════════════════════════
+   KEYFRAMES
+═══════════════════════════════════════════════════════ */
+@keyframes orb-breathe {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(1.07); }
+}
+
+@keyframes icon-breathe {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(0.93); }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.5); }
+}
+
+@keyframes sep-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+

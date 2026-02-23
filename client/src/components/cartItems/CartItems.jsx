@@ -183,6 +183,7 @@ export default function CartItems() {
   // select the cart state
   const cart = useSelector((select) => select.cart);
   const { token } = useSelector((select) => select.auth);
+  const user = useSelector((select) => select.auth.userData);
   const dispatch = useDispatch();
 
   // Track lunch ordering status if any lunch items are in cart
@@ -312,6 +313,39 @@ export default function CartItems() {
               <span>Total</span>
               <span className="val">₹{cart.totalCost}</span>
             </div>
+          </div>
+
+          {/* ─── Student Confirmation ─── */}
+          <div className="student-confirm">
+            <div className="sc-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+              <span>Ordering as</span>
+            </div>
+            <div className="sc-grid">
+              <div className="sc-row">
+                <span className="sc-key">Name</span>
+                <span className="sc-val">{user?.username || "—"}</span>
+              </div>
+              <div className="sc-row">
+                <span className="sc-key">Reg. No</span>
+                <span className="sc-val">{user?.registerNumber || <em>Not set</em>}</span>
+              </div>
+              <div className="sc-row">
+                <span className="sc-key">Department</span>
+                <span className="sc-val">{user?.department || <em>Not set</em>}</span>
+              </div>
+              <div className="sc-row">
+                <span className="sc-key">Sem / Div</span>
+                <span className="sc-val">
+                  {[user?.semester, user?.division].filter(Boolean).join(" / ") || <em>Not set</em>}
+                </span>
+              </div>
+            </div>
+            {(!user?.registerNumber || !user?.department || !user?.semester) && (
+              <p className="sc-warn">Complete academic details in Profile</p>
+            )}
           </div>
 
           {/* Slide to order */}

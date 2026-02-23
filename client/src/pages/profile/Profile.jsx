@@ -1,160 +1,294 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import "./profile.scss";
 import { FaEye, FaEyeSlash, BiImageAdd, BsBoxArrowInLeft } from "../../constants";
 import Navbar from "../../components/navbar/Navbar";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  updateUserDetails,
-  updateUserProfile,
-  logout,
-} from "../../features/auth/authAction";
+import { updateUserDetails, updateUserProfile, logout } from "../../features/auth/authAction";
+
+const resolveAvatar = (avatar) => {
+  if (!avatar) return `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/noProfile.png`;
+  if (avatar.startsWith("http")) return avatar;
+  return `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/${avatar}`;
+};
+
 export default function Profile() {
-  const [hidePass, setHidePass] = useState(false);
-  const [imageFile, setImageFile] = useState("");
-  const [updatedDetails, setUpdatedDetails] = useState(false);
-
-  const usernameRef = useRef();
-  const emailRef = useRef();
-  const oldPassRef = useRef();
-  const newPassRef = useRef();
-
-  // select token from state
-  const token = useSelector((state) => state.auth.token);
-
-  // select user state
-  const user = useSelector((select) => select.auth.userData);
+  const user  = useSelector((s) => s.auth.userData);
+  const token = useSelector((s) => s.auth.token);
   const dispatch = useDispatch();
 
-  const handleLogout = () => dispatch(logout());
+  /* ── State ── */
+  const [imageFile, setImageFile]   = useState(null);
+  const [editSection, setEditSection] = useState(null); // 'account' | 'academic' | 'password'
 
-  const handleUpdateUserProfile = () => {
-    // e.preventDefault();
+  const [accountForm, setAccountForm] = useState({ username: user?.username || "" });
+  const [academicForm, setAcademicForm] = useState({
+    registerNumber: user?.registerNumber || "",
+    department:     user?.department     || "",
+    semester:       user?.semester       || "",
+    division:       user?.division       || "",
+  });
+  const [passForm, setPassForm] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
+  const [showOldPass, setShowOldPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  /* ── Helpers ── */
+  const showToast = (type, msg) => {
+    setToast({ type, msg });
+    setTimeout(() => setToast(null), 3200);
+  };
+
+  const cancelEdit = (section) => {
+    if (section === "account")  setAccountForm({ username: user?.username || "" });
+    if (section === "academic") setAcademicForm({
+      registerNumber: user?.registerNumber || "",
+      department:     user?.department     || "",
+      semester:       user?.semester       || "",
+      division:       user?.division       || "",
+    });
+    if (section === "password") setPassForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+    setEditSection(null);
+  };
+
+  /* ── Save handlers ── */
+  const handleAvatarUpload = () => {
     dispatch(updateUserProfile(imageFile, token));
     setImageFile(null);
+    showToast("success", "Profile photo updated!");
   };
 
-  const handleUpdateUserDetails = () => {
-    const credential = {
-      // username: usernameRef.current.value || null,
-      // email: emailRef.current.value || null,
-      // oldPassword: oldPassRef.current.value || null,
-      // newPassRef: newPassRef.current.value || null,
-    };
-
-    if (usernameRef.current.value) {
-      credential.username = usernameRef.current.value;
-    }
-
-    if (emailRef.current.value) {
-      credential.email = emailRef.current.value;
-    }
-
-    if (oldPassRef.current.value && newPassRef.current.value) {
-      credential.oldPassword = oldPassRef.current.value;
-      credential.newPassword = newPassRef.current.value;
-    }
-
-    if (Object.keys(credential).length > 0) {
-      dispatch(updateUserDetails(credential, token));
-      setUpdatedDetails(true);
-      setTimeout(() => {
-        setUpdatedDetails(false);
-      }, 10 * 1000);
-    }
+  const handleSaveAccount = () => {
+    const cred = {};
+    if (accountForm.username.trim() && accountForm.username.trim() !== user?.username)
+      cred.username = accountForm.username.trim();
+    if (!Object.keys(cred).length) { setEditSection(null); return; }
+    dispatch(updateUserDetails(cred, token));
+    showToast("success", "Account info saved!");
+    setEditSection(null);
   };
+
+  const handleSaveAcademic = () => {
+    const cred = {};
+    ["registerNumber", "department", "semester", "division"].forEach((k) => {
+      if (academicForm[k] !== (user?.[k] || "")) cred[k] = academicForm[k];
+    });
+    if (!Object.keys(cred).length) { setEditSection(null); return; }
+    dispatch(updateUserDetails(cred, token));
+    showToast("success", "Academic details saved!");
+    setEditSection(null);
+  };
+
+  const handleSavePassword = () => {
+    if (passForm.newPassword !== passForm.confirmPassword) {
+      showToast("error", "New passwords do not match"); return;
+    }
+    if (!passForm.oldPassword || !passForm.newPassword) {
+      showToast("error", "Fill all password fields"); return;
+    }
+    dispatch(updateUserDetails({ oldPassword: passForm.oldPassword, newPassword: passForm.newPassword }, token));
+    showToast("success", "Password updated!");
+    setPassForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+    setEditSection(null);
+  };
+
+  /* ── Sub-components ── */
+  const EditBtn = ({ section, label = "Edit" }) => (
+    <button className="card-edit-btn" onClick={() => setEditSection(section)}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="12" height="12">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      {label}
+    </button>
+  );
+
+  const CardActions = ({ section, onSave }) => (
+    <div className="card-actions">
+      <button className="card-cancel-btn" onClick={() => cancelEdit(section)}>Cancel</button>
+      <button className="card-save-btn"   onClick={onSave}>Save</button>
+    </div>
+  );
+
+  const avatarSrc = imageFile ? URL.createObjectURL(imageFile) : resolveAvatar(user?.avatar);
+  const academicComplete = user?.registerNumber && user?.department && user?.semester && user?.division;
 
   return (
     <div className="profile">
       <Navbar />
       <div className="profile-wrapper">
-        <div className="profile-mid-div">
-          <input
-            type="file"
-            accept="image/png, image/jpeg, image/jpg, image/gif, image/svg, image/webp"
-            onChange={(e) => setImageFile(e.target.files[0])}
-            className="fileInput"
-            id="fileInput"
-          />
-          <label className="fileLabel" htmlFor="fileInput">
-            <img
-              src={
-                imageFile
-                  ? URL.createObjectURL(imageFile)
-                  : user?.avatar?.startsWith("http")
-                  ? user.avatar
-                  : `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/${
-                      user?.avatar || "noProfile.png"
-                    }`
-              }
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/noProfile.png`;
-              }}
-            />
-            <span className="w-mark-add-img">
-              <BiImageAdd />
-            </span>
-          </label>
-          {imageFile && (
-            <motion.button
-              className="upd-img"
-              whileTap={{ scale: 0.95 }}
-              onClick={handleUpdateUserProfile}
+
+        {/* ─── Toast ─── */}
+        <AnimatePresence>
+          {toast && (
+            <motion.div
+              className={`profile-toast ${toast.type}`}
+              initial={{ opacity: 0, y: -14, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0,  scale: 1 }}
+              exit={{    opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
             >
-              update image
-            </motion.button>
+              {toast.type === "success"
+                ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M20 6 9 17l-5-5"/></svg>
+                : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="14" height="14"><path d="M18 6 6 18M6 6l12 12"/></svg>}
+              {toast.msg}
+            </motion.div>
           )}
-        </div>
-        <div className="profile-details">
-          <label htmlFor="username">username</label>
-          <input
-            type="text"
-            id="username"
-            placeholder={user.username}
-            ref={usernameRef}
-          />
-          <label htmlFor="email">Email</label>
-          <input type="email" placeholder={user.email} ref={emailRef} />
-          <div className="pass-label">
-            <label htmlFor="password">Update password</label>
-          </div>
-          <input
-            type={`${hidePass ? "password" : "text"}`}
-            placeholder="Enter your old password"
-            ref={oldPassRef}
-          />
-          <div className="pass-input">
-            <input
-              type={`${hidePass ? "password" : "text"}`}
-              placeholder="Enter your new password"
-              ref={newPassRef}
-            />
-            {hidePass ? (
-              <FaEyeSlash
-                className="icon"
-                onClick={() => setHidePass(!hidePass)}
+        </AnimatePresence>
+
+        {/* ─── Hero / Avatar ─── */}
+        <div className="profile-hero">
+          <div className="profile-avatar-wrap">
+            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} className="fileInput" id="fileInput" />
+            <label htmlFor="fileInput" className="fileLabel">
+              <img
+                src={avatarSrc}
+                alt={user?.username}
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = resolveAvatar(null); }}
               />
-            ) : (
-              <FaEye className="icon" onClick={() => setHidePass(!hidePass)} />
+              <span className="avatar-overlay"><BiImageAdd /></span>
+            </label>
+          </div>
+
+          <div className="profile-hero-info">
+            <h2 className="profile-name">{user?.username}</h2>
+            <p className="profile-email">{user?.email}</p>
+            {!academicComplete && (
+              <span className="incomplete-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="10" height="10"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                Complete your academic details
+              </span>
             )}
           </div>
-          <motion.button
-            onClick={handleUpdateUserDetails}
-            whileTap={{ scale: 0.95 }}
-          >
-            Update
-          </motion.button>
+
+          <AnimatePresence>
+            {imageFile && (
+              <motion.button
+                className="avatar-save-btn"
+                initial={{ opacity: 0, scale: 0.88 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{    opacity: 0, scale: 0.88 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleAvatarUpload}
+              >
+                Save Photo
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ─── Account Info ─── */}
+        <div className={`profile-card${editSection === "account" ? " editing" : ""}`}>
+          <div className="card-header">
+            <div className="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Account
+            </div>
+            {editSection === "account"
+              ? <CardActions section="account" onSave={handleSaveAccount} />
+              : <EditBtn section="account" />}
+          </div>
+
+          <div className="card-fields">
+            {/* Username */}
+            <div className="pf-field">
+              <label className="pf-label">Username</label>
+              {editSection === "account"
+                ? <input className="pf-input" type="text" value={accountForm.username} onChange={(e) => setAccountForm({ username: e.target.value })} placeholder="Enter username" />
+                : <p className="pf-value">{user?.username || "—"}</p>}
+            </div>
+
+            {/* Email — locked */}
+            <div className="pf-field">
+              <label className="pf-label">
+                Email
+                <span className="locked-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" width="9" height="9"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  locked
+                </span>
+              </label>
+              <p className="pf-value muted">{user?.email || "—"}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── Academic Details ─── */}
+        <div className={`profile-card${editSection === "academic" ? " editing" : ""}`}>
+          <div className="card-header">
+            <div className="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Academic Details
+            </div>
+            {editSection === "academic"
+              ? <CardActions section="academic" onSave={handleSaveAcademic} />
+              : <EditBtn section="academic" />}
+          </div>
+
+          <div className="card-fields card-fields-grid">
+            {[
+              { key: "registerNumber", label: "Register No.",    placeholder: "e.g. 22CS001" },
+              { key: "department",     label: "Department",      placeholder: "e.g. Computer Science" },
+              { key: "semester",       label: "Semester",        placeholder: "e.g. 4" },
+              { key: "division",       label: "Division / Batch",placeholder: "e.g. A" },
+            ].map(({ key, label, placeholder }) => (
+              <div className="pf-field" key={key}>
+                <label className="pf-label">{label}</label>
+                {editSection === "academic"
+                  ? <input className="pf-input" type="text" value={academicForm[key]} onChange={(e) => setAcademicForm({ ...academicForm, [key]: e.target.value })} placeholder={placeholder} />
+                  : <p className={`pf-value${!user?.[key] ? " empty" : ""}`}>{user?.[key] || "Not set"}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ─── Security ─── */}
+        <div className={`profile-card${editSection === "password" ? " editing" : ""}`}>
+          <div className="card-header">
+            <div className="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Security
+            </div>
+            {editSection === "password"
+              ? <CardActions section="password" onSave={handleSavePassword} />
+              : <EditBtn section="password" label="Change" />}
+          </div>
+
+          {editSection !== "password" ? (
+            <p className="pf-value muted pw-dots">••••••••••</p>
+          ) : (
+            <div className="card-fields">
+              <div className="pf-field">
+                <label className="pf-label">Current Password</label>
+                <div className="pf-pass-wrap">
+                  <input className="pf-input" type={showOldPass ? "text" : "password"} value={passForm.oldPassword} onChange={(e) => setPassForm({ ...passForm, oldPassword: e.target.value })} placeholder="Current password" />
+                  <button className="pf-eye" onClick={() => setShowOldPass(!showOldPass)}>{showOldPass ? <FaEyeSlash /> : <FaEye />}</button>
+                </div>
+              </div>
+              <div className="pf-field">
+                <label className="pf-label">New Password</label>
+                <div className="pf-pass-wrap">
+                  <input className="pf-input" type={showNewPass ? "text" : "password"} value={passForm.newPassword} onChange={(e) => setPassForm({ ...passForm, newPassword: e.target.value })} placeholder="New password" />
+                  <button className="pf-eye" onClick={() => setShowNewPass(!showNewPass)}>{showNewPass ? <FaEyeSlash /> : <FaEye />}</button>
+                </div>
+              </div>
+              <div className="pf-field">
+                <label className="pf-label">Confirm New Password</label>
+                <input className="pf-input" type="password" value={passForm.confirmPassword} onChange={(e) => setPassForm({ ...passForm, confirmPassword: e.target.value })} placeholder="Re-enter new password" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ─── Logout ─── */}
         <div className="profile-logout">
-          <motion.button onClick={handleLogout} whileTap={{ scale: 0.97 }}>
+          <motion.button onClick={() => dispatch(logout())} whileTap={{ scale: 0.97 }}>
             <BsBoxArrowInLeft className="icon" />
             Sign Out
           </motion.button>
         </div>
+
       </div>
     </div>
   );
 }
+

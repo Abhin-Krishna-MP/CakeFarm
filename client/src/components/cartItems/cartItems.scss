@@ -270,6 +270,77 @@
       }
     }
 
+    /* ── Student Confirmation ── */
+    .student-confirm {
+      margin-bottom: 0.875rem;
+      padding: 0.8rem 1rem;
+      background: linear-gradient(135deg, #FFFDF5 0%, #FFF7E0 100%);
+      border: 1.5px solid rgba(253,187,46,0.22);
+      border-radius: 14px;
+
+      .sc-header {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.6rem;
+
+        svg { color: $text-2-primary; flex-shrink: 0; }
+
+        span {
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: $text-2-primary;
+        }
+      }
+
+      .sc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.4rem 0.6rem;
+      }
+
+      .sc-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.08rem;
+
+        .sc-key {
+          font-size: 0.65rem;
+          font-weight: 600;
+          color: $text-2-primary;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+        }
+
+        .sc-val {
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: $text-primary;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
+          em {
+            font-style: normal;
+            color: #C8C4C0;
+            font-weight: 400;
+            font-size: 0.78rem;
+          }
+        }
+      }
+
+      .sc-warn {
+        margin-top: 0.55rem;
+        font-size: 0.7rem;
+        color: #d97706;
+        font-weight: 600;
+
+        &::before { content: '⚠ '; }
+      }
+    }
+
     /* ── Slide-to-order ── */
     .slide-to-order {
       position: relative;
