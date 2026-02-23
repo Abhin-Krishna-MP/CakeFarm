@@ -227,9 +227,6 @@ class OrderModel {
     //   ]
     // }
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
     try {
       const orderId = generateUUID();
       const pickUpTime = cart.pickUpTime;
@@ -275,16 +272,12 @@ class OrderModel {
         ticketStatus: "active",
       });
 
-      await order.save({ session });
-      await session.commitTransaction();
+      await order.save();
 
       return orderId;
     } catch (error) {
-      await session.abortTransaction();
       console.log("error while placing order : ", error);
       throw error;
-    } finally {
-      session.endSession();
     }
   };
 

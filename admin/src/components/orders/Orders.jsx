@@ -152,9 +152,11 @@ export default function Orders() {
   useEffect(() => {
     if (!token) return;
 
-    // Connect to socket server
-    const socket = io("http://localhost:6005", {
-      transports: ["websocket"],
+    // Connect to socket server via Vite dev proxy to avoid CORS issues
+    const socketUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost:6005";
+    const socket = io(socketUrl, {
+      transports: ["websocket", "polling"],
+      withCredentials: true,
     });
 
     // Listen for new order events

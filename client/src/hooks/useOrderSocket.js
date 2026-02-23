@@ -17,15 +17,11 @@ const useOrderSocket = (onDelivered = null) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // Derive the socket server root from the API base URL.
-    // VITE_API_BASE_URI is something like "http://host:port/api/v1"
-    const apiBase = import.meta.env.VITE_API_BASE_URI || "";
-    let socketUrl;
-    try {
-      socketUrl = new URL(apiBase).origin; // "http://host:port"
-    } catch {
-      socketUrl = apiBase.replace(/\/api\/v1.*$/, "");
-    }
+    // Connect to the same origin as the page — Vite dev server proxies
+    // /socket.io/ to the API server (ws: true in vite.config.js).
+    // This avoids cross-origin WebSocket failures and React StrictMode
+    // double-invoke teardowns before the WS handshake completes.
+    const socketUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
 
     socketRef.current = io(socketUrl, {
       withCredentials: true,

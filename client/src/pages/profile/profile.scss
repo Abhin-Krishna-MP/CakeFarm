@@ -328,32 +328,6 @@
 
         &.muted    { color: $text-2-primary; font-weight: 400; }
         &.empty    { color: #C8C4C8; font-weight: 400; font-style: italic; font-size: 0.875rem; }
-        &.pw-dots  { letter-spacing: 0.18em; font-size: 0.75rem; }
-      }
-
-      /* Password input with eye toggle */
-      .pf-pass-wrap {
-        position: relative;
-
-        .pf-input { padding-right: 2.75rem; }
-
-        .pf-eye {
-          position: absolute;
-          right: 0.8rem;
-          top: 50%;
-          transform: translateY(-50%);
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: $text-2-primary;
-          font-size: 1rem;
-          display: flex;
-          align-items: center;
-          padding: 0;
-          transition: color 0.15s;
-
-          &:hover { color: $text-primary; }
-        }
       }
     }
   }
