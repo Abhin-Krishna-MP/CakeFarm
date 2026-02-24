@@ -6,6 +6,7 @@ import {
   PiArchiveBox,
   MdLunchDining,
   MdQrCodeScanner,
+  MdSchool,
   profilePic,
 } from "../../constants/index";
 import "./menuSidebar.scss";
@@ -19,6 +20,7 @@ const navItems = [
   { id: 4, icon: FaRegRectangleList, label: "Products" },
   { id: 5, icon: MdLunchDining,      label: "Lunch Settings" },
   { id: 6, icon: MdQrCodeScanner,    label: "Scan QR" },
+  { id: 7, icon: MdSchool,           label: "Academics" },
 ];
 
 export default function MenuSidebar({ selectedMenu, setSelectedMenu, onClose }) {

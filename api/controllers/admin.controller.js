@@ -1,6 +1,7 @@
 import { categoriesModel } from "../models/categories.model.js";
 import { ProductModel } from "../models/product.model.js";
 import { UserModel } from "../models/user.model.js";
+import { Department } from "../models/department.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -143,6 +144,46 @@ const deleteCategory = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "category deleted successfully"));
 });
 
+/* ──────────── Department controllers ──────────── */
+
+const getDepartments = asyncHandler(async (_req, res) => {
+  const departments = await Department.find().sort({ name: 1 });
+  return res.status(200).json(new ApiResponse(200, { departments }, "departments fetched successfully"));
+});
+
+const createDepartment = asyncHandler(async (req, res) => {
+  const { name } = req.body;
+  if (!name) throw new ApiError(400, "Department name is required");
+
+  const existing = await Department.findOne({ name: name.trim() });
+  if (existing) throw new ApiError(409, "Department already exists");
+
+  const dept = await Department.create({ name: name.trim() });
+  return res.status(201).json(new ApiResponse(201, { department: dept }, "department created successfully"));
+});
+
+const updateDepartment = asyncHandler(async (req, res) => {
+  const { departmentId } = req.params;
+  const { name, semesters, batches } = req.body;
+
+  const dept = await Department.findById(departmentId);
+  if (!dept) throw new ApiError(404, "Department not found");
+
+  if (name !== undefined) dept.name = name.trim();
+  if (semesters !== undefined) dept.semesters = semesters;
+  if (batches !== undefined) dept.batches = batches;
+
+  await dept.save();
+  return res.status(200).json(new ApiResponse(200, { department: dept }, "department updated successfully"));
+});
+
+const deleteDepartment = asyncHandler(async (req, res) => {
+  const { departmentId } = req.params;
+  const result = await Department.findByIdAndDelete(departmentId);
+  if (!result) throw new ApiError(404, "Department not found");
+  return res.status(200).json(new ApiResponse(200, {}, "department deleted successfully"));
+});
+
 export {
   createCategory,
   updateCategory,
@@ -151,4 +192,8 @@ export {
   deleteProduct,
   deleteUser,
   createProduct,
+  getDepartments,
+  createDepartment,
+  updateDepartment,
+  deleteDepartment,
 };

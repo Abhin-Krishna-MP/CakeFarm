@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import { filterObject } from "../utils/helper.js";
 import { ProductModel } from "../models/product.model.js";
 import { categoriesModel } from "../models/categories.model.js";
+import { Department } from "../models/department.model.js";
 import { imagesUpload, profileUpload } from "../utils/multerSetup.js";
 
 // generating the jwt access token
@@ -40,7 +41,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, username, password } = req.body;
+  const { email, username, password, department, registerNumber, semester, division } = req.body;
 
   // check if user is already registered
   const existingUser = await UserModel.getUserByEmail(email);
@@ -51,7 +52,12 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // if not user existes create new user
-  const createdUser = await UserModel.createUser(email, username, password);
+  const createdUser = await UserModel.createUser(email, username, password, {
+    department,
+    registerNumber,
+    semester,
+    division,
+  });
 
   const { password: pass, role, ...rest } = createdUser;
 
@@ -311,6 +317,11 @@ const toggleUserFavourite = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { favourites }, "Favourite updated successfully"));
 });
 
+const getDepartmentsPublic = asyncHandler(async (_req, res) => {
+  const departments = await Department.find().sort({ name: 1 }).lean();
+  return res.status(200).json(new ApiResponse(200, { departments }, "departments fetched successfully"));
+});
+
 export {
   uploadUserProfile,
   getAllUsers,
@@ -322,4 +333,5 @@ export {
   uploadOtherImages,
   getFavourites,
   toggleUserFavourite,
+  getDepartmentsPublic,
 };

@@ -7,6 +7,9 @@ import { ApiError } from "../utils/ApiError.js";
 
 const router = express.Router();
 
+// Frontend base URL — set FRONTEND_URL in .env (e.g. http://localhost:5174)
+const FRONTEND = (process.env.FRONTEND_URL || "http://localhost:5174").replace(/\/$/, "");
+
 // Initiate Google OAuth
 router.get(
   "/google",
@@ -42,12 +45,12 @@ router.get(
     if (!req.user.registerNumber || !req.user.department) {
       // Redirect to profile completion page
       res.redirect(
-        `http://localhost:5173/complete-profile?token=${accessToken}&userId=${req.user.userId}`
+        `${FRONTEND}/complete-profile?token=${accessToken}&userId=${req.user.userId}`
       );
     } else {
       // Redirect to home with token
       res.redirect(
-        `http://localhost:5173/auth/success?token=${accessToken}&user=${encodeURIComponent(
+        `${FRONTEND}/auth/success?token=${accessToken}&user=${encodeURIComponent(
           JSON.stringify(userObject)
         )}`
       );

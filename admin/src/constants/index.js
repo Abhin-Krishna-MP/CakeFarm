@@ -11,6 +11,7 @@ import { AiOutlineEdit } from "react-icons/ai";
 import { MdLunchDining } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { MdQrCodeScanner } from "react-icons/md";
+import { MdSchool } from "react-icons/md";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegRectangleList } from "react-icons/fa6";
@@ -53,6 +54,7 @@ export {
   FaEyeSlash,
   MdLunchDining,
   MdQrCodeScanner,
+  MdSchool,
   backgroundImg1,
   backgroundImg2,
   backgroundImg3,

@@ -13,6 +13,7 @@ import {
   uploadUserProfile,
   getFavourites,
   toggleUserFavourite,
+  getDepartmentsPublic,
 } from "../controllers/user.controllers.js";
 import { validate } from "../validators/validate.js";
 import { verifyJwt } from "../middlewares/jwt.authMiddleware.js";
@@ -47,5 +48,8 @@ router.route("/order/verify/:token").get(getOrderByToken);
 // Favourites routes
 router.route("/favourites").get(verifyJwt, getFavourites);
 router.route("/favourites/toggle").post(verifyJwt, toggleUserFavourite);
+
+// Public: get departments (for registration and profile dropdowns)
+router.route("/get-departments").get(getDepartmentsPublic);
 
 export default router;

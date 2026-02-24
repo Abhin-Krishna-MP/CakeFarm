@@ -6,6 +6,10 @@ import {
   updateProduct,
   updateCategory,
   deleteCategory,
+  getDepartments,
+  createDepartment,
+  updateDepartment,
+  deleteDepartment,
 } from "../controllers/admin.controller.js";
 import { getAllOrders, updateOrderStatus, markOrderDelivered } from "../controllers/order.controller.js";
 import { getAllUsers } from "../controllers/user.controllers.js";
@@ -57,5 +61,11 @@ router
 router
   .route("/update-ticket-status")
   .patch(verifyJwt, verifyAdmin, markOrderDelivered);
+
+// Department routes
+router.route("/departments").get(verifyJwt, verifyAdmin, getDepartments);
+router.route("/departments").post(verifyJwt, verifyAdmin, createDepartment);
+router.route("/departments/:departmentId").put(verifyJwt, verifyAdmin, updateDepartment);
+router.route("/departments/:departmentId").delete(verifyJwt, verifyAdmin, deleteDepartment);
 
 export default router;

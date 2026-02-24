@@ -7,8 +7,9 @@ import UserList from "../../components/userList/UserList";
 import ProductList from "../../components/productList/ProductList";
 import LunchSettings from "../../components/lunchSettings/LunchSettings";
 import QrScanner from "../../components/qrScanner/QrScanner";
+import Academics from "../../components/academics/Academics";
 
-const menuLabels = ["", "Orders", "Add Product", "Users", "Products", "Lunch Settings", "Scan QR"];
+const menuLabels = ["", "Orders", "Add Product", "Users", "Products", "Lunch Settings", "Scan QR", "Academics"];
 
 export default function Home() {
   const [selectedMenu, setSelectedMenu] = useState(1);
@@ -58,6 +59,7 @@ export default function Home() {
           {selectedMenu === 4 && <ProductList />}
           {selectedMenu === 5 && <LunchSettings />}
           {selectedMenu === 6 && <QrScanner />}
+          {selectedMenu === 7 && <Academics />}
         </div>
       </div>
     </div>

@@ -95,7 +95,7 @@ class UserModel {
     return refreshToken;
   };
 
-  static createUser = async (email, username, password) => {
+  static createUser = async (email, username, password, academicFields = {}) => {
     try {
       // hash the password using bcrypt
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -110,6 +110,9 @@ class UserModel {
         email,
         password: hashedPassword,
         avatar: "noProfile.png",
+        ...Object.fromEntries(
+          Object.entries(academicFields).filter(([, v]) => v !== undefined && v !== "")
+        ),
       });
 
       // save the user in db
