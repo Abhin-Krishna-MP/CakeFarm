@@ -1,0 +1,91 @@
+@import "../../styles/_global.scss";
+
+/* ═══════════════════════════════════════════════════════
+   LEGAL FULL PAGE
+═══════════════════════════════════════════════════════ */
+
+.lp-page {
+  min-height: 100vh;
+  background: $bg-secondary;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Sticky top bar ── */
+.lp-topbar {
+  position: sticky;
+  top: 0;
+  background: rgba(248, 246, 240, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  z-index: 10;
+}
+
+.lp-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $text-primary;
+  cursor: pointer;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* ── Main content ── */
+.lp-content {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.25rem 1.5rem 5rem;
+
+  @media (max-width: 480px) {
+    padding: 1.75rem 1.1rem 4rem;
+  }
+}
+
+.lp-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin: 0 0 2rem;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+
+  @media (max-width: 480px) {
+    font-size: 1.35rem;
+  }
+}
+
+/* Override modal-context styles so the body renders naturally on the page */
+.lp-body {
+  overflow: visible !important;
+  max-height: none !important;
+  padding: 0 !important;
+  flex: unset !important;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* ── Error / not-found state ── */
+.lp-error {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  background: $bg-secondary;
+  color: $text-2-primary;
+  font-size: 1rem;
+}

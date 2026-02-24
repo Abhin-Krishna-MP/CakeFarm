@@ -9,6 +9,7 @@ import CompleteProfile from "./pages/completeProfile/CompleteProfile";
 import AuthSuccess from "./pages/authSuccess/AuthSuccess";
 import Lunch from "./pages/lunch/Lunch";
 import VerifyOrder from "./pages/verifyOrder/VerifyOrder";
+import LegalPage from "./pages/legal/LegalPage";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { cartDrawerVars, cartMobileVars } from "./utils/motion";
@@ -67,6 +68,8 @@ function App() {
           />
           {/* Public: QR code scan lands here — no auth required */}
           <Route path="/orders/verify/:token" element={<VerifyOrder />} />
+          {/* Public: legal & policy pages */}
+          <Route path="/legal/:id" element={<LegalPage />} />
         </Routes>
 
         {/* ─── Global Cart Drawer — accessible from every page ─── */}
