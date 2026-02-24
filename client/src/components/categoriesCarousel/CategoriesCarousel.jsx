@@ -58,17 +58,19 @@ export default function CategoriesCarousel() {
         <span className="cat-pill__label">Favourites</span>
       </button>
 
-      {category.categories?.map((item, index) => (
-        <CategoryItemCard
-          key={item.categoryId}
-          id={index}
-          imgSrc={item.categoryImage}
-          itemName={item.categoryName}
-          activeSlide={activeSlide}
-          setActiveSlide={handleSetActiveSlide}
-          categoryId={item.categoryId}
-        />
-      ))}
+      {category.categories
+        ?.filter((item) => item.categoryName?.toLowerCase() !== "lunch")
+        .map((item, index) => (
+          <CategoryItemCard
+            key={item.categoryId}
+            id={index}
+            imgSrc={item.categoryImage}
+            itemName={item.categoryName}
+            activeSlide={activeSlide}
+            setActiveSlide={handleSetActiveSlide}
+            categoryId={item.categoryId}
+          />
+        ))}
     </div>
   );
 }

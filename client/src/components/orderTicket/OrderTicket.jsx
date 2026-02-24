@@ -3,6 +3,7 @@ import { QRCodeSVG } from "qrcode.react";
 import Barcode from "react-barcode";
 import { AnimatePresence, motion } from "framer-motion";
 import { LiaRupeeSignSolid, IoIosArrowDown, IoIosArrowUp } from "../../constants";
+import { MdDownload } from "react-icons/md";
 import "./orderTicket.scss";
 
 /**
@@ -12,7 +13,7 @@ import "./orderTicket.scss";
  *   order   – single order object from Redux / API
  *   minimal – compact read-only mode (VerifyOrder page)
  */
-const OrderTicket = ({ order, minimal = false }) => {
+const OrderTicket = ({ order, minimal = false, onDownload, downloading = false }) => {
   const [expanded, setExpanded] = useState(false);
 
   // Torn state triggers when either:
@@ -23,18 +24,18 @@ const OrderTicket = ({ order, minimal = false }) => {
     order.ticketStatus === "delivered" || normalizedStatus === "delivered";
 
   const statusLabel = order.orderStatus || order.status || "placed";
-  const verifyUrl    = `${window.location.origin}/orders/verify/${order.orderToken}`;
+  const verifyUrl = `${window.location.origin}/orders/verify/${order.orderToken}`;
 
   // Format pick-up time
   const pickupDate = order.pickUpTime
     ? new Date(Number(order.pickUpTime)).toLocaleDateString("en-IN", {
-        day: "2-digit", month: "short",
-      })
+      day: "2-digit", month: "short",
+    })
     : "—";
   const pickupTime = order.pickUpTime
     ? new Date(Number(order.pickUpTime)).toLocaleTimeString("en-IN", {
-        hour: "2-digit", minute: "2-digit",
-      })
+      hour: "2-digit", minute: "2-digit",
+    })
     : "—";
 
   const itemNames = order.items?.map((i) => i.productName) || [];
@@ -67,6 +68,17 @@ const OrderTicket = ({ order, minimal = false }) => {
           <span className={`ot-badge ot-badge--${statusLabel.toLowerCase()}`}>
             {statusLabel}
           </span>
+          <button
+            className="ot-download-btn"
+            onClick={(e) => { e.stopPropagation(); onDownload?.(); }}
+            title="Download ticket"
+            aria-label="Download order ticket as image"
+            data-html2canvas-ignore="true"
+          >
+            {downloading
+              ? <span className="ot-dl-spinner" />
+              : <MdDownload />}
+          </button>
         </div>
 
         {/* Item headline */}
@@ -118,9 +130,20 @@ const OrderTicket = ({ order, minimal = false }) => {
               {order.items?.map((item, i) => (
                 <div key={i} className="ot-item-row">
                   <img
-                    src={`${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${item.image}`}
+                    src={
+                      item.image?.startsWith("http")
+                        ? item.image
+                        : `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${item.image}`
+                    }
                     alt={item.productName}
                     loading="lazy"
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      // If the image is blocked or broken, swap to a safe, neutral placeholder
+                      // so the canvas doesn't crash during download.
+                      e.target.onerror = null;
+                      e.target.src = "https://placehold.co/34x34/eeeeee/999999?text=Item";
+                    }}
                   />
                   <span className="ot-item-name">{item.productName}</span>
                   <span className="ot-item-qty">×{item.quantity}</span>

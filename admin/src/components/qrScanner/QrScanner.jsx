@@ -361,7 +361,12 @@ export default function QrScanner() {
         { orderToken: order.orderToken },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      setOrder((prev) => ({ ...prev, ticketStatus: "delivered" }));
+      setOrder((prev) => ({
+        ...prev,
+        ticketStatus: "delivered",
+        orderStatus: "delivered",
+        status: "delivered",
+      }));
       showToast("success", "✅ Delivered! Returning to scanner...");
       setTimeout(() => {
         activeRef.current = false;

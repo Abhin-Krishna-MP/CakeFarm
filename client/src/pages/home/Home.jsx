@@ -18,9 +18,11 @@ export default function Home() {
   }, []);
 
   const favourites = useSelector((state) => state.favourites);
-  const allItems = product.products || [];
+  // Exclude lunch items from the home page — they belong on the Lunch tab only
+  const allItems = (product.products || []).filter((item) => !item.isLunchItem);
   // Use the full unfiltered list for favourites so items from other categories are always found
-  const allProducts = product.allProducts?.length ? product.allProducts : allItems;
+  const allProducts = (product.allProducts?.length ? product.allProducts : product.products || [])
+    .filter((item) => !item.isLunchItem);
   const displayItems = favourites.viewingFavourites
     ? allProducts.filter((item) => favourites.productIds.includes(item.productId))
     : allItems;

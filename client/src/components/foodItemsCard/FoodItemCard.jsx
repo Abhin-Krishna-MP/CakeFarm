@@ -23,6 +23,7 @@ export default function FoodItemCard({ item, isDisabled = false }) {
   // state for checking whether an item in added to cart or not
   const [isAddedTocart, setIsAddedTocart] = useState(false);
   const [itemQuantity, setItemQuantity] = useState(0);
+  const [conflictMsg, setConflictMsg] = useState("");
 
   const dispatch = useDispatch();
 
@@ -43,9 +44,31 @@ export default function FoodItemCard({ item, isDisabled = false }) {
     getCurrentQuantity(); // get current item quantity
   }, [cartItems]);
 
+  // Show a temporary conflict message
+  const showConflict = (msg) => {
+    setConflictMsg(msg);
+    setTimeout(() => setConflictMsg(""), 3000);
+  };
+
   // handle adding items to cart
   const handleAddItem = () => {
     if (isDisabled) return; // prevent adding if disabled
+
+    // Prevent mixing lunch items and snack/regular items in the same cart
+    if (cartItems && cartItems.length > 0) {
+      const hasLunchInCart = cartItems.some((ci) => ci.isLunchItem);
+      const hasSnacksInCart = cartItems.some((ci) => !ci.isLunchItem);
+
+      if (item.isLunchItem && hasSnacksInCart) {
+        showConflict("Lunch & snacks can't be ordered together. Clear your cart first.");
+        return;
+      }
+      if (!item.isLunchItem && hasLunchInCart) {
+        showConflict("Snacks & lunch can't be ordered together. Clear your cart first.");
+        return;
+      }
+    }
+
     dispatch(addItemToCart(item)); // add curent item to cart
     setIsAddedTocart(true);
   };
@@ -69,7 +92,10 @@ export default function FoodItemCard({ item, isDisabled = false }) {
   };
 
   return (
-    <div className={`foodItemCard ${isDisabled ? 'disabled' : ''}`}>
+    <div className={`foodItemCard ${isDisabled ? 'disabled' : ''}${conflictMsg ? ' has-conflict' : ''}`}>
+      {conflictMsg && (
+        <div className="conflict-toast">{conflictMsg}</div>
+      )}
       {/* ─── Image ─── */}
       <div className="img-div">
         <img

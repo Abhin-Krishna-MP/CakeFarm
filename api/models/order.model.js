@@ -43,7 +43,7 @@ const orderStatusSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["processing", "placed", "ready", "completed", "expired", "cancelled"],
+      enum: ["processing", "placed", "ready", "completed", "delivered", "expired", "cancelled"],
       default: "processing",
     },
   },
@@ -203,14 +203,19 @@ class OrderModel {
   // mark order ticket as delivered (triggered by admin QR scan)
   static markAsDelivered = async (orderToken) => {
     try {
-      const result = await Order.updateOne(
+      const updated = await Order.findOneAndUpdate(
         { orderToken },
-        { $set: { ticketStatus: "delivered" } }
+        { $set: { ticketStatus: "delivered", "orderStatus.status": "delivered" } },
+        { new: true }
       );
-      return result.modifiedCount > 0;
+      if (!updated) return null;
+      return {
+        orderId: updated.orderId,
+        orderStatusId: updated.orderStatus.orderStatusId,
+      };
     } catch (error) {
       console.log("error while marking order as delivered: " + error);
-      return false;
+      return null;
     }
   };
 

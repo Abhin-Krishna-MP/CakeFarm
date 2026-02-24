@@ -18,6 +18,9 @@ export default function AddProducts() {
   // Category form controlled state
   const [catName, setCatName] = useState("");
   const [catDesc, setCatDesc] = useState("");
+  const [catImage, setCatImage] = useState(null);          // new File to upload
+  const [catImagePreview, setCatImagePreview] = useState(null); // URL for preview (existing or new)
+  const [isDraggingCat, setIsDraggingCat] = useState(false);
   // Edit / delete mode
   const [editMode, setEditMode] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -86,10 +89,12 @@ export default function AddProducts() {
   // upload category item
   const handleUploadCategory = (e) => {
     e.preventDefault();
-    dispatch(uploadCategory(token, { categoryName: catName, categoryDesc: catDesc })).then(() => {
+    dispatch(uploadCategory(token, { categoryName: catName, categoryDesc: catDesc }, catImage)).then(() => {
       dispatch(getCategory(token));
       setCatName("");
       setCatDesc("");
+      setCatImage(null);
+      setCatImagePreview(null);
     });
   };
 
@@ -98,6 +103,13 @@ export default function AddProducts() {
     setEditingCategory(cat);
     setCatName(cat.categoryName);
     setCatDesc(cat.description || "");
+    setCatImage(null);
+    // Show existing image as preview (served via API)
+    setCatImagePreview(
+      cat.categoryImage
+        ? `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/${cat.categoryImage}`
+        : null
+    );
   };
 
   const handleCancelEdit = () => {
@@ -105,6 +117,8 @@ export default function AddProducts() {
     setEditingCategory(null);
     setCatName("");
     setCatDesc("");
+    setCatImage(null);
+    setCatImagePreview(null);
   };
 
   const handleUpdateCategory = (e) => {
@@ -112,7 +126,7 @@ export default function AddProducts() {
     dispatch(updateCategory(token, editingCategory.categoryId, {
       categoryName: catName,
       categoryDesc: catDesc,
-    })).then(() => {
+    }, catImage)).then(() => {
       dispatch(getCategory(token));
       handleCancelEdit();
     });
@@ -295,6 +309,50 @@ export default function AddProducts() {
           className="new-category-form"
           onSubmit={editMode ? handleUpdateCategory : handleUploadCategory}
         >
+          {/* ── Category image upload ── */}
+          <div
+            className={`category-img-wrap${isDraggingCat ? " dragging" : ""}`}
+            onDragOver={(e) => { e.preventDefault(); setIsDraggingCat(true); }}
+            onDragLeave={() => setIsDraggingCat(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDraggingCat(false);
+              const file = e.dataTransfer.files[0];
+              if (file) {
+                setCatImage(file);
+                setCatImagePreview(URL.createObjectURL(file));
+              }
+            }}
+          >
+            <label htmlFor="category-img">
+              {catImagePreview ? (
+                <img src={catImagePreview} alt="category preview" />
+              ) : (
+                <BiImageAdd className="icon" />
+              )}
+            </label>
+            <input
+              type="file"
+              id="category-img"
+              accept="image/*"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  setCatImage(file);
+                  setCatImagePreview(URL.createObjectURL(file));
+                }
+              }}
+            />
+            <p className="drag-hint">
+              {catImage
+                ? catImage.name
+                : editMode && catImagePreview
+                ? "Current image (click to change)"
+                : "Drag & drop or click to upload image"}
+            </p>
+          </div>
+
           <div className="category-name-wrap">
             <label htmlFor="category-name">Category Name</label>
             <input

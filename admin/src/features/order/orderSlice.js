@@ -46,6 +46,19 @@ const orderSlice = createSlice({
     errorUpdateStatus: (state, action) => {
       state.error = action.payload.message;
     },
+
+    // Real-time: update a single order in the list without clearing/refetching
+    updateOrderStatusRealtime: (state, action) => {
+      const { orderId, status } = action.payload;
+      const order = state.orderList?.find((o) => o.orderId === orderId);
+      if (order) {
+        order.orderStatus = status;
+        order.status = status;
+        if (status === "delivered") {
+          order.ticketStatus = "delivered";
+        }
+      }
+    },
   },
 });
 
@@ -55,6 +68,7 @@ export const {
   orderRequest,
   orderListSuccess,
   orderListFailure,
+  updateOrderStatusRealtime,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

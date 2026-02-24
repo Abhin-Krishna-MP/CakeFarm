@@ -152,10 +152,14 @@ export const markOrderDelivered = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Order not found or already marked as delivered");
   }
 
-  // Broadcast via Socket.io so the user's ticket UI tears in real-time
+  // Broadcast via Socket.io:
+  // 1. orderDelivered — updates the client ticket UI
+  // 2. orderStatusUpdated — updates the admin Orders panel in real-time
   const io = req.app.get("io");
   if (io) {
     io.emit("orderDelivered", { orderToken });
+    // orderStatusId here is the order's orderId (matches how the frontend identifies orders)
+    io.emit("orderStatusUpdated", { orderStatusId: result.orderId, status: "delivered" });
   }
 
   return res

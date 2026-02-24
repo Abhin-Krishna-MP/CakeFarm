@@ -5,6 +5,7 @@ import {
   orderListSuccess,
   orderRequest,
   updateStatus,
+  updateOrderStatusRealtime,
 } from "./orderSlice";
 
 const getOrderList = (token) => async (dispatch) => {
@@ -33,26 +34,21 @@ const updateOrderStatus = (token, orderId, orderStatus) => async (dispatch) => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "Application/json",
+        "Content-Type": "application/json",
       },
-      // withCredentials: true,
     };
 
-    // console.log({ orderId, token, orderStatus });
-    console.log(config);
+    // Optimistic update first — UI responds instantly
+    dispatch(updateOrderStatusRealtime({ orderId, status: orderStatus }));
 
-    const res = await axios.patch(
-      `${
-        import.meta.env.VITE_API_BASE_URI
-      }/admin/update-order-status?orderStatusId=${orderId}&status=${orderStatus}`,
-
-      config
+    await axios.patch(
+      `${import.meta.env.VITE_API_BASE_URI}/admin/update-order-status?orderStatusId=${orderId}&status=${orderStatus}`,
+      {},      // body (none needed — params are in query string)
+      config   // headers go here as 3rd argument
     );
-    dispatch(updateStatus(res.data));
-    dispatch(getOrderList(token));
   } catch (error) {
     console.log(error);
-    dispatch(errorUpdateStatus(error.response.data));
+    dispatch(errorUpdateStatus(error?.response?.data || "Error updating status"));
   }
 };
 export { getOrderList, updateOrderStatus };

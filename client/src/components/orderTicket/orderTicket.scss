@@ -491,3 +491,47 @@ $notch-d:       22px;
   // Hide the notch circles while torn
   .ot-tear-zone { opacity: 0; pointer-events: none; }
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  DOWNLOAD BUTTON  — sits inside ot-order-row after the status badge
+// ══════════════════════════════════════════════════════════════════════════════
+.ot-download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 184, 0, 0.35);
+  background: rgba(255, 184, 0, 0.10);
+  color: $yellow-dark;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.12s, border-color 0.15s;
+
+  svg { font-size: 0.9rem; display: block; }
+
+  &:hover {
+    background: rgba(255, 184, 0, 0.22);
+    border-color: $yellow-dark;
+    transform: scale(1.1);
+  }
+
+  &:active { transform: scale(0.94); }
+}
+
+// Spinner shown while html2canvas is rendering
+.ot-dl-spinner {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border: 2px solid rgba(229, 165, 0, 0.25);
+  border-top-color: $yellow-dark;
+  border-radius: 50%;
+  animation: ot-dl-spin 0.55s linear infinite;
+}
+
+@keyframes ot-dl-spin {
+  to { transform: rotate(360deg); }
+}

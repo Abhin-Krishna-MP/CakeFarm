@@ -25,11 +25,25 @@ const getCategory = (token) => async (dispatch) => {
   }
 };
 
-const uploadCategory = (token, data) => async (dispatch) => {
+const uploadCategory = (token, data, imageFile) => async (dispatch) => {
   try {
+    let categoryImage = "";
+
+    // Upload image first if provided
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("file", imageFile);
+      const uploadRes = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URI}/users/upload-images`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+      );
+      categoryImage = uploadRes.data?.data?.filename || "";
+    }
+
     const res = await axios.post(
       `${import.meta.env.VITE_API_BASE_URI}/admin/create-category`,
-      data,
+      { ...data, categoryImage },
       { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
     );
     dispatch(uploadCategorySuccess(res.data));
@@ -41,12 +55,28 @@ const uploadCategory = (token, data) => async (dispatch) => {
 
 export { getCategory, uploadCategory };
 
-const updateCategory = (token, categoryId, data) => async (dispatch) => {
+const updateCategory = (token, categoryId, data, imageFile) => async (dispatch) => {
   try {
     dispatch(updateCategoryRequest());
+
+    let updateData = { ...data };
+
+    // Upload new image first if a file was provided
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("file", imageFile);
+      const uploadRes = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URI}/users/upload-images`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+      );
+      updateData.categoryImage = uploadRes.data?.data?.filename || "";
+    }
+    // If no new image, do NOT pass categoryImage — keep existing value on server
+
     const res = await axios.put(
       `${import.meta.env.VITE_API_BASE_URI}/admin/update-category/${categoryId}`,
-      data,
+      updateData,
       { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
     );
     dispatch(updateCategorySuccess(res.data));
