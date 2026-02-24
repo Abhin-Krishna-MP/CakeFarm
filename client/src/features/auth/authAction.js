@@ -36,13 +36,13 @@ const signIn = (email, password) => async (dispatch) => {
   }
 };
 
-const signUp = (username, email, password) => async (dispatch) => {
+const signUp = (username, email, password, academicFields = {}) => async (dispatch) => {
   try {
     dispatch(signUpRequest());
 
     const res = await axios.post(
       `${import.meta.env.VITE_API_BASE_URI}/users/register`,
-      { username, email, password }
+      { username, email, password, ...academicFields }
     );
 
     if (res.data.data) {

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signInSuccess } from "../../features/auth/authSlice";
+import { fetchDepartments } from "../../features/academics/academicsAction";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiCode, FiGlobe, FiCpu, FiZap, FiSettings, FiLayers,
@@ -12,18 +13,17 @@ import {
 import "./completeProfile.scss";
 import { logo } from "../../constants/index.js";
 
-const DEPARTMENTS = [
-  { label: "Computer Science",       Icon: FiCode     },
-  { label: "Information Technology", Icon: FiGlobe    },
-  { label: "Electronics",            Icon: FiCpu      },
-  { label: "Electrical",             Icon: FiZap      },
-  { label: "Mechanical",             Icon: FiSettings },
-  { label: "Civil",                  Icon: FiLayers   },
-  { label: "Chemical",               Icon: FiDroplet  },
-  { label: "Other",                  Icon: FiBook     },
-];
-
-const SEMESTERS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+// Icon map for departments (fallback icon for unknown departments)
+const DEPT_ICONS = {
+  "Computer Science":       FiCode,
+  "Information Technology": FiGlobe,
+  "Electronics":            FiCpu,
+  "Electrical":             FiZap,
+  "Mechanical":             FiSettings,
+  "Civil":                  FiLayers,
+  "Chemical":               FiDroplet,
+};
+const DEFAULT_DEPT_ICON = FiBook;
 
 const STEPS = [
   { id: 1, label: "Register No.", field: "registerNumber" },
@@ -38,15 +38,19 @@ const slideVariants = {
   exit:   (dir) => ({ x: dir > 0 ? -60 :  60, opacity: 0 }),
 };
 
-const semSuffix = (s) =>
-  s === "1" ? "st" : s === "2" ? "nd" : s === "3" ? "rd" : "th";
-
 export default function CompleteProfile() {
   const [searchParams] = useSearchParams();
   const navigate        = useNavigate();
   const dispatch        = useDispatch();
   const userId          = searchParams.get("userId");
 
+  const { departments } = useSelector((s) => s.academics);
+
+  useEffect(() => {
+    dispatch(fetchDepartments());
+  }, [dispatch]);
+
+  // Derive selected department object to get semesters + batches
   const [step, setStep]         = useState(1);
   const [dir,  setDir]          = useState(1);
   const [formData, setFormData] = useState({
@@ -57,6 +61,10 @@ export default function CompleteProfile() {
   });
   const [error,   setError]   = useState("");
   const [loading, setLoading] = useState(false);
+
+  const selectedDeptObj = departments?.find((d) => d.name === formData.department) || null;
+  const availableSemesters = selectedDeptObj?.semesters || [];
+  const availableBatches   = selectedDeptObj?.batches   || [];
 
   const totalSteps = STEPS.length;
   const progress   = step <= totalSteps ? ((step - 1) / totalSteps) * 100 : 100;
@@ -218,21 +226,28 @@ export default function CompleteProfile() {
               >
                 <div className="cp-field-label">Department</div>
                 <p className="cp-field-hint">Choose your academic department</p>
-                <div className="cp-dept-grid">
-                  {DEPARTMENTS.map(({ label, Icon }) => (
-                    <button
-                      key={label}
-                      type="button"
-                      className={`cp-dept-chip${
-                        formData.department === label ? " selected" : ""
-                      }`}
-                      onClick={() => setFormData({ ...formData, department: label })}
-                    >
-                      <span className="cp-dept-icon"><Icon size={19} /></span>
-                      <span className="cp-dept-name">{label}</span>
-                    </button>
-                  ))}
-                </div>
+                {(!departments || departments.length === 0) ? (
+                  <p className="cp-field-hint" style={{ marginTop: "1rem", color: "#a09cb8" }}>
+                    No departments available yet. Ask your admin to add departments first.
+                  </p>
+                ) : (
+                  <div className="cp-dept-grid">
+                    {departments.map(({ _id, name }) => {
+                      const Icon = DEPT_ICONS[name] || DEFAULT_DEPT_ICON;
+                      return (
+                        <button
+                          key={_id}
+                          type="button"
+                          className={`cp-dept-chip${formData.department === name ? " selected" : ""}`}
+                          onClick={() => setFormData({ ...formData, department: name, semester: "", division: "" })}
+                        >
+                          <span className="cp-dept-icon"><Icon size={19} /></span>
+                          <span className="cp-dept-name">{name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -245,22 +260,45 @@ export default function CompleteProfile() {
               >
                 <div className="cp-field-label">Current Semester</div>
                 <p className="cp-field-hint">Select the semester you are currently in</p>
-                <div className="cp-sem-grid">
-                  {SEMESTERS.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      className={`cp-sem-pill${
-                        formData.semester === s ? " selected" : ""
-                      }`}
-                      onClick={() => setFormData({ ...formData, semester: s })}
-                    >
-                      <span className="cp-sem-num">{s}</span>
-                      <span className="cp-sem-suffix">{semSuffix(s)}</span>
-                      <span className="cp-sem-text">Sem</span>
-                    </button>
-                  ))}
-                </div>
+                {availableSemesters.length === 0 ? (
+                  <>
+                    <p className="cp-field-hint" style={{ marginTop: "0.5rem", color: "#a09cb8" }}>
+                      No semesters configured for this department. Type your semester below.
+                    </p>
+                    <div className="cp-input-wrap" style={{ marginTop: "0.75rem" }}>
+                      <svg className="cp-input-icon" viewBox="0 0 20 20" fill="none"
+                        stroke="currentColor" strokeWidth="1.6">
+                        <rect x="3" y="2" width="14" height="16" rx="2" />
+                        <path d="M6 7h8M6 10h8M6 13h5" strokeLinecap="round" />
+                      </svg>
+                      <input
+                        autoFocus
+                        type="text"
+                        className="cp-input"
+                        placeholder="e.g. 4"
+                        value={formData.semester}
+                        onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
+                        onKeyDown={(e) => e.key === "Enter" && canAdvance() && go(4)}
+                      />
+                      {formData.semester.trim() && (
+                        <span className="cp-input-check"><CheckMark /></span>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="cp-sem-grid">
+                    {availableSemesters.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        className={`cp-sem-pill${formData.semester === s ? " selected" : ""}`}
+                        onClick={() => setFormData({ ...formData, semester: s })}
+                      >
+                        <span className="cp-sem-num">{s}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -271,34 +309,54 @@ export default function CompleteProfile() {
                 initial="enter" animate="center" exit="exit"
                 transition={{ duration: 0.28, ease: "easeInOut" }}
               >
-                <div className="cp-field-label">Division</div>
-                <p className="cp-field-hint">Your class division (A, B, C …)</p>
-                <div className="cp-input-wrap">
-                  <svg className="cp-input-icon" viewBox="0 0 20 20" fill="none"
-                    stroke="currentColor" strokeWidth="1.6">
-                    <path d="M17 20H3a1 1 0 01-1-1V7l4-4h11a1 1 0 011 1v15a1 1 0 01-1 1z"
-                      strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M6 3v4H2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <input
-                    autoFocus
-                    type="text"
-                    className="cp-input cp-input--center"
-                    placeholder="A"
-                    maxLength={2}
-                    value={formData.division}
-                    onChange={(e) =>
-                      setFormData({ ...formData, division: e.target.value.toUpperCase() })
-                    }
-                    onKeyDown={(e) => e.key === "Enter" && canAdvance() && go(5)}
-                  />
-                  {formData.division.trim().length >= 1 && (
-                    <span className="cp-input-check"><CheckMark /></span>
-                  )}
-                </div>
-                <p className="cp-div-examples">
-                  Examples:&nbsp; A &middot; B &middot; C1 &middot; D2
-                </p>
+                <div className="cp-field-label">Division / Batch</div>
+                <p className="cp-field-hint">Your class division or batch</p>
+                {availableBatches.length === 0 ? (
+                  <>
+                    <p className="cp-field-hint" style={{ marginTop: "0.5rem", color: "#a09cb8" }}>
+                      No batches configured for this department. Type your division below.
+                    </p>
+                    <div className="cp-input-wrap" style={{ marginTop: "0.75rem" }}>
+                      <svg className="cp-input-icon" viewBox="0 0 20 20" fill="none"
+                        stroke="currentColor" strokeWidth="1.6">
+                        <path d="M17 20H3a1 1 0 01-1-1V7l4-4h11a1 1 0 011 1v15a1 1 0 01-1 1z"
+                          strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M6 3v4H2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <input
+                        autoFocus
+                        type="text"
+                        className="cp-input cp-input--center"
+                        placeholder="A"
+                        maxLength={10}
+                        value={formData.division}
+                        onChange={(e) =>
+                          setFormData({ ...formData, division: e.target.value.toUpperCase() })
+                        }
+                        onKeyDown={(e) => e.key === "Enter" && canAdvance() && go(5)}
+                      />
+                      {formData.division.trim().length >= 1 && (
+                        <span className="cp-input-check"><CheckMark /></span>
+                      )}
+                    </div>
+                    <p className="cp-div-examples">
+                      Examples:&nbsp; A &middot; B &middot; C1 &middot; D2
+                    </p>
+                  </>
+                ) : (
+                  <div className="cp-sem-grid">
+                    {availableBatches.map((b) => (
+                      <button
+                        key={b}
+                        type="button"
+                        className={`cp-sem-pill${formData.division === b ? " selected" : ""}`}
+                        onClick={() => setFormData({ ...formData, division: b })}
+                      >
+                        <span className="cp-sem-num">{b}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -318,12 +376,8 @@ export default function CompleteProfile() {
                   {[
                     { Icon: FiHash,     label: "Register No.", val: formData.registerNumber },
                     { Icon: FiBookOpen, label: "Department",   val: formData.department     },
-                    {
-                      Icon: FiCalendar,
-                      label: "Semester",
-                      val: `${formData.semester}${semSuffix(formData.semester)} Semester`,
-                    },
-                    { Icon: FiGrid, label: "Division", val: formData.division },
+                    { Icon: FiCalendar, label: "Semester",     val: formData.semester       },
+                    { Icon: FiGrid,     label: "Division",     val: formData.division       },
                   ].map(({ Icon, label, val }) => (
                     <div key={label} className="cp-summary-row">
                       <span className="cp-summary-icon"><Icon size={14} /></span>

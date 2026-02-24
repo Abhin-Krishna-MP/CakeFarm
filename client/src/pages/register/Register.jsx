@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./register.scss";
 import {
   backgroundImg1,
@@ -13,14 +13,35 @@ import Carousel from "../../components/carousel/Carousel.jsx";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signUp } from "../../features/auth/authAction.js";
+import { fetchDepartments } from "../../features/academics/academicsAction.js";
+
 export default function Register() {
   const [hidePass, setHidePass] = useState(true);
   const auth = useSelector((select) => select.auth);
+  const { departments } = useSelector((s) => s.academics);
 
   const dispatch = useDispatch();
   const usernameRef = useRef();
   const emailRef = useRef();
   const passRef = useRef();
+  const registerNumberRef = useRef();
+
+  const [selectedDept, setSelectedDept] = useState("");
+  const [selectedBatch, setSelectedBatch] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchDepartments());
+  }, [dispatch]);
+
+  // Batches available for the chosen department
+  const deptObj = departments?.find((d) => d.name === selectedDept) || null;
+  const availableBatches = deptObj?.batches || [];
+
+  // Reset batch when department changes
+  const handleDeptChange = (e) => {
+    setSelectedDept(e.target.value);
+    setSelectedBatch("");
+  };
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -29,7 +50,12 @@ export default function Register() {
       signUp(
         usernameRef.current.value,
         emailRef.current.value,
-        passRef.current.value
+        passRef.current.value,
+        {
+          registerNumber: registerNumberRef.current?.value || undefined,
+          department: selectedDept || undefined,
+          division: selectedBatch || undefined,
+        }
       )
     );
   };
@@ -48,14 +74,14 @@ export default function Register() {
             <label htmlFor="username">Username</label>
             <input type="text" placeholder="Enter username" ref={usernameRef} />
 
-            <label htmlFor="username">Email</label>
+            <label htmlFor="email">Email</label>
             <input type="email" placeholder="Enter Email" ref={emailRef} />
 
             <label htmlFor="password">Password</label>
             <div className="pass-div">
               <input
                 type={`${hidePass ? "password" : "text"}`}
-                placeholder="Enter you password"
+                placeholder="Enter your password"
                 ref={passRef}
               />
               {hidePass ? (
@@ -70,6 +96,52 @@ export default function Register() {
                 />
               )}
             </div>
+
+            <label htmlFor="registerNumber">Register Number</label>
+            <input
+              type="text"
+              id="registerNumber"
+              placeholder="e.g. 22CS001"
+              ref={registerNumberRef}
+            />
+
+            <label htmlFor="department">Department</label>
+            <select
+              id="department"
+              value={selectedDept}
+              onChange={handleDeptChange}
+              className="select-field"
+            >
+              <option value="">-- Select Department --</option>
+              {(departments || []).map((d) => (
+                <option key={d._id} value={d.name}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+
+            <label htmlFor="batch">Batch / Division</label>
+            <select
+              id="batch"
+              value={selectedBatch}
+              onChange={(e) => setSelectedBatch(e.target.value)}
+              className="select-field"
+              disabled={!selectedDept || availableBatches.length === 0}
+            >
+              <option value="">
+                {!selectedDept
+                  ? "-- Select Department first --"
+                  : availableBatches.length === 0
+                  ? "-- No batches available --"
+                  : "-- Select Batch --"}
+              </option>
+              {availableBatches.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+
             <button type="submit" className="button">
               Sign Up
             </button>

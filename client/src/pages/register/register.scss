@@ -10,7 +10,7 @@
 
   .register-wrapper {
     width: 800px;
-    height: 550px;
+    height: 580px;
     background-color: white;
     box-shadow: $box-shadow-dark;
     display: flex;
@@ -19,6 +19,7 @@
       height: 100%;
       width: 60%;
       padding: 2rem;
+      overflow-y: auto;
 
       .logo {
         img {
@@ -68,6 +69,25 @@
             width: 10%;
             text-align: center;
             cursor: pointer;
+          }
+        }
+
+        .select-field {
+          width: 80%;
+          padding: 0.6rem;
+          font-size: $font-size-small;
+          color: black;
+          border: none;
+          outline: none;
+          background-color: rgba(211, 211, 211, 0.315);
+          border-radius: $border-radius-light;
+          margin-bottom: 1rem;
+          cursor: pointer;
+          appearance: auto;
+
+          &:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
           }
         }
 

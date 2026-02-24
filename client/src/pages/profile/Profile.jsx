@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./profile.scss";
 import { BiImageAdd, BsBoxArrowInLeft } from "../../constants";
 import Navbar from "../../components/navbar/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserDetails, updateUserProfile, logout } from "../../features/auth/authAction";
+import { fetchDepartments } from "../../features/academics/academicsAction";
 
 const resolveAvatar = (avatar) => {
   if (!avatar) return `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/noProfile.png`;
@@ -15,7 +16,15 @@ const resolveAvatar = (avatar) => {
 export default function Profile() {
   const user  = useSelector((s) => s.auth.userData);
   const token = useSelector((s) => s.auth.token);
+  const { departments } = useSelector((s) => s.academics);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchDepartments());
+  }, [dispatch]);
+
+  // Find the department object matching the user's department
+  const userDeptObj = departments?.find((d) => d.name === user?.department) || null;
 
   /* ── State ── */
   const [imageFile, setImageFile]   = useState(null);
@@ -23,8 +32,6 @@ export default function Profile() {
 
   const [accountForm, setAccountForm] = useState({ username: user?.username || "" });
   const [academicForm, setAcademicForm] = useState({
-    registerNumber: user?.registerNumber || "",
-    department:     user?.department     || "",
     semester:       user?.semester       || "",
     division:       user?.division       || "",
   });
@@ -39,10 +46,8 @@ export default function Profile() {
   const cancelEdit = (section) => {
     if (section === "account")  setAccountForm({ username: user?.username || "" });
     if (section === "academic") setAcademicForm({
-      registerNumber: user?.registerNumber || "",
-      department:     user?.department     || "",
-      semester:       user?.semester       || "",
-      division:       user?.division       || "",
+      semester: user?.semester || "",
+      division: user?.division || "",
     });
     setEditSection(null);
   };
@@ -66,7 +71,7 @@ export default function Profile() {
 
   const handleSaveAcademic = () => {
     const cred = {};
-    ["registerNumber", "department", "semester", "division"].forEach((k) => {
+    ["semester", "division"].forEach((k) => {
       if (academicForm[k] !== (user?.[k] || "")) cred[k] = academicForm[k];
     });
     if (!Object.keys(cred).length) { setEditSection(null); return; }
@@ -208,19 +213,74 @@ export default function Profile() {
           </div>
 
           <div className="card-fields card-fields-grid">
-            {[
-              { key: "registerNumber", label: "Register No.",    placeholder: "e.g. 22CS001" },
-              { key: "department",     label: "Department",      placeholder: "e.g. Computer Science" },
-              { key: "semester",       label: "Semester",        placeholder: "e.g. 4" },
-              { key: "division",       label: "Division / Batch",placeholder: "e.g. A" },
-            ].map(({ key, label, placeholder }) => (
-              <div className="pf-field" key={key}>
-                <label className="pf-label">{label}</label>
-                {editSection === "academic"
-                  ? <input className="pf-input" type="text" value={academicForm[key]} onChange={(e) => setAcademicForm({ ...academicForm, [key]: e.target.value })} placeholder={placeholder} />
-                  : <p className={`pf-value${!user?.[key] ? " empty" : ""}`}>{user?.[key] || "Not set"}</p>}
-              </div>
-            ))}
+            {/* Register Number — locked */}
+            <div className="pf-field">
+              <label className="pf-label">
+                Register No.
+                <span className="locked-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" width="9" height="9"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  locked
+                </span>
+              </label>
+              <p className="pf-value muted">{user?.registerNumber || "—"}</p>
+            </div>
+
+            {/* Department — locked */}
+            <div className="pf-field">
+              <label className="pf-label">
+                Department
+                <span className="locked-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" width="9" height="9"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  locked
+                </span>
+              </label>
+              <p className="pf-value muted">{user?.department || "—"}</p>
+            </div>
+
+            {/* Semester — editable via dropdown */}
+            <div className="pf-field">
+              <label className="pf-label">Semester</label>
+              {editSection === "academic" ? (
+                <select
+                  className="pf-input"
+                  value={academicForm.semester}
+                  onChange={(e) => setAcademicForm({ ...academicForm, semester: e.target.value })}
+                >
+                  <option value="">-- Select Semester --</option>
+                  {(userDeptObj?.semesters || []).map((sem) => (
+                    <option key={sem} value={sem}>{sem}</option>
+                  ))}
+                  {/* If user has a saved value not in the list, keep it selectable */}
+                  {user?.semester && !(userDeptObj?.semesters || []).includes(user.semester) && (
+                    <option value={user.semester}>{user.semester}</option>
+                  )}
+                </select>
+              ) : (
+                <p className={`pf-value${!user?.semester ? " empty" : ""}`}>{user?.semester || "Not set"}</p>
+              )}
+            </div>
+
+            {/* Division / Batch — editable via dropdown */}
+            <div className="pf-field">
+              <label className="pf-label">Division / Batch</label>
+              {editSection === "academic" ? (
+                <select
+                  className="pf-input"
+                  value={academicForm.division}
+                  onChange={(e) => setAcademicForm({ ...academicForm, division: e.target.value })}
+                >
+                  <option value="">-- Select Batch --</option>
+                  {(userDeptObj?.batches || []).map((b) => (
+                    <option key={b} value={b}>{b}</option>
+                  ))}
+                  {user?.division && !(userDeptObj?.batches || []).includes(user.division) && (
+                    <option value={user.division}>{user.division}</option>
+                  )}
+                </select>
+              ) : (
+                <p className={`pf-value${!user?.division ? " empty" : ""}`}>{user?.division || "Not set"}</p>
+              )}
+            </div>
           </div>
         </div>
 
