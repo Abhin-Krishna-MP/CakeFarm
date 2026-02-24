@@ -85,75 +85,123 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.2rem 1.25rem 1rem;
-    border-bottom: 1.5px solid #F0EDE6;
+    padding: 1rem 1.25rem 1rem;
     flex-shrink: 0;
-    background: #FFFFFF;
+    background: linear-gradient(170deg, #FFFFFF 0%, #FFFDF7 100%);
     position: relative;
+    box-shadow: 0 1px 0 #EDE9E0, 0 4px 18px rgba(0,0,0,0.045);
 
-    /* Animated accent bar */
+    /* Shimmer top bar */
     &::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #FDBB2E 0%, #FFE066 30%, #FFD000 60%, #FDBB2E 100%);
+      height: 3.5px;
+      background: linear-gradient(90deg, #F5A800 0%, #FDBB2E 28%, #FFE566 52%, #FF9E00 75%, #FDBB2E 100%);
       background-size: 300% 100%;
-      animation: topBarShimmer 3s linear infinite;
+      animation: topBarShimmer 4s ease infinite;
+      border-radius: 0 0 3px 3px;
+    }
+
+    /* Subtle bottom glow line */
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 12%; right: 12%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(253,187,46,0.35), transparent);
     }
 
     .cart-header-left {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.9rem;
 
-      .cart-icon-badge {
-        width: 44px;
-        height: 44px;
-        background: linear-gradient(135deg, #FFF3CC, #FFE680);
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
+      .cart-icon-wrap {
+        position: relative;
         flex-shrink: 0;
-        box-shadow: 0 2px 8px rgba(253,187,46,0.2);
+
+        .cart-icon-badge {
+          width: 46px;
+          height: 46px;
+          background: linear-gradient(140deg, #FDBB2E 0%, #FFD445 55%, #FFC107 100%);
+          border-radius: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow:
+            0 4px 12px rgba(253,187,46,0.38),
+            0 1px 3px rgba(0,0,0,0.08),
+            inset 0 1px 0 rgba(255,255,255,0.45);
+          color: #1A1A1A;
+        }
+
+        .cart-count-badge {
+          position: absolute;
+          top: -6px;
+          right: -7px;
+          min-width: 19px;
+          height: 19px;
+          padding: 0 5px;
+          background: #1A1A1A;
+          color: #FDBB2E;
+          border-radius: 999px;
+          font-size: 0.62rem;
+          font-weight: 800;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          letter-spacing: -0.01em;
+          border: 2px solid #FFFFFF;
+          animation: bounceIn 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
       }
 
-      h2 {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: $text-primary;
-        line-height: 1.2;
-      }
+      .cart-header-text {
+        h2 {
+          font-size: 1.12rem;
+          font-weight: 800;
+          color: $text-primary;
+          line-height: 1.15;
+          letter-spacing: -0.03em;
+        }
 
-      .cart-sub {
-        font-size: 0.74rem;
-        color: $text-2-primary;
-        font-weight: 500;
-        margin-top: 1px;
+        .cart-sub {
+          display: inline-flex;
+          align-items: center;
+          margin-top: 5px;
+          background: rgba(253,187,46,0.12);
+          border: 1px solid rgba(253,187,46,0.30);
+          border-radius: 999px;
+          padding: 2px 9px;
+          font-size: 0.69rem;
+          font-weight: 600;
+          color: #A07800;
+          letter-spacing: 0.01em;
+        }
       }
     }
 
     .close-cart {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
       background: #F5F3EF;
       border: 1.5px solid #E8E4DC;
       display: flex;
       align-items: center;
       justify-content: center;
       color: $text-2-primary;
-      font-size: 1.05rem;
+      font-size: 0.92rem;
       cursor: pointer;
-      transition: all 0.18s;
+      transition: all 0.18s ease;
       flex-shrink: 0;
 
       &:hover {
-        background: rgba(239,68,68,0.08);
-        border-color: rgba(239,68,68,0.3);
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.28);
         color: $bg-fill-color-red;
+        transform: rotate(90deg);
       }
     }
   }
