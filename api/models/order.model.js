@@ -43,7 +43,7 @@ const orderStatusSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["processing", "placed", "ready", "completed", "delivered", "expired", "cancelled"],
+      enum: ["processing", "placed", "completed", "delivered", "expired", "cancelled"],
       default: "processing",
     },
   },
@@ -293,7 +293,7 @@ class OrderModel {
       const result = await Order.updateMany(
         {
           expiryDate: { $lte: getYesterdaysDate().toString() },
-          "orderStatus.status": { $in: ["processing", "placed", "ready"] },
+          "orderStatus.status": { $in: ["processing", "placed"] },
         },
         {
           $set: {

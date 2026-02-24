@@ -11,11 +11,10 @@ import useOrderSocket from "../../hooks/useOrderSocket";
 import html2canvas from "html2canvas";
 import { toPng } from "html-to-image";
 
-const STATUS_FILTERS = ["all", "placed", "ready", "delivered", "cancelled"];
+const STATUS_FILTERS = ["all", "placed", "delivered", "cancelled"];
 
 const STATUS_COLORS = {
-  placed: { bg: "rgba(59,130,246,0.12)", color: "#2563eb" },
-  ready: { bg: "rgba(245,158,11,0.12)", color: "#d97706" },
+  placed:    { bg: "rgba(59,130,246,0.12)",  color: "#2563eb" },
   delivered: { bg: "rgba(34,197,94,0.12)", color: "#16a34a" },
   cancelled: { bg: "rgba(239,68,68,0.12)", color: "#dc2626" },
 };

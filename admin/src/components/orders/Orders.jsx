@@ -105,7 +105,7 @@ export default function Orders() {
   ).toLowerCase();
 
   // Status filter options (includes All + Cancelled)
-  const statusOptions = ["All", "Placed", "Ready", "Delivered", "Cancelled"];
+  const statusOptions = ["All", "Placed", "Delivered", "Cancelled"];
 
   // Extract unique filter values from ALL orders
   const allOrders = orderList || [];
@@ -333,12 +333,6 @@ export default function Orders() {
               onClick={() => handleStatusTabClick("placed")}
             >
               Placed
-            </button>
-            <button
-              className={`status-tab ${currentStatus === "ready" ? "active" : ""}`}
-              onClick={() => handleStatusTabClick("ready")}
-            >
-              Ready
             </button>
             <button
               className={`status-tab ${currentStatus === "delivered" ? "active" : ""}`}

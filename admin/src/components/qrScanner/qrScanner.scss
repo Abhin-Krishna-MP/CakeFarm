@@ -734,10 +734,6 @@ $shadow-card: 0 8px 40px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.06);
       background: rgba($amber, .15);
       color: darken($amber-dk, 10%);
     }
-    &--ready {
-      background: rgba($green, .12);
-      color: $green-dk;
-    }
     &--delivered {
       background: rgba($green, .12);
       color: $green-dk;
