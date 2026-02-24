@@ -20,8 +20,14 @@ const OrderTicket = ({ order, minimal = false, onDownload, downloading = false }
   // 1. Admin scanned the QR and clicked "Mark as Delivered" (ticketStatus)
   // 2. Admin updated the order status to "delivered" via the admin panel (orderStatus)
   const normalizedStatus = (order.orderStatus || order.status || "").toLowerCase();
+  // ticketStatus is set by QR scan and never cleared by the server, so only
+  // use it when orderStatus hasn't explicitly moved away from delivered.
   const isDelivered =
-    order.ticketStatus === "delivered" || normalizedStatus === "delivered";
+    normalizedStatus === "delivered" || normalizedStatus === "completed" ||
+    (order.ticketStatus === "delivered" &&
+      !["placed", "cancelled", "expired"].includes(normalizedStatus));
+  const isCancelled =
+    normalizedStatus === "cancelled" || normalizedStatus === "expired";
 
   const statusLabel = order.orderStatus || order.status || "placed";
   const verifyUrl = `${window.location.origin}/orders/verify/${order.orderToken}`;
@@ -46,7 +52,7 @@ const OrderTicket = ({ order, minimal = false, onDownload, downloading = false }
 
   return (
     <div
-      className={`ot-wrapper${isDelivered ? " ot-torn" : ""}`}
+      className={`ot-wrapper${isDelivered ? " ot-torn" : ""}${isCancelled ? " ot-cancelled" : ""}`}
       data-delivered={isDelivered}
     >
 
@@ -56,9 +62,12 @@ const OrderTicket = ({ order, minimal = false, onDownload, downloading = false }
         {/* Diagonal stripe border at the very top */}
         <div className="ot-stripe-bar" aria-hidden="true" />
 
-        {/* Delivered stamp */}
+        {/* Status stamps */}
         {isDelivered && (
           <div className="ot-stamp" aria-hidden="true">DELIVERED</div>
+        )}
+        {isCancelled && (
+          <div className="ot-stamp ot-stamp--cancelled" aria-hidden="true">CANCELLED</div>
         )}
 
         {/* Order ID row */}

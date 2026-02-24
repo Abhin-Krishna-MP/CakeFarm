@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import "./userList.scss";
 import { profilePic } from "../../assets";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,8 +14,36 @@ import { searchValueInArrObj } from "../../utils/helper";
 import { useEffect } from "react";
 import { deleteUser, getAllUsers } from "../../features/users/usersAction";
 
+/* ─── Confirmation modal ─── */
+function ConfirmDeleteModal({ user, onConfirm, onCancel }) {
+  return ReactDOM.createPortal(
+    <div className="ul-confirm-overlay" onClick={onCancel}>
+      <div className="ul-confirm-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="ul-confirm-icon">
+          <MdDeleteOutline />
+        </div>
+        <h3 className="ul-confirm-title">Delete User</h3>
+        <p className="ul-confirm-msg">
+          Are you sure you want to delete{" "}
+          <strong>{user.username}</strong>? This action cannot be undone.
+        </p>
+        <div className="ul-confirm-btns">
+          <button className="ul-confirm-cancel" onClick={onCancel}>
+            <RxCross2 /> Cancel
+          </button>
+          <button className="ul-confirm-delete" onClick={onConfirm}>
+            <MdDeleteOutline /> Delete
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 const UserListChild = ({ user }) => {
   const [toggleEditMode, setToggleEditMode] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -23,45 +52,53 @@ const UserListChild = ({ user }) => {
     setToggleEditMode(false);
   };
 
-  const handleDeleteUser = (userId) => {
-    dispatch(deleteUser(token, userId));
+  const handleConfirmDelete = () => {
+    dispatch(deleteUser(token, user.userId));
+    setShowConfirm(false);
   };
 
   return (
-    <div className="user-list-child">
-      {/* <div className="user-id">
-        <p>{user.userId}</p>
-      </div> */}
-      <div className="user-name-avatar">
-        <img
-          src={
-            user.avatar
-              ? `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/${user.avatar}`
-              : profilePic
-          }
-          alt={user.username}
-          onError={(e) => { e.currentTarget.src = profilePic; }}
-        />
-        <input type="text" value={user.username} disabled={!toggleEditMode} />
-      </div>
-
-      <div className="user-email">
-        <input type="email" value={user.email} disabled={!toggleEditMode} />
-      </div>
-
-      <div className="user-role">
-        <p>{user.role}</p>
-      </div>
-
-      <div className="user-update">
-        {user.role !== "admin" && (
-          <MdDeleteOutline
-            onClick={() => handleDeleteUser(user.userId)}
-            className="icon"
+    <>
+      <div className="user-list-child">
+        <div className="user-name-avatar">
+          <img
+            src={
+              user.avatar
+                ? `${import.meta.env.VITE_API_BASE_IMAGE_URI}/assets/images/users/${user.avatar}`
+                : profilePic
+            }
+            alt={user.username}
+            onError={(e) => { e.currentTarget.src = profilePic; }}
           />
-        )}
+          <input type="text" value={user.username} disabled={!toggleEditMode} />
+        </div>
+
+        <div className="user-email">
+          <input type="email" value={user.email} disabled={!toggleEditMode} />
+        </div>
+
+        <div className="user-role">
+          <p>{user.role}</p>
+        </div>
+
+        <div className="user-update">
+          {user.role !== "admin" && (
+            <MdDeleteOutline
+              onClick={() => setShowConfirm(true)}
+              className="icon"
+            />
+          )}
+        </div>
       </div>
-    </div>
+
+      {showConfirm && (
+        <ConfirmDeleteModal
+          user={user}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowConfirm(false)}
+        />
+      )}
+    </>
   );
 };
 

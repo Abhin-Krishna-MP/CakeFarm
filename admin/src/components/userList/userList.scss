@@ -95,7 +95,98 @@
   }
 }
 
-/* ─── Mobile responsive ─── */
+/* ─── Delete confirmation modal ─── */
+.ul-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.15s ease both;
+}
+
+.ul-confirm-modal {
+  background: $bg-primary;
+  border-radius: 18px;
+  padding: 2rem 2rem 1.5rem;
+  width: min(420px, 92vw);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  animation: scaleIn 0.18s ease both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+}
+
+.ul-confirm-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba($bg-fill-color-red, 0.1);
+  color: $bg-fill-color-red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.ul-confirm-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.ul-confirm-msg {
+  font-size: 0.88rem;
+  color: $text-2-primary;
+  line-height: 1.55;
+  margin: 0 0 0.5rem;
+
+  strong { color: $text-primary; }
+}
+
+.ul-confirm-btns {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.25rem;
+
+  button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+  }
+}
+
+.ul-confirm-cancel {
+  background: #F0EDE6;
+  color: $text-primary;
+  border: 1.5px solid #E5E5E5 !important;
+  &:hover { background: #E5E0D5; }
+}
+
+.ul-confirm-delete {
+  background: $bg-fill-color-red;
+  color: #fff;
+  &:hover { background: darken(#ef4444, 6%); }
+  &:active { transform: scale(0.97); }
+}
+
 @media (max-width: 768px) {
   .user-list .head {
     flex-direction: column;

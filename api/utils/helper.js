@@ -81,6 +81,7 @@ export const transformUserOrderData = (rawUserOrderData) => {
             total: order.total,
             userId: order.userId,
             user: order.user || null, // Include user info
+            createdAt: order.createdAt,
             items: [
               {
                 orderItemsId: order.orderItemsId,
