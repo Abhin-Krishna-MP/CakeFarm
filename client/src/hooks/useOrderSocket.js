@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import { useDispatch } from "react-redux";
-import { setTicketDelivered } from "../features/userActions/order/orderSlice";
+import { setTicketDelivered, updateOrderStatusRealtime } from "../features/userActions/order/orderSlice";
 
 /**
  * Connects to the Socket.io server and listens for real-time
@@ -35,6 +35,12 @@ const useOrderSocket = (onDelivered = null) => {
       if (typeof onDelivered === "function") {
         onDelivered(orderToken);
       }
+    });
+
+    // Real-time order status changes from admin panel (placed → ready → delivered)
+    socketRef.current.on("orderStatusUpdated", ({ orderStatusId, status }) => {
+      // orderStatusId is the orderId on the server side (query param naming)
+      dispatch(updateOrderStatusRealtime({ orderId: orderStatusId, status }));
     });
 
     return () => {

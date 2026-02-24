@@ -52,6 +52,21 @@ const orderSlice = createSlice({
         order.ticketStatus = "delivered";
       }
     },
+
+    // Real-time: called by the socket "orderStatusUpdated" event so the
+    // Orders page reflects the new status without a page refresh.
+    updateOrderStatusRealtime: (state, action) => {
+      const { orderId, status } = action.payload;
+      const order = state.orderHistory?.find((o) => o.orderId === orderId);
+      if (order) {
+        order.orderStatus = status;
+        order.status = status;
+        // If admin marks as delivered via status, also flip the ticket
+        if (status === "delivered") {
+          order.ticketStatus = "delivered";
+        }
+      }
+    },
   },
 });
 
@@ -62,6 +77,7 @@ export const {
   getOrderHistorySuccess,
   getOrderHistoryFailure,
   setTicketDelivered,
+  updateOrderStatusRealtime,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

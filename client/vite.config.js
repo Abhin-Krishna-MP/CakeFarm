@@ -14,6 +14,14 @@ export default defineConfig({
         target: 'http://localhost:6005',
         changeOrigin: true,
         ws: true,
+        configure: (proxy) => {
+          proxy.on('error', (err) => {
+            const silent = ['ECONNRESET', 'EPIPE', 'ECONNREFUSED'];
+            if (!silent.includes(err.code)) {
+              console.error('[proxy] socket error:', err.message);
+            }
+          });
+        },
       },
     },
   },
