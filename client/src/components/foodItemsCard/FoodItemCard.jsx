@@ -17,7 +17,7 @@ import {
   decrementItem,
   incrementItem,
 } from "../../features/userActions/cart/cartAction";
-import { toggleFavourite } from "../../features/userActions/favourites/favouritesSlice";
+import { toggleFavouriteApi } from "../../features/userActions/favourites/favouritesAction";
 
 export default function FoodItemCard({ item, isDisabled = false }) {
   // state for checking whether an item in added to cart or not
@@ -29,6 +29,7 @@ export default function FoodItemCard({ item, isDisabled = false }) {
 
   // cart state
   const cartItems = useSelector((state) => state.cart).cartItems;
+  const token = useSelector((state) => state.auth.token);
 
   // favourites state
   const favouriteIds = useSelector((state) => state.favourites.productIds);
@@ -36,7 +37,7 @@ export default function FoodItemCard({ item, isDisabled = false }) {
 
   const handleToggleFavourite = (e) => {
     e.stopPropagation();
-    dispatch(toggleFavourite(item.productId));
+    dispatch(toggleFavouriteApi(token, item.productId));
   };
   // console.log(cart);
 

@@ -1,29 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const STORAGE_KEY = "cakefarm_favourites";
-
-const loadFromStorage = () => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveToStorage = (ids) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-  } catch {}
-};
-
 const favouritesSlice = createSlice({
   name: "favourites",
   initialState: {
-    productIds: loadFromStorage(),
+    productIds: [],
     viewingFavourites: false,
+    loading: false,
   },
   reducers: {
+    // Called after a successful API fetch — replaces the full list
+    setFavourites: (state, action) => {
+      state.productIds = action.payload;
+      state.loading = false;
+    },
+    // Optimistic local toggle (immediately reflects in UI before server confirms)
     toggleFavourite: (state, action) => {
       const id = action.payload;
       const idx = state.productIds.indexOf(id);
@@ -32,13 +22,21 @@ const favouritesSlice = createSlice({
       } else {
         state.productIds.splice(idx, 1);
       }
-      saveToStorage(state.productIds);
     },
     setViewingFavourites: (state, action) => {
       state.viewingFavourites = action.payload;
     },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
   },
 });
 
-export const { toggleFavourite, setViewingFavourites } = favouritesSlice.actions;
+export const {
+  setFavourites,
+  toggleFavourite,
+  setViewingFavourites,
+  setLoading,
+} = favouritesSlice.actions;
+
 export default favouritesSlice.reducer;

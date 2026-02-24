@@ -292,6 +292,25 @@ const getCategories = asyncHandler(async (req, res, next) => {
     );
 });
 
+const getFavourites = asyncHandler(async (req, res) => {
+  const favourites = await UserModel.getFavourites(req.user.userId);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { favourites }, "Favourites fetched successfully"));
+});
+
+const toggleUserFavourite = asyncHandler(async (req, res) => {
+  const { productId } = req.body;
+  if (!productId) throw new ApiError(400, "productId is required");
+
+  const favourites = await UserModel.toggleFavourite(req.user.userId, productId);
+  if (favourites === null) throw new ApiError(404, "User not found");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { favourites }, "Favourite updated successfully"));
+});
+
 export {
   uploadUserProfile,
   getAllUsers,
@@ -301,4 +320,6 @@ export {
   getProducts,
   getCategories,
   uploadOtherImages,
+  getFavourites,
+  toggleUserFavourite,
 };

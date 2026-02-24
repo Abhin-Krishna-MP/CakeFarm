@@ -11,6 +11,8 @@ import {
   updateUser,
   uploadOtherImages,
   uploadUserProfile,
+  getFavourites,
+  toggleUserFavourite,
 } from "../controllers/user.controllers.js";
 import { validate } from "../validators/validate.js";
 import { verifyJwt } from "../middlewares/jwt.authMiddleware.js";
@@ -41,5 +43,9 @@ router
 
 // Public route: anyone who scans a QR code can view order details
 router.route("/order/verify/:token").get(getOrderByToken);
+
+// Favourites routes
+router.route("/favourites").get(verifyJwt, getFavourites);
+router.route("/favourites/toggle").post(verifyJwt, toggleUserFavourite);
 
 export default router;

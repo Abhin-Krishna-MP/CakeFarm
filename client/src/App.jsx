@@ -10,7 +10,7 @@ import AuthSuccess from "./pages/authSuccess/AuthSuccess";
 import Lunch from "./pages/lunch/Lunch";
 import VerifyOrder from "./pages/verifyOrder/VerifyOrder";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { cartDrawerVars, cartMobileVars } from "./utils/motion";
 import CartItems from "./components/cartItems/CartItems";
 import context from "./context/context";
@@ -19,6 +19,7 @@ function App() {
   const user = useSelector((state) => state.auth.userData);
   const { isToggleCart, setIsToggleCart } = useContext(context);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  const cartDragControls = useDragControls();
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 640);
@@ -86,8 +87,19 @@ function App() {
                 initial="initial"
                 animate="animate"
                 exit="exit"
+                drag={isMobile ? "y" : false}
+                dragControls={cartDragControls}
+                dragListener={false}
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={{ top: 0, bottom: 0.35 }}
+                dragMomentum={false}
+                onDragEnd={(_, info) => {
+                  if (isMobile && (info.offset.y > 80 || info.velocity.y > 500)) {
+                    setIsToggleCart(false);
+                  }
+                }}
               >
-                <CartItems />
+                <CartItems onDragStart={(e) => cartDragControls.start(e)} />
               </motion.div>
             </>
           )}

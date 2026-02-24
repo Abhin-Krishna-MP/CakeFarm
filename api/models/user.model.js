@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    favourites: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );
@@ -178,6 +182,35 @@ class UserModel {
       return null;
     } catch (error) {
       console.error("Error updating user: ", error.message);
+      throw error;
+    }
+  };
+
+  static getFavourites = async (userId) => {
+    try {
+      const user = await User.findOne({ userId }, { favourites: 1 }).lean();
+      return user?.favourites || [];
+    } catch (error) {
+      console.error("Error getting favourites:", error);
+      throw error;
+    }
+  };
+
+  static toggleFavourite = async (userId, productId) => {
+    try {
+      // Use atomic operators to add or remove in a single DB round-trip
+      const user = await User.findOne({ userId });
+      if (!user) return null;
+      const idx = user.favourites.indexOf(productId);
+      if (idx === -1) {
+        user.favourites.push(productId);
+      } else {
+        user.favourites.splice(idx, 1);
+      }
+      await user.save();
+      return user.favourites;
+    } catch (error) {
+      console.error("Error toggling favourite:", error);
       throw error;
     }
   };

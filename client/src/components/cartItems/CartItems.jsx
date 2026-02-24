@@ -177,7 +177,7 @@ const CartItem = ({ cartItem }) => {
   );
 };
 
-export default function CartItems() {
+export default function CartItems({ onDragStart }) {
   const { setIsToggleCart } = useContext(context);
 
   // select the cart state
@@ -244,7 +244,11 @@ export default function CartItems() {
   return (
     <div className="cart-items">
       {/* ─── Mobile drag handle ─── */}
-      <div className="drag-handle-wrap">
+      <div
+        className="drag-handle-wrap"
+        onPointerDown={onDragStart}
+        style={{ touchAction: "none" }}
+      >
         <div className="drag-handle" />
       </div>
 

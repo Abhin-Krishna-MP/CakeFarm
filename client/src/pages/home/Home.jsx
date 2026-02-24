@@ -7,6 +7,7 @@ import { fadeIn, slideIn } from "../../utils/motion";
 import FoodItemCard from "../../components/foodItemsCard/FoodItemCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../features/userActions/product/productAction";
+import { loadFavourites } from "../../features/userActions/favourites/favouritesAction";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     dispatch(getProducts(token));
+    dispatch(loadFavourites(token));
   }, []);
 
   const favourites = useSelector((state) => state.favourites);
