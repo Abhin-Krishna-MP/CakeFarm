@@ -177,8 +177,11 @@ export default function Orders() {
   // ── Real-time socket ────────────────────────────
   useEffect(() => {
     if (!token) return;
+    // Use the API server URL from the environment variable so socket.io
+    // connects to the correct server in production (client and API may be
+    // on different domains — window.location.origin would be wrong there).
     const socketUrl =
-      typeof window !== "undefined" ? window.location.origin : "http://localhost:6005";
+      import.meta.env.VITE_API_BASE_IMAGE_URI || (typeof window !== "undefined" ? window.location.origin : "");
 
     const socket = io(socketUrl, { transports: ["websocket", "polling"], withCredentials: true });
 

@@ -17,11 +17,11 @@ const useOrderSocket = (onDelivered = null) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // Connect to the same origin as the page — Vite dev server proxies
-    // /socket.io/ to the API server (ws: true in vite.config.js).
-    // This avoids cross-origin WebSocket failures and React StrictMode
-    // double-invoke teardowns before the WS handshake completes.
-    const socketUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
+    // Connect directly to the API server URL from the environment variable.
+    // In dev this points to localhost:6005; in production it points to the
+    // deployed API server. Using window.location.origin would break when the
+    // client and API are hosted on different domains (no Vite proxy in prod).
+    const socketUrl = import.meta.env.VITE_API_BASE_IMAGE_URI || (typeof window !== "undefined" ? window.location.origin : "");
 
     socketRef.current = io(socketUrl, {
       withCredentials: true,
