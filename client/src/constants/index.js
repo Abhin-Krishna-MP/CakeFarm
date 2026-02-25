@@ -36,6 +36,8 @@ import {
   mealsImage,
   nonVegImage,
   vegImage,
+  loginBgMobile,
+  loginBgDesktop,
 } from "../assets/index";
 
 export {
@@ -79,6 +81,8 @@ export {
   mealsImage,
   nonVegImage,
   vegImage,
+  loginBgMobile,
+  loginBgDesktop,
 };
 
 export const menuLinks = [

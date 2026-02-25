@@ -6,6 +6,8 @@ import profilePic from "./images/profile-pic.jpg";
 import logo from "./images/CakeFarm.jpeg";
 import defaultProfilePic from "./images/default-profile.png";
 import profile from "./images/profile.jpeg";
+import loginBgMobile from "./images/cakefarm-login.png";
+import loginBgDesktop from "./images/cakefarm-desktop-login.png";
 import allFoodImage from "./images/cat_allFood.png";
 import chineseFoodImage from "./images/cat_chinese.png";
 import snacksImage from "./images/cat_snacks.png";
@@ -24,6 +26,8 @@ export {
   defaultProfilePic,
   profile,
   profilePic,
+  loginBgMobile,
+  loginBgDesktop,
   allFoodImage,
   chineseFoodImage,
   snacksImage,
