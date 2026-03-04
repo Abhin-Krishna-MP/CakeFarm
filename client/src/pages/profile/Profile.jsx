@@ -17,10 +17,12 @@ const resolveAvatar = (avatar) => {
 
 /* ─── Legal footer links ─── */
 const LEGAL_LINKS = [
-  { id: "privacy",  label: "Privacy Policy"    },
-  { id: "terms",    label: "Terms & Conditions" },
-  { id: "customer", label: "Customer Service"   },
-  { id: "legal",    label: "Legal & Privacy"    },
+  { id: "privacy",  label: "Privacy Policy"        },
+  { id: "terms",    label: "Terms & Conditions"    },
+  { id: "customer", label: "Customer Service"      },
+  { id: "legal",    label: "Legal & Privacy"       },
+  { id: "refund",   label: "Refund & Cancellation" },
+  { id: "fssai",    label: "FSSAI License"          },
 ];
 
 const MODAL_CONTENT = {
@@ -192,6 +194,52 @@ Phone: +91 80899 89966 / +91 487 2421242
 
 Address: Cake Farm, Palakkad Road, Kizhakkumpattukara, Thrissur, Kerala - 680005, India`,
   },
+  refund: {
+    title: "Refund & Cancellation Policy",
+    text: `Order Cancellations
+At Cake Farm, we understand that plans can change. You may cancel your order up to 24 hours before your scheduled delivery or event time to receive a partial or full refund, depending on the nature of the order.
+
+To request a cancellation, please immediately contact our support team at infocakefarmtcr@gmail.com or call us at +91 80899 89966.
+
+Late Cancellations & Non-Refundable Items
+Because our cakes and bakery items are made fresh to order, cancellations made within 24 hours of the scheduled time, or after the preparation of your order has already begun, are generally not eligible for a refund.
+
+Additionally, custom-designed cakes, large event catering, or bulk orders may require a non-refundable advance payment to cover the specialized ingredients and preparation time.
+
+Refund Processing
+If your cancellation is eligible for a refund, the amount will be processed and credited back to your original payment method within 7 business days. Please note that your bank or credit card company may take additional time to officially post the refund to your account.
+
+Quality Guarantee
+We take immense pride in our baking. If you receive an order that is incorrect, damaged, or falls below our quality standards, please contact us within 2 hours of delivery with a photo of the item. We will work with you to provide a suitable resolution, which may include a replacement or a refund.`,
+  },
+  fssai: {
+    title: "FSSAI License & Food Safety",
+    pdfUrl: "/fssai-license.pdf",
+    text: `We are committed to the highest standards of food safety and hygiene. Cake Farm operates under the official registration of our parent company, ensuring that all our bakery products, sweets, and savouries meet stringent quality regulations.
+
+License Details
+
+License Number: 11326008000035
+
+Registered Office Name: MARIYAS AGRO FOOD PRODUCTS
+
+Registered Address: 7/250, 250 A, THAMARIYUR BUILDING, KOLAZHY P O, Thrissur, Kerala-680010
+
+Authorized Premises Address: 7/250, 250 A, THAMARIYUR BUILDING, KOLAZHY P O, Thrissur Circle, Thrissur, Kerala-680010
+
+Category of License: State License
+
+Kind of Business: Manufacturer - General Manufacturing and Trade/Retail - Retailer
+
+License Valid Upto: 11-01-2027
+
+Approved Food Categories
+07 — Bakery products
+18 — Indian Sweets and Indian Snacks & Savouries products
+15 — Ready-to-eat savouries
+
+This license is granted under and is subject to the provisions of the FSS Act, 2006.`,
+  },
 };
 
 function renderModalContent(text) {
@@ -259,6 +307,31 @@ function LegalModal({ content, id, onClose }) {
         </div>
         <div className="pl-modal__body">
           {renderModalContent(content.text)}
+          {content.pdfUrl && (
+            <div className="pl-modal__pdf-section">
+              <h3 className="pl-modal__section-title">Official License Document</h3>
+              <a
+                href={content.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pl-modal__pdf-card"
+              >
+                <div className="pl-modal__pdf-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" strokeLinecap="round" strokeLinejoin="round"/>
+                    <polyline points="14 2 14 8 20 8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <line x1="16" y1="13" x2="8" y2="13" strokeLinecap="round"/>
+                    <line x1="16" y1="17" x2="8" y2="17" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <div className="pl-modal__pdf-info">
+                  <span className="pl-modal__pdf-name">FSSAI License Certificate</span>
+                  <span className="pl-modal__pdf-desc">State License · Valid until 11-01-2027</span>
+                </div>
+                <span className="pl-modal__pdf-btn">View ↗</span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>,

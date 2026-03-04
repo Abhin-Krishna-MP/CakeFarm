@@ -44,6 +44,38 @@ export default function LegalPage() {
         {/* Reuse the same content renderer + class names from the modal */}
         <div className="pl-modal__body lp-body">
           {renderModalContent(content.text)}
+          {content.pdfUrl && (
+            <div className="lp-pdf-section">
+              <h3 className="pl-modal__section-title lp-pdf-title">Official License Document</h3>
+              <a
+                href={content.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pl-modal__pdf-card"
+              >
+                <div className="pl-modal__pdf-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" strokeLinecap="round" strokeLinejoin="round"/>
+                    <polyline points="14 2 14 8 20 8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <line x1="16" y1="13" x2="8" y2="13" strokeLinecap="round"/>
+                    <line x1="16" y1="17" x2="8" y2="17" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <div className="pl-modal__pdf-info">
+                  <span className="pl-modal__pdf-name">FSSAI License Certificate</span>
+                  <span className="pl-modal__pdf-desc">State License · Valid until 11-01-2027</span>
+                </div>
+                <span className="pl-modal__pdf-btn">View ↗</span>
+              </a>
+              <div className="lp-pdf-embed-wrap">
+                <iframe
+                  src={content.pdfUrl}
+                  className="lp-pdf-embed"
+                  title="FSSAI License Certificate"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
